@@ -35,24 +35,15 @@ export function DashboardHome() {
 
   return (
     <div className="flex flex-col gap-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">İdarəetmə Paneli</h1>
-        <div className="flex items-center gap-2">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" /> Yeni Kurs Əlavə Et
-          </Button>
-        </div>
-      </div>
-
       <div>
         <HomeHero />
       </div>
 
-
       {/* Testimonials Management */}
 
-      <Testimonials />
-
+      <div>
+        <Testimonials />
+      </div>
       {/* Graduates Management */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">

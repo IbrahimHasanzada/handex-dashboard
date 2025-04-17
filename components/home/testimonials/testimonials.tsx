@@ -7,17 +7,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { Edit, Globe, Plus, Trash2 } from 'lucide-react'
-import { useGetCustomersQuery } from "@/store/handexApi"
+import { useDeleteCustomersMutation, useGetCustomersQuery } from "@/store/handexApi"
 import { Testimonial } from "@/types/home/testimonials.dto"
 import TestimonialsEdit from "./testimonials-edit"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { TestimonialsAdd } from "./testimonials-add"
 
 const Testimonials = () => {
     const [editingId, setEditingId] = useState<number | string | null>(null)
     const [editedData, setEditedData] = useState<Partial<Testimonial>>({})
     const [currentLanguage, setCurrentLanguage] = useState<string>("az")
+    const [addData, setAddData] = useState<boolean>(false)
 
     const { data: getCustomers, isLoading, isError, refetch } = useGetCustomersQuery(currentLanguage)
+    const [deleteCustomer, { isLoading: customersLoading, data: customersData }] = useDeleteCustomersMutation()
 
     const handleEdit = (testimonial: Testimonial) => {
         setEditingId(testimonial.id)
@@ -40,20 +43,16 @@ const Testimonials = () => {
 
     const handleDelete = async (id: number | string) => {
         try {
-            // await deleteTestimonialMutation(id)
+            await deleteCustomer(id)
             await refetch()
         } catch (error) {
-            console.error("Error deleting testimonial:", error)
+            console.error(error)
         }
     }
 
-    const handleAddNew = () => {
-        console.log("Adding new testimonial")
-    }
 
     const handleLanguageChange = (language: string) => {
         setCurrentLanguage(language)
-        // If we're editing, cancel the edit when changing language
         if (editingId) {
             handleCancelEdit()
         }
@@ -74,81 +73,88 @@ const Testimonials = () => {
                             <TabsTrigger value="ru">RU</TabsTrigger>
                         </TabsList>
                     </Tabs>
-                    <Button onClick={handleAddNew}>
+                    <Button onClick={() => setAddData(true)}>
                         <Plus className="mr-2 h-4 w-4" /> Yeni Rəy Əlavə Et
                     </Button>
                 </div>
             </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {isLoading ? (
-                        <div className="col-span-2 text-center py-8">Yüklənir...</div>
-                    ) : isError ? (
-                        <div className="col-span-2 text-center py-8 text-red-500">Məlumatları yükləyərkən xəta baş verdi</div>
-                    ) : getCustomers && getCustomers.length > 0 ? (
-                        getCustomers.map((testimonial: Testimonial) => (
-                            <div
-                                key={testimonial.id}
-                                className={`border rounded-lg p-4 ${editingId === testimonial.id ? "bg-muted/50 shadow-sm" : ""}`}
-                            >
-                                {editingId === testimonial.id ? (
-                                    <TestimonialsEdit
-                                        editedData={editedData}
-                                        handleCancelEdit={handleCancelEdit}
-                                        testimonial={testimonial}
-                                        setEditedData={setEditedData}
-                                        setEditingId={setEditingId}
-                                        refetch={refetch}
-                                        currentLanguage={currentLanguage}
-                                    />
-                                ) : (
-                                    <>
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center gap-3">
-                                                <Image
-                                                    src={testimonial.customer_profile.url || "/placeholder.svg?height=40&width=40"}
-                                                    alt={testimonial.name}
-                                                    width={40}
-                                                    height={40}
-                                                    className="rounded-full"
-                                                />
+            {addData ?
+                <CardContent>
+                    <TestimonialsAdd addData={addData} setAddData={setAddData} />
+                </CardContent>
+
+                :
+                <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {isLoading ? (
+                            <div className="col-span-2 text-center py-8">Yüklənir...</div>
+                        ) : isError ? (
+                            <div className="col-span-2 text-center py-8 text-red-500">Məlumatları yükləyərkən xəta baş verdi</div>
+                        ) : getCustomers && getCustomers.length > 0 ? (
+                            getCustomers.map((testimonial: Testimonial) => (
+                                <div
+                                    key={testimonial.id}
+                                    className={`border rounded-lg p-4 ${editingId === testimonial.id ? "bg-muted/50 shadow-sm" : ""}`}
+                                >
+                                    {editingId === testimonial.id ? (
+                                        <TestimonialsEdit
+                                            editedData={editedData}
+                                            handleCancelEdit={handleCancelEdit}
+                                            testimonial={testimonial}
+                                            setEditedData={setEditedData}
+                                            setEditingId={setEditingId}
+                                            refetch={refetch}
+                                            currentLanguage={currentLanguage}
+                                        />
+                                    ) : (
+                                        <>
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center gap-3">
+                                                    <Image
+                                                        src={testimonial.customer_profile.url || "/placeholder.svg?height=40&width=40"}
+                                                        alt={testimonial.name}
+                                                        width={40}
+                                                        height={40}
+                                                        className="rounded-full"
+                                                    />
+                                                    <div>
+                                                        <div className="font-medium">{testimonial.name}</div>
+                                                        <div className="text-sm text-muted-foreground">{testimonial.bank_name}</div>
+                                                    </div>
+                                                </div>
                                                 <div>
-                                                    <div className="font-medium">{testimonial.name}</div>
-                                                    <div className="text-sm text-muted-foreground">{testimonial.bank_name}</div>
+                                                    <Image
+                                                        src={testimonial.bank_logo.url || "/placeholder.svg?height=50&width=50"}
+                                                        alt={testimonial.bank_name || ""}
+                                                        width={50}
+                                                        height={50}
+                                                        className="rounded-full"
+                                                    />
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    <Button size="icon" variant="ghost" onClick={() => handleEdit(testimonial)}>
+                                                        <Edit className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button size="icon" variant="ghost" onClick={() => handleDelete(testimonial.id)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
                                                 </div>
                                             </div>
-                                            <div>
-                                                <Image
-                                                    src={testimonial.bank_logo.url || "/placeholder.svg?height=50&width=50"}
-                                                    alt={testimonial.bank_name || ""}
-                                                    width={50}
-                                                    height={50}
-                                                    className="rounded-full"
-                                                />
+                                            <div className="text-sm mt-2">{testimonial.comment}</div>
+                                            <div className="mt-2 text-xs text-muted-foreground flex items-center">
+                                                <Globe className="h-3 w-3 mr-1" />
+                                                {currentLanguage === "az" ? "Azərbaycan" : currentLanguage === "en" ? "English" : "Русский"}
                                             </div>
-                                            <div className="flex gap-1">
-                                                <Button size="icon" variant="ghost" onClick={() => handleEdit(testimonial)}>
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                <Button size="icon" variant="ghost" onClick={() => handleDelete(testimonial.id)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                        <div className="text-sm mt-2">{testimonial.comment}</div>
-                                        <div className="mt-2 text-xs text-muted-foreground flex items-center">
-                                            <Globe className="h-3 w-3 mr-1" />
-                                            {currentLanguage === "az" ? "Azərbaycan" : currentLanguage === "en" ? "English" : "Русский"}
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        ))
-                    ) : (
-                        <div className="col-span-2 text-center py-8">Heç bir rəy tapılmadı</div>
-                    )}
-                </div>
-            </CardContent>
+                                        </>
+                                    )}
+                                </div>
+                            ))
+                        ) : (
+                            <div className="col-span-2 text-center py-8">Heç bir rəy tapılmadı</div>
+                        )}
+                    </div>
+                </CardContent>
+            }
         </Card>
     )
 }

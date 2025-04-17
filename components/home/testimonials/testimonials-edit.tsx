@@ -70,8 +70,6 @@ const TestimonialsEdit: React.FC<TestimonialsEditProps> = ({
                 }
             }
         })
-
-        console.log(editedData)
     }
 
     const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,7 +98,6 @@ const TestimonialsEdit: React.FC<TestimonialsEditProps> = ({
         }
     }
 
-    // Language display names
     const languageNames = {
         az: "Azərbaycan",
         en: "English",
