@@ -80,7 +80,7 @@ const Testimonials = () => {
             </CardHeader>
             {addData ?
                 <CardContent>
-                    <TestimonialsAdd addData={addData} setAddData={setAddData} />
+                    <TestimonialsAdd refetch={refetch} addData={addData} setAddData={setAddData} />
                 </CardContent>
 
                 :
@@ -109,27 +109,30 @@ const Testimonials = () => {
                                     ) : (
                                         <>
                                             <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center gap-3">
-                                                    <Image
-                                                        src={testimonial.customer_profile.url || "/placeholder.svg?height=40&width=40"}
-                                                        alt={testimonial.name}
-                                                        width={40}
-                                                        height={40}
-                                                        className="rounded-full"
-                                                    />
-                                                    <div>
-                                                        <div className="font-medium">{testimonial.name}</div>
-                                                        <div className="text-sm text-muted-foreground">{testimonial.bank_name}</div>
+                                                <div className="flex flex-col gap-3 md:w-1F/3">
+                                                    <div className="w-full flex justify-between items-center">
+                                                        <div className="h-10 w-15">
+                                                            <img
+                                                                src={testimonial.customer_profile.url || "/placeholder.svg?height=40&width=40"}
+                                                                alt={testimonial.name}
+                                                                className="rounded-full object-cover w-full h-full"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-medium">{testimonial.name}</div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div>
-                                                    <Image
-                                                        src={testimonial.bank_logo.url || "/placeholder.svg?height=50&width=50"}
-                                                        alt={testimonial.bank_name || ""}
-                                                        width={50}
-                                                        height={50}
-                                                        className="rounded-full"
-                                                    />
+                                                    <div className="w-full flex justify-between items-center">
+                                                        <Image
+                                                            src={testimonial.bank_logo.url || "/placeholder.svg?height=50&width=50"}
+                                                            alt={testimonial.bank_name || ""}
+                                                            width={50}
+                                                            height={50}
+                                                            className="rounded-full w-15 !h-15"
+                                                        />
+                                                        <div className="text-sm text-muted-foreground">{testimonial.bank_name}</div>
+
+                                                    </div>
                                                 </div>
                                                 <div className="flex gap-1">
                                                     <Button size="icon" variant="ghost" onClick={() => handleEdit(testimonial)}>
@@ -155,7 +158,7 @@ const Testimonials = () => {
                     </div>
                 </CardContent>
             }
-        </Card>
+        </Card >
     )
 }
 

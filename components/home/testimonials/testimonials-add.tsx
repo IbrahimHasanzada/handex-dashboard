@@ -13,10 +13,10 @@ import { Upload, X } from "lucide-react"
 import Image from "next/image"
 import { useAddCustomersMutation, useUploadFileMutation } from "@/store/handexApi"
 
-export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData }) => {
+export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData, refetch }) => {
     const [activeTab, setActiveTab] = useState("az")
     const [profilePreview, setProfilePreview] = useState()
-    const [uploadImage, { isSuccess, isError }] = useUploadFileMutation()
+    const [uploadImage, { isLoading, isSuccess, isError }] = useUploadFileMutation()
     const [addCustomers, { isSuccess: addCustomersSucces, isError: addCustomersError }] = useAddCustomersMutation()
     const [bankPreview, setBankPreview] = useState()
     const [addTestimonials, setaddTestimonials] = useState({
@@ -55,11 +55,13 @@ export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData }) => {
                 const formData = new FormData()
                 formData.append('image', file)
                 const response = await uploadImage(formData).unwrap()
-                if (field == 'customer_profile') { setProfilePreview(response.url) } else setBankPreview(response.url)
-                setaddTestimonials({
-                    ...addTestimonials,
-                    [field]: response.id
-                })
+                if (!isLoading) {
+                    if (field == 'customer_profile') { setProfilePreview(response.url) } else setBankPreview(response.url)
+                    setaddTestimonials({
+                        ...addTestimonials,
+                        [field]: response.id
+                    })
+                }
             } catch (error) {
                 console.log(error)
             }
@@ -68,8 +70,13 @@ export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        console.log(JSON.stringify(addTestimonials))
-        await addCustomers(JSON.stringify(addTestimonials)).unwrap()
+        console.log(addTestimonials)
+        try {
+            await addCustomers(addTestimonials).unwrap()
+            await refetch()
+        } catch (error) {
+            console.log(error)
+        }
         setAddData(false)
     }
 

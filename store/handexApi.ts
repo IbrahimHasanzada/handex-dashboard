@@ -5,7 +5,7 @@ let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0ND
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/api' }),
-    tagTypes: ['Statistics', 'HomeHero', 'Customers'],
+    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates'],
     endpoints: (builder) => ({
         getGeneral: builder.query({
             query: () => '/general',
@@ -52,7 +52,7 @@ export const handexApi = createApi({
             }),
         }),
         addCustomers: builder.mutation({
-            query: ({ params }) => ({
+            query: (params) => ({
                 url: `/customers`,
                 method: 'POST',
                 headers: {
@@ -71,7 +71,12 @@ export const handexApi = createApi({
                 },
                 body: file
             })
-        })
+        }),
+        getProfiles: builder.query({
+            query: (model) => `/profiles?model=${model}`,
+            providesTags: ['Graduates']
+        }),
+
     }),
 })
 
@@ -83,5 +88,6 @@ export const {
     useGetCustomersQuery,
     useUploadFileMutation,
     useDeleteCustomersMutation,
-    useAddCustomersMutation
+    useAddCustomersMutation,
+    useGetProfilesQuery
 } = handexApi
