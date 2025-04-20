@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 
-let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NDkwMTA2NiwiZXhwIjoxNzQ0OTg3NDY2fQ.2i5LLK7fsU4lutydD5CzKyzahCIpR7XaNXs1X7LqmoE'
+let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTE0NjQxOSwiZXhwIjoxNzQ1MjMyODE5fQ.TSqIFOIyH4XE4z803MOAYpRKl37k3xfMuUPON3PIsi0'
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/api' }),
@@ -76,6 +76,26 @@ export const handexApi = createApi({
             query: (model) => `/profiles?model=${model}`,
             providesTags: ['Graduates']
         }),
+        addProfiles: builder.mutation({
+            query: (params) => ({
+                url: `/profiles`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
+        deleteProfiles: builder.mutation({
+            query: (id) => ({
+                url: `/profiles/${id}`,
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+        })
 
     }),
 })
@@ -89,5 +109,7 @@ export const {
     useUploadFileMutation,
     useDeleteCustomersMutation,
     useAddCustomersMutation,
-    useGetProfilesQuery
+    useGetProfilesQuery,
+    useAddProfilesMutation,
+    useDeleteProfilesMutation
 } = handexApi

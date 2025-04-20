@@ -127,7 +127,7 @@ export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData, refetch })
 
                         {/* Bank Logo */}
                         <div className="space-y-2">
-                            <Label htmlFor="bank_logo">Bank Logosu</Label>
+                            <Label htmlFor="bank_logo">Şirkət Logosu</Label>
                             <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 h-40 relative">
                                 {bankPreview ? (
                                     <div className="relative w-full h-full">

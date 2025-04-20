@@ -6,7 +6,7 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { Edit, Globe, Plus, Trash2 } from 'lucide-react'
+import { Edit, Globe, Loader2, Plus, Trash2 } from 'lucide-react'
 import { useDeleteCustomersMutation, useGetCustomersQuery } from "@/store/handexApi"
 import { Testimonial } from "@/types/home/testimonials.dto"
 import TestimonialsEdit from "./testimonials-edit"
@@ -85,9 +85,11 @@ const Testimonials = () => {
 
                 :
                 <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className={isLoading ? 'flex' : 'grid grid-cols-1 md:grid-cols-3 gap-4'}>
                         {isLoading ? (
-                            <div className="col-span-2 text-center py-8">Yüklənir...</div>
+                            <div className="w-full h-full flex !justify-center items-center">
+                                <Loader2 className="h-8 w-8 animate-spin" />
+                            </div>
                         ) : isError ? (
                             <div className="col-span-2 text-center py-8 text-red-500">Məlumatları yükləyərkən xəta baş verdi</div>
                         ) : getCustomers && getCustomers.length > 0 ? (
