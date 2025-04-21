@@ -8,7 +8,7 @@ import Image from "next/image"
 import AddGraduateModal from "./add-graduate-modal"
 import EditGraduateModal from "./edit-graduate-modal"
 import { toast } from "react-toastify"
-
+import { showDeleteConfirmation } from "@/utils/sweet-alert"
 const Graduates = () => {
     const { data: graduatesData, isLoading, isError, refetch } = useGetProfilesQuery("student")
     const [deleteGraduates, { isSuccess }] = useDeleteProfilesMutation()
@@ -28,9 +28,11 @@ const Graduates = () => {
     }
     const handleDeleteGraduates = async (id: number) => {
         try {
-            await deleteGraduates(id)
-            toast.success('Məzun uğurla silindi!')
-            await refetch()
+            showDeleteConfirmation(deleteGraduates, id, refetch, {
+                title: "Məzunu silmək istəyirsinizmi?",
+                text: "Bu əməliyyat geri qaytarıla bilməz!",
+                successText: "Məzun uğurla silindi.",
+            })
         } catch (error) {
             toast.success('Məzunu silərkən xəta baş verdi!')
         }
