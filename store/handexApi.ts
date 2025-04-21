@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 
-let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTE0NjQxOSwiZXhwIjoxNzQ1MjMyODE5fQ.TSqIFOIyH4XE4z803MOAYpRKl37k3xfMuUPON3PIsi0'
+let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTIzNDIyOCwiZXhwIjoxNzQ1MzIwNjI4fQ.TzBksqSzscOHVvKH74wjAkZ4DKn-rWOF4I6NM8IDaos'
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/api' }),
@@ -87,6 +87,17 @@ export const handexApi = createApi({
                 body: params
             }),
         }),
+        updateProfiles: builder.mutation({
+            query: ({ params, id }) => ({
+                url: `/profiles/${id}`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
         deleteProfiles: builder.mutation({
             query: (id) => ({
                 url: `/profiles/${id}`,
@@ -111,5 +122,6 @@ export const {
     useAddCustomersMutation,
     useGetProfilesQuery,
     useAddProfilesMutation,
-    useDeleteProfilesMutation
+    useDeleteProfilesMutation,
+    useUpdateProfilesMutation
 } = handexApi

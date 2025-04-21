@@ -5,6 +5,7 @@ import "../styles/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Provider } from 'react-redux'
 import { store } from "@/store/store"
+import { Bounce, ToastContainer } from 'react-toastify';
 const inter = Inter({ subsets: ["latin"] })
 
 export default function RootLayout({
@@ -15,6 +16,19 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          transition={Bounce}
+        />
         <Provider store={store}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             {children}
