@@ -30,11 +30,12 @@ export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGra
 
         try {
             const formData = new FormData()
-            formData.append("image", file)
+            formData.append("file", file)
             const response = await uploadImage(formData).unwrap()
             form.setValue("image", response.id)
             setImageState((prev) => ({ ...prev, id: response.id, error: null, preview: response.url }))
         } catch (error) {
+            toast.error(error?.data?.message)
             setImageState((prev) => ({ ...prev, error: "Şəkil yükləmə xətası baş verdi" }))
         }
     }

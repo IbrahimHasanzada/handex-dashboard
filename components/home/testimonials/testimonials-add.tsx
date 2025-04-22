@@ -53,7 +53,7 @@ export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData, refetch })
         if (file) {
             try {
                 const formData = new FormData()
-                formData.append('image', file)
+                formData.append('file', file)
                 const response = await uploadImage(formData).unwrap()
                 if (!isLoading) {
                     if (field == 'customer_profile') { setProfilePreview(response.url) } else setBankPreview(response.url)

@@ -25,7 +25,6 @@ const HomeHero = () => {
         if (!isLoading && heroData) {
             setTitle(heroData?.[0].title)
             setText(heroData?.[0].desc)
-            setMetaChange(heroData?.[0].meta[0])
         }
     }, [isEditing, heroData])
 
@@ -48,6 +47,9 @@ const HomeHero = () => {
         }
 
         await addHero({ params: newBannerData, id: heroData?.[0].id });
+
+        console.log(heroData);
+
 
         setIsEditing(false);
     };
@@ -137,10 +139,7 @@ const HomeHero = () => {
                                 <div className="font-medium text-sm text-muted-foreground">Alt Başlıq</div>
                                 <div className="text-sm">{heroData?.[0].desc}</div>
                             </div>
-                            <div className="space-y-2 mt-4">
-                                <div className="font-medium text-sm text-muted-foreground">Meta</div>
-                                <div className="text-sm">{heroData?.[0].meta[0].value}</div>
-                            </div>
+
                             <div className="mt-4">
                                 <Tabs defaultValue="az" value={activeLanguage} onValueChange={setActiveLanguage}>
                                     <TabsList>

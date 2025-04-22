@@ -77,7 +77,7 @@ const TestimonialsEdit: React.FC<TestimonialsEditProps> = ({
         if (file) {
             try {
                 const formData = new FormData()
-                formData.append('image', file)
+                formData.append('file', file)
                 const response = await uploadImage(formData).unwrap()
                 setProfileImagePreview(response.url)
                 setEditedData({

@@ -64,7 +64,7 @@ export const handexApi = createApi({
         }),
         uploadFile: builder.mutation({
             query: (file) => ({
-                url: '/upload/image',
+                url: '/upload/single',
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
