@@ -3,7 +3,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useDeleteProfilesMutation, useGetProfilesQuery } from "@/store/handexApi"
-import { ChevronLeft, ChevronRight, Edit, Plus, Trash2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Edit, Loader2, Plus, Trash2 } from "lucide-react"
 import Image from "next/image"
 import AddGraduateModal from "./add-graduate-modal"
 import EditGraduateModal from "./edit-graduate-modal"
@@ -50,7 +50,9 @@ const Graduates = () => {
                     </Button>
                 </CardHeader>
                 {isLoading ? (
-                    <div className="col-span-2 text-center py-8">Yüklənir...</div>
+                    <div className="w-full h-full flex !justify-center items-center">
+                        <Loader2 className="h-8 w-8 animate-spin" />
+                    </div>
                 ) : isError ? (
                     <div className="col-span-2 text-center py-8 text-red-500">Məlumatları yükləyərkən xəta baş verdi</div>
                 ) : (

@@ -1,11 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 
-let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTIzNDIyOCwiZXhwIjoxNzQ1MzIwNjI4fQ.TzBksqSzscOHVvKH74wjAkZ4DKn-rWOF4I6NM8IDaos'
+let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTMyMjYxMSwiZXhwIjoxNzQ1NDA5MDExfQ.gjL33fuFYnYWRf7TqBUWANm6nS746aQWBK2GgjDWQMI'
 export const handexApi = createApi({
     reducerPath: 'handexApi',
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/api' }),
-    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates'],
+    baseQuery: fetchBaseQuery({ baseUrl: 'https://api.drafts.az/api' }),
+    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General'],
     endpoints: (builder) => ({
         getGeneral: builder.query({
             query: () => '/general',
@@ -106,7 +106,7 @@ export const handexApi = createApi({
                     'Authorization': `Bearer ${token}`
                 }
             })
-        })
+        }),
 
     }),
 })
