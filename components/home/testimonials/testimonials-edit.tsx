@@ -8,7 +8,8 @@ import { Camera, Check, Globe, X } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { useRef, useState } from "react"
 import type { Testimonial } from "@/types/home/testimonials.dto"
-import { useGetCustomersQuery, useUploadFileMutation } from "@/store/handexApi"
+import { useGetCustomersQuery, useUpdateCustomersMutation, useUploadFileMutation } from "@/store/handexApi"
+import { toast } from "react-toastify"
 
 interface TestimonialsEditProps {
     editedData: Partial<Testimonial>
@@ -30,29 +31,23 @@ const TestimonialsEdit: React.FC<TestimonialsEditProps> = ({
     currentLanguage,
 }) => {
     const [uploadImage, { isSuccess, isError }] = useUploadFileMutation()
+    const [uploadCustomers, { isSuccess: profilesSucces, isError: profilesError }] = useUpdateCustomersMutation()
     const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null)
     const [profileImageId, setProfileImageId] = useState<string>()
     const [logoImagePreview, setLogoImagePreview] = useState<string | null>(null)
-    // const { data: getCustomers, isLoading, refetch } = useGetCustomersQuery(currentLanguage)
     const profileImageInputRef = useRef<HTMLInputElement>(null)
     const logoImageInputRef = useRef<HTMLInputElement>(null)
 
     const handleSaveEdit = async (id: number | string) => {
-        console.log("Saving edited testimonial:", id, editedData)
-        console.log("New profile image:", profileImagePreview)
-        console.log("New logo image:", logoImagePreview)
-        console.log("Language:", currentLanguage)
         try {
-            console.log(profileImageId)
-
-            console.log(editedData)
+            await uploadCustomers({ params: editedData, id })
             await refetch()
             setEditingId(null)
             setEditedData({})
             setProfileImagePreview(null)
             setLogoImagePreview(null)
         } catch (error) {
-            console.error("Error saving testimonial:", error)
+            toast.error(error?.data?.message)
         }
     }
 
@@ -61,7 +56,7 @@ const TestimonialsEdit: React.FC<TestimonialsEditProps> = ({
             if (field === 'translations') {
                 return {
                     ...prev,
-                    translations: [{ comment: value }],
+                    translations: [{ comment: value, lang: currentLanguage }],
                 }
             } else {
                 return {

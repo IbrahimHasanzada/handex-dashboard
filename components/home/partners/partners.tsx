@@ -5,7 +5,7 @@ import { Edit, Plus } from 'lucide-react'
 import Image from 'next/image'
 
 
-const partners = () => {
+const Partners = () => {
     const { data: partners, refetch: fetchStatistics, isFetching } = useGetGeneralQuery('')
     return (
         <Card>
@@ -45,4 +45,4 @@ const partners = () => {
     )
 }
 
-export default partners
+export default Partners

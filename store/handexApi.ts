@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 
-let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTMyMjYxMSwiZXhwIjoxNzQ1NDA5MDExfQ.gjL33fuFYnYWRf7TqBUWANm6nS746aQWBK2GgjDWQMI'
+let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQwOTczOSwiZXhwIjoxNzQ1NDk2MTM5fQ.fflrOvl56bHOH39-5Ajl7wID2kRMuhnKj_Gl1aOCqio'
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'https://api.drafts.az/api' }),
@@ -11,7 +11,6 @@ export const handexApi = createApi({
             query: () => '/general',
             providesTags: ['Statistics']
         }),
-
         addStatistics: builder.mutation({
             query: (params) => ({
                 url: '/general/update',
@@ -54,6 +53,17 @@ export const handexApi = createApi({
         addCustomers: builder.mutation({
             query: (params) => ({
                 url: `/customers`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
+        updateCustomers: builder.mutation({
+            query: ({ params, id }) => ({
+                url: `/customers/${id}`,
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -123,5 +133,6 @@ export const {
     useGetProfilesQuery,
     useAddProfilesMutation,
     useDeleteProfilesMutation,
-    useUpdateProfilesMutation
+    useUpdateProfilesMutation,
+    useUpdateCustomersMutation
 } = handexApi

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import HomeHero from "./home/home-hero"
 import Testimonials from "./home/testimonials/testimonials"
 import Graduates from "./home/graduates/graduates"
+import Partners from "./home/partners/partners"
 
 export function DashboardHome() {
 
@@ -43,7 +44,7 @@ export function DashboardHome() {
       </div>
 
       {/* Partners Management */}
-      
+      <Partners />
     </div>
   )
 }
