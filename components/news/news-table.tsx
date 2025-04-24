@@ -92,14 +92,16 @@ export function ArticlesTable() {
         <div className="rounded-md border">
             <div className="flex items-center justify-between p-4">
                 <div className="flex flex-1 items-center space-x-2">
-                    <h2 className="text-xl font-semibold">Articles</h2>
+                    <h2 className="text-xl font-semibold">Xəbərlər</h2>
                     <Badge>{articles.length}</Badge>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <Button>
-                        <Plus className="mr-2 h-4 w-4" />
-                        New Article
-                    </Button>
+                    <Link href='/news/new'>
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" />
+                            New Article
+                        </Button>
+                    </Link>
                 </div>
             </div>
             <Table>
@@ -111,29 +113,11 @@ export function ArticlesTable() {
                         <TableHead>Article</TableHead>
                         <TableHead>
                             <Button variant="ghost" className="p-0 hover:bg-transparent">
-                                Status
-                                <ArrowUpDown className="ml-2 h-4 w-4" />
-                            </Button>
-                        </TableHead>
-                        <TableHead>
-                            <Button variant="ghost" className="p-0 hover:bg-transparent">
-                                Category
-                                <ChevronDown className="ml-2 h-4 w-4" />
-                            </Button>
-                        </TableHead>
-                        <TableHead>
-                            <Button variant="ghost" className="p-0 hover:bg-transparent">
                                 Date
                                 <ArrowUpDown className="ml-2 h-4 w-4" />
                             </Button>
                         </TableHead>
-                        <TableHead>
-                            <Button variant="ghost" className="p-0 hover:bg-transparent">
-                                Views
-                                <ArrowUpDown className="ml-2 h-4 w-4" />
-                            </Button>
-                        </TableHead>
-                        <TableHead className="w-[80px]">Actions</TableHead>
+                        <TableHead className="w-[80px] hidden md:block">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -158,18 +142,7 @@ export function ArticlesTable() {
                                     </div>
                                 </div>
                             </TableCell>
-                            <TableCell>
-                                <Badge
-                                    variant={
-                                        article.status === "published" ? "default" : article.status === "draft" ? "outline" : "secondary"
-                                    }
-                                >
-                                    {article.status}
-                                </Badge>
-                            </TableCell>
-                            <TableCell>{article.category}</TableCell>
-                            <TableCell>{article.date}</TableCell>
-                            <TableCell>{article.views}</TableCell>
+                            <TableCell className="hidden md:block">{article.date}</TableCell>
                             <TableCell>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
@@ -181,18 +154,18 @@ export function ArticlesTable() {
                                     <DropdownMenuContent align="end">
                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem >
-                                            <Link className="flex item-center" href={`/news/${article.id}/view`}>
+                                        <Link className="flex item-center" href={`/news/${article.id}/view`}>
+                                            <DropdownMenuItem className="w-full cursor-pointer">
                                                 <Eye className="mr-2 h-4 w-4" />
                                                 <span>View</span>
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem >
-                                            <Link className="flex item-center" href={`/news/${article.id}/edit`}>
+                                            </DropdownMenuItem>
+                                        </Link>
+                                        <Link className="flex item-center w-full" href={`/news/${article.id}/edit`}>
+                                            <DropdownMenuItem className="w-full cursor-pointer">
                                                 <Edit className="mr-2 h-4 w-4" />
                                                 <span>Edit</span>
-                                            </Link>
-                                        </DropdownMenuItem>
+                                            </DropdownMenuItem>
+                                        </Link>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem className="text-destructive">
                                             <Trash2 className="mr-2 h-4 w-4" /> Delete

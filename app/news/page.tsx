@@ -8,7 +8,7 @@ export default function ArticlesPage() {
   return (
     <DashboardLayout>
       <div className="p-6">
-        <NewsHeader heading="Xəbərlər" text="Xəbərlərinizi və məzmununlarını idarə edin.">
+        <NewsHeader heading="Xəbərlər" text="Xəbərləri və məzmununlarını idarə edin.">
           <NewsTableFilters />
         </NewsHeader>
         <ArticlesTable />

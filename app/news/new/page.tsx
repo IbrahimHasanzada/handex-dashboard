@@ -6,7 +6,7 @@ export default function NewArticlePage() {
     return (
         <DashboardLayout>
             <div className="p-6">
-                <NewsHeader heading="New Article" text="Create a new article for your news site." />
+                <NewsHeader heading="Yeni xəbər" text="Yeni xəbər yaradın." />
                 <NewsForm />
             </div>
         </DashboardLayout>
