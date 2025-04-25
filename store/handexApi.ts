@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 
-let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQwOTczOSwiZXhwIjoxNzQ1NDk2MTM5fQ.fflrOvl56bHOH39-5Ajl7wID2kRMuhnKj_Gl1aOCqio'
+let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTU3NjQxMiwiZXhwIjoxNzQ1NjYyODEyfQ.pPK_5uUzzMwjObtDi0kJcF5dr1JQ-S_f42gl_mfKHZ0'
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'https://api.drafts.az/api' }),

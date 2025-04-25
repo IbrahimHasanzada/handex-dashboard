@@ -48,9 +48,6 @@ const HomeHero = () => {
 
         await addHero({ params: newBannerData, id: heroData?.[0].id });
 
-        console.log(heroData);
-
-
         setIsEditing(false);
     };
 

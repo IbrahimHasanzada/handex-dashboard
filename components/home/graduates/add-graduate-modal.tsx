@@ -35,7 +35,7 @@ export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGra
             form.setValue("image", response.id)
             setImageState((prev) => ({ ...prev, id: response.id, error: null, preview: response.url }))
         } catch (error) {
-            toast.error(error?.data?.message)
+            toast.error(error?.data?.message.join(','))
             setImageState((prev) => ({ ...prev, error: "Şəkil yükləmə xətası baş verdi" }))
         }
     }
@@ -57,7 +57,7 @@ export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGra
             toast.success('Məzun uğurla əlavə edildi!')
             onOpenChange(false)
         } catch (error) {
-            toast.error("Məzun əlavə edilərkən xəta baş verdi!")
+            toast.error(error?.data?.message.join(','))
         }
     }
 

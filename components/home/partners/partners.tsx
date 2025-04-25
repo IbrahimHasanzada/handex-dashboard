@@ -1,12 +1,13 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useGetGeneralQuery } from '@/store/handexApi'
-import { Edit, Plus } from 'lucide-react'
-import Image from 'next/image'
-
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useGetGeneralQuery } from "@/store/handexApi"
+import { Edit } from "lucide-react"
+import Image from "next/image"
+import { AddPartner } from "./add-partners"
 
 const Partners = () => {
-    const { data: partners, refetch: fetchStatistics, isFetching } = useGetGeneralQuery('')
+    const { data: partners, refetch: fetchPartners, isFetching } = useGetGeneralQuery("")
+
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -14,9 +15,7 @@ const Partners = () => {
                     <CardTitle>Tərəfdaşlar</CardTitle>
                     <CardDescription>Tərəfdaş şirkətləri idarə edin</CardDescription>
                 </div>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" /> Yeni Tərəfdaş
-                </Button>
+                <AddPartner onSuccess={fetchPartners} />
             </CardHeader>
             <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -25,7 +24,7 @@ const Partners = () => {
                             <div className="relative">
                                 <Image
                                     src={partner.logo || "/placeholder.svg"}
-                                    alt={partner.name}
+                                    alt={"partner" + partner.name}
                                     width={40}
                                     height={40}
                                     className="object-contain"
