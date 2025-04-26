@@ -2,11 +2,11 @@
 
 import type React from "react"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { Camera, Check, Globe, X } from 'lucide-react'
+import { Camera, Check, Globe, Loader2, X } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,21 +27,9 @@ const TestimonialsEditModal = ({
     const profileImageInputRef = useRef<HTMLInputElement>(null)
     const logoImageInputRef = useRef<HTMLInputElement>(null)
     const [updateCustomers] = useUpdateCustomersMutation()
-    const [uploadImage] = useUploadFileMutation()
-
-    const getInitialComment = () => {
-        if (testimonial.comment) {
-            return testimonial.comment
-        }
-
-        if (testimonial.translations && testimonial.translations.length > 0) {
-            const translation = testimonial.translations.find(t => t.lang === currentLanguage)
-            return translation ? translation.comment : ""
-        }
-
-        return ""
-    }
-
+    const [uploadImage, { isLoading: upLoading }] = useUploadFileMutation()
+    const [profilePreview, setProfilePreview] = useState(testimonial?.customer_profile?.url)
+    const [bankPreview, setBankPreview] = useState(testimonial?.bank_logo?.url)
     const {
         register,
         handleSubmit,
@@ -55,7 +43,7 @@ const TestimonialsEditModal = ({
             id: testimonial?.id || "",
             name: testimonial?.name || "",
             bank_name: testimonial?.bank_name || "",
-            comment: getInitialComment(),
+            comment: testimonial.comment,
             bank_logo_id: testimonial?.bank_logo?.id,
             customer_profile_id: testimonial?.customer_profile?.id,
             currentLanguage,
@@ -68,7 +56,7 @@ const TestimonialsEditModal = ({
                 id: testimonial.id,
                 name: testimonial.name || "",
                 bank_name: testimonial.bank_name || "",
-                comment: getInitialComment(),
+                comment: testimonial.comment,
                 bank_logo_id: testimonial?.bank_logo?.id,
                 customer_profile_id: testimonial?.customer_profile?.id,
                 currentLanguage,
@@ -88,10 +76,9 @@ const TestimonialsEditModal = ({
 
             const response = await uploadImage(formData)
             setValue("customer_profile_id", response?.data.id, { shouldDirty: true })
-
+            setProfilePreview(response?.data.url)
             toast.success("Profil şəkli yükləndi")
         } catch (error) {
-            console.error(error)
             toast.error("Şəkil yükləmə xətası")
         }
     }
@@ -107,10 +94,9 @@ const TestimonialsEditModal = ({
             const response = await uploadImage(formData)
 
             setValue("bank_logo_id", response?.data.id, { shouldDirty: true })
-
+            setBankPreview(response?.data.url)
             toast.success("Şirkət logosu yükləndi")
         } catch (error) {
-            console.error(error)
             toast.error("Şəkil yükləmə xətası")
         }
     }
@@ -151,77 +137,102 @@ const TestimonialsEditModal = ({
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
-                    <DialogTitle>
+                    <DialogTitle className="font-bold">
                         Rəyi dəyiş
                     </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onSaveEdit)}>
-                    <div className="mb-4">
-                            <div className="flex justify-between">
+                    <div className="mb-4 flex flex-col gap-5">
+                        <div>
+                            <p className="mb-2">Müştəri</p>
+                            <div className="flex justify-between items-center gap-5">
                                 <div className="relative">
-                                    <Image
-                                        src={testimonial?.customer_profile?.url || "/placeholder.svg?height=40&width=40"}
-                                        alt={formValues.name || "Customer profile"}
-                                        width={60}
-                                        height={60}
-                                        className="rounded-full object-cover"
-                                    />
-                                    <Button
-                                        size="icon"
-                                        variant="secondary"
-                                        className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full"
-                                        onClick={() => profileImageInputRef.current?.click()}
-                                        type="button"
-                                    >
-                                        <Camera className="h-3 w-3" />
-                                    </Button>
-                                    <Input
-                                        type="file"
-                                        ref={profileImageInputRef}
-                                        onChange={handleProfileImageChange}
-                                        accept="image/*"
-                                        className="hidden"
-                                    />
+                                    {upLoading
+                                        ?
+                                        (
+                                            <Loader2 className="animate-spin" />
+                                        )
+                                        : (
+                                            <>
+                                                <Image
+                                                    src={profilePreview || "/placeholder.svg?height=40&width=40"}
+                                                    alt={formValues.name || "Customer profile"}
+                                                    width={60}
+                                                    height={60}
+                                                    className="rounded-full object-cover"
+                                                />
+                                                <Button
+                                                    size="icon"
+                                                    variant="secondary"
+                                                    className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full"
+                                                    onClick={() => profileImageInputRef.current?.click()}
+                                                    type="button"
+                                                >
+                                                    <Camera className="h-3 w-3" />
+                                                </Button>
+                                                <Input
+                                                    type="file"
+                                                    ref={profileImageInputRef}
+                                                    onChange={handleProfileImageChange}
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                />
+                                            </>
+                                        )
+                                    }
                                 </div>
-                                <div>
+                                <div className="w-full">
                                     <Input {...register("name")} placeholder="Ad Soyad" className="w-full" />
                                     {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
                                 </div>
                             </div>
-                        <div className="flex justify-between">
-                            <div className="relative">
-                                <Image
-                                    src={testimonial?.bank_logo?.url || "/placeholder.svg?height=50&width=50"}
-                                    alt={formValues.bank_name || "Company logo"}
-                                    width={60}
-                                    height={60}
-                                    className="rounded-full object-cover"
-                                />
-                                <Button
-                                    size="icon"
-                                    variant="secondary"
-                                    className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full"
-                                    onClick={() => logoImageInputRef.current?.click()}
-                                    type="button"
-                                >
-                                    <Camera className="h-3 w-3" />
-                                </Button>
-                                <input
-                                    type="file"
-                                    ref={logoImageInputRef}
-                                    onChange={handleLogoImageChange}
-                                    accept="image/*"
-                                    className="hidden"
-                                />
-                            </div>
+                        </div>
+                        <div>
+                            <p className="mb-2">Şirkət</p>
+                            <div className="flex justify-between items-center gap-5">
+                                <div className="relative">
+                                    {upLoading ?
+                                        (
+                                            <Loader2 className="animate-spin" />
+                                        ) :
+                                        <>
+                                            <Image
+                                                src={bankPreview || "/placeholder.svg?height=50&width=50"}
+                                                alt={formValues.bank_name || "Company logo"}
+                                                width={60}
+                                                height={60}
+                                                className="rounded-full object-cover"
+                                            />
+                                            <Button
+                                                size="icon"
+                                                variant="secondary"
+                                                className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full"
+                                                onClick={() => logoImageInputRef.current?.click()}
+                                                type="button"
+                                            >
+                                                <Camera className="h-3 w-3" />
+                                            </Button>
+                                            <input
+                                                type="file"
+                                                ref={logoImageInputRef}
+                                                onChange={handleLogoImageChange}
+                                                accept="image/*"
+                                                className="hidden"
+                                            />
+                                        </>
 
-                            <div>
-                                <Input {...register("bank_name")} placeholder="Vəzifə" className="w-full" />
-                                {errors.bank_name && <p className="text-sm text-destructive">{errors.bank_name.message}</p>}
+                                    }
+                                </div>
+
+                                <div className="w-full">
+                                    <Input {...register("bank_name")} placeholder="Vəzifə" className="w-full" />
+                                    {errors.bank_name && <p className="text-sm text-destructive">{errors.bank_name.message}</p>}
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div className="mt-3">
+                        <p>Rəy</p>
                         <Textarea
                             {...register("comment")}
                             placeholder="Rəy"
@@ -236,18 +247,18 @@ const TestimonialsEditModal = ({
                             <span className="ml-1">(Düzəliş edilir)</span>
                         </div>
 
-                        <div className="flex gap-1">
+                        <div className="flex gap-2">
                             <Button size="sm" className="bg-black hover:bg-white hover:border border-black group" type="submit">
                                 <Check className="h-4 w-4 mr-1 text-white group-hover:text-black" /> <span className="text-white group-hover:text-black">Saxla</span>
                             </Button>
                             <Button size="sm" variant="ghost" type="button" onClick={onClose}>
-                                <X className="h-4 w-4" />
+                                Ləğv et
                             </Button>
                         </div>
                     </div>
                 </form>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     )
 }
 

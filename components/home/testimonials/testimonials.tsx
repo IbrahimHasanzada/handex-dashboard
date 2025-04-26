@@ -86,39 +86,37 @@ const Testimonials = () => {
                             <div className="col-span-2 text-center py-8 text-red-500">Məlumatları yükləyərkən xəta baş verdi</div>
                         ) : getCustomers && getCustomers.length > 0 ? (
                             getCustomers.map((testimonial: any) => (
-                                <div key={testimonial.id} className="border rounded-lg p-4">
+                                <div key={testimonial.id} className="relative border rounded-lg p-4">
+                                    <div className="absolute right-2 top-3 flex gap-1">
+                                        <Button size="icon" variant="ghost" onClick={() => handleEdit(testimonial)}>
+                                            <Edit className="h-4 w-4" />
+                                        </Button>
+                                        <Button size="icon" variant="ghost" onClick={() => handleDelete(testimonial.id)}>
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
                                     <div className="flex items-center justify-between mb-3">
-                                        <div className="flex flex-col gap-3 md:w-1F/3">
-                                            <div className="w-full flex justify-between items-center">
-                                                <div className="h-10 w-15">
-                                                    <img
-                                                        src={testimonial.customer_profile?.url || "/placeholder.svg?height=40&width=40"}
-                                                        alt={testimonial.name}
-                                                        className="rounded-full object-cover w-full h-full"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <div className="font-medium">{testimonial.name}</div>
-                                                </div>
+                                        <div className="flex flex-col gap-2 md:w-2/3">
+                                            <div className="flex gap-5 items-center">
+                                                <Image
+                                                    src={testimonial.customer_profile?.url || "/placeholder.svg?height=40&width=40"}
+                                                    alt={testimonial.name}
+                                                    width={50}
+                                                    height={50}
+                                                    className="rounded-full "
+                                                />
+                                                <div className="font-medium">{testimonial.name}</div>
                                             </div>
-                                            <div className="w-full flex justify-between items-center">
+                                            <div className="flex gap-5 items-center">
                                                 <Image
                                                     src={testimonial.bank_logo?.url || "/placeholder.svg?height=50&width=50"}
                                                     alt={testimonial.bank_name || ""}
                                                     width={50}
                                                     height={50}
-                                                    className="rounded-full w-15 !h-15"
+                                                    className="rounded-full"
                                                 />
                                                 <div className="text-sm text-muted-foreground">{testimonial.bank_name}</div>
                                             </div>
-                                        </div>
-                                        <div className="flex gap-1">
-                                            <Button size="icon" variant="ghost" onClick={() => handleEdit(testimonial)}>
-                                                <Edit className="h-4 w-4" />
-                                            </Button>
-                                            <Button size="icon" variant="ghost" onClick={() => handleDelete(testimonial.id)}>
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
                                         </div>
                                     </div>
                                     <div className="text-sm mt-2">{testimonial.comment}</div>
@@ -135,7 +133,7 @@ const Testimonials = () => {
                 </CardContent>
             )}
 
-            {/* Edit Modal - Render outside of the conditional logic */}
+            {/* Edit Testimonials Modal */}
             {isModalOpen && selectedTestimonial && (
                 <TestimonialsEditModal
                     isOpen={isModalOpen}

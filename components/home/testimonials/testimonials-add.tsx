@@ -88,7 +88,7 @@ export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData, refetch, c
       setProfilePreview(null)
       setBankPreview(null)
     } catch (error: any) {
-      toast.error(error?.data?.message?.join(',') || "Xəta baş verdi")
+      toast.error("Xəta baş verdi")
     }
   }
 

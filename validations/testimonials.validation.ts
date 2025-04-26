@@ -5,12 +5,10 @@ export const testimonialFormSchema = z.object({
   bank_name: z.string().min(2, { message: "Şirkət adı minimum 2 simvol olmalıdır" }),
   customer_profile: z
     .number({ required_error: "Profil şəkli tələb olunur." })
-    .nullable()
-    .refine((val) => val !== null, { message: "Profil şəkli tələb olunur." }),
+    .refine((val) => val !== -1, { message: "Profil şəkli tələb olunur." }),
   bank_logo: z
     .number({ required_error: "Şirkət logosu tələb olunur." })
-    .nullable()
-    .refine((val) => val !== null, { message: "Şirkət logosu tələb olunur." }),
+    .refine((val) => val !== -1, { message: "Şirkət logosu tələb olunur." }),
   translations: z.array(
     z.object({
       comment: z.string().min(2, { message: "Rəy mətni minimum 2 simvol olmalıdır" }),
