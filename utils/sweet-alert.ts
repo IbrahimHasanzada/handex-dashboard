@@ -21,8 +21,8 @@ interface DeleteConfirmationOptions {
  * @returns Promise<boolean> - Whether the deletion was confirmed and successful
  */
 export const showDeleteConfirmation = async (
-    deleteFunction: (id: number | string) => Promise<any>,
-    id: number | string,
+    deleteFunction: (id: number | string | object) => Promise<any>,
+    id: number | string | object,
     refetchFunction?: () => Promise<any>,
     options?: DeleteConfirmationOptions
 ): Promise<boolean> => {
@@ -86,28 +86,4 @@ export const showDeleteConfirmation = async (
     }
 }
 
-/**
- * Shows a delete confirmation dialog specifically for graduates
- * 
- * @param deleteFunction - The function to delete a graduate
- * @param id - The ID of the graduate to delete
- * @param refetchFunction - Function to refresh graduates data
- * @returns Promise<boolean> - Whether the deletion was confirmed and successful
- */
-export const showDeleteGraduateConfirmation = (
-    deleteFunction: (id: number | string) => Promise<any>,
-    id: number | string,
-    refetchFunction?: () => Promise<any>
-): Promise<boolean> => {
-    return showDeleteConfirmation(
-        deleteFunction,
-        id,
-        refetchFunction,
-        {
-            title: "Məzunu silmək istəyirsinizmi?",
-            text: "Bunu geri qaytara bilməyəcəksiniz!",
-            successTitle: "Silindi!",
-            successText: "Məzun uğurla silindi."
-        }
-    )
-}
+

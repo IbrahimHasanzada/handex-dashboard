@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Upload, X } from "lucide-react"
+import { Loader2, Upload, X } from "lucide-react"
 import Image from "next/image"
 import { useAddCustomersMutation, useUploadFileMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
@@ -24,7 +24,7 @@ export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData, refetch, c
   const [profilePreview, setProfilePreview] = useState<string | null>(null)
   const [bankPreview, setBankPreview] = useState<string | null>(null)
   const [uploadImage, { isLoading }] = useUploadFileMutation()
-  const [addCustomers] = useAddCustomersMutation()
+  const [addCustomers, { isLoading: addLoading }] = useAddCustomersMutation()
 
   const form = useForm<TestimonialFormValues>({
     resolver: zodResolver(testimonialFormSchema),
@@ -73,7 +73,6 @@ export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData, refetch, c
         form.setValue(field, response.id, { shouldValidate: true })
       }
     } catch (error) {
-      console.log(error)
       toast.error("Şəkil yüklənərkən xəta baş verdi")
     }
   }
@@ -299,10 +298,21 @@ export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData, refetch, c
               </CardContent>
 
               <CardFooter className="flex justify-end gap-2">
+                <Button type="submit">{
+                  addLoading
+                    ?
+                    <span className="flex items-center">
+                      <Loader2 className="animate-spin h-4 w-4 mr-1" />
+                      Əlavə edilir...
+                    </span>
+                    :
+                    <span>
+                      Əlavə et
+                    </span>
+                }</Button>
                 <Button onClick={() => setAddData(false)} type="button" variant="outline">
                   Ləğv Et
                 </Button>
-                <Button type="submit">Yadda Saxla</Button>
               </CardFooter>
             </Card>
           </form>

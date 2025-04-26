@@ -1,14 +1,11 @@
 "use client"
-
 import type React from "react"
-
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Upload, X, Plus } from "lucide-react"
 import Image from "next/image"
-
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -19,52 +16,63 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-// import { useAddPartnerMutation } from "@/store/handexApi"
+import { toast } from "react-toastify"
+import { useGeneralMutation, useUploadFileMutation } from "@/store/handexApi"
 
 const formSchema = z.object({
-    logo: z.any().optional(),
+    id: z.number().nullable()
 })
 
-export function AddPartner({ onSuccess }: { onSuccess: () => void }) {
+export function AddPartner({ refetch, partners }: { refetch: () => void, partners: [{ id: number, url: string }] }) {
     const [open, setOpen] = useState(false)
     const [logoPreview, setLogoPreview] = useState<string | null>(null)
-    // const [addPartner, { isLoading }] = useAddPartnerMutation()
+    const [addPartner, { isLoading }] = useGeneralMutation()
+    const [uploadFile, { isLoading: upLoading }] = useUploadFileMutation()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            logo: undefined,
+            id: null
         },
     })
 
-    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
-        if (file) {
-            form.setValue("logo", file)
+        try {
+            if (file) {
+                const formData = new FormData()
+                formData.append('file', file)
+                const response = await uploadFile(formData).unwrap()
+                if (!upLoading) {
+                    setLogoPreview(response?.url)
+                    form.setValue("id", response?.id)
+                }
+            }
+        } catch (error) {
+            toast.error('Şəkil yüklənərkən xəta baş verdi')
         }
     }
 
     const clearLogo = () => {
-        form.setValue("logo", undefined)
+        form.setValue("id", null)
         setLogoPreview(null)
     }
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        try {
-            const formData = new FormData()
-            if (values.logo) {
-                formData.append("logo", values.logo)
-            }
 
-            // await addPartner(formData).unwrap()
+        const previousPartners = partners.map(item => item.id)
+
+        try {
+            await addPartner({ company: [...previousPartners, values.id] }).unwrap()
             form.reset()
             setLogoPreview(null)
             setOpen(false)
-            onSuccess()
+            toast.success('Tərəfdaş uğurla əlavə edildi')
+            refetch()
         } catch (error) {
-            console.error("Failed to add partner:", error)
+            toast.error("Xəta baş verdi")
         }
     }
 
@@ -133,9 +141,9 @@ export function AddPartner({ onSuccess }: { onSuccess: () => void }) {
                             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                                 Ləğv et
                             </Button>
-                            {/* <Button type="submit" disabled={isLoading}>
+                            <Button type="submit" disabled={isLoading}>
                                 {isLoading ? "Yüklənir..." : "Yadda saxla"}
-                            </Button> */}
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>

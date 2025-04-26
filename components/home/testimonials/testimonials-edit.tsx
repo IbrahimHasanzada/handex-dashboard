@@ -26,7 +26,7 @@ const TestimonialsEditModal = ({
 }: TestimonialsEditModalProps) => {
     const profileImageInputRef = useRef<HTMLInputElement>(null)
     const logoImageInputRef = useRef<HTMLInputElement>(null)
-    const [updateCustomers] = useUpdateCustomersMutation()
+    const [updateCustomers, { isLoading: cusLoading }] = useUpdateCustomersMutation()
     const [uploadImage, { isLoading: upLoading }] = useUploadFileMutation()
     const [profilePreview, setProfilePreview] = useState(testimonial?.customer_profile?.url)
     const [bankPreview, setBankPreview] = useState(testimonial?.bank_logo?.url)
@@ -120,7 +120,7 @@ const TestimonialsEditModal = ({
             await updateCustomers({ params: submitData, id: data.id })
             toast.success("Rəy uğurla yeniləndi!")
             await refetch()
-            onClose()
+            !cusLoading && onClose()
         } catch (error: any) {
             console.log(error)
             toast.error(error?.data?.message || "Xəta baş verdi")
@@ -249,7 +249,20 @@ const TestimonialsEditModal = ({
 
                         <div className="flex gap-2">
                             <Button size="sm" className="bg-black hover:bg-white hover:border border-black group" type="submit">
-                                <Check className="h-4 w-4 mr-1 text-white group-hover:text-black" /> <span className="text-white group-hover:text-black">Saxla</span>
+
+                                <span className="text-white group-hover:text-black">
+                                    {cusLoading ?
+                                        <span className="flex items-center">
+                                            <Loader2 className="animate-spin h-4 w-4 mr-1" />
+                                            Yenilənir...
+                                        </span>
+                                        :
+                                        <span className="flex items-center">
+                                            <Check className="h-4 w-4 mr-1 text-white group-hover:text-black" />
+                                            Saxla
+                                        </span>
+                                    }
+                                </span>
                             </Button>
                             <Button size="sm" variant="ghost" type="button" onClick={onClose}>
                                 Ləğv et

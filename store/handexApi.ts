@@ -11,7 +11,7 @@ export const handexApi = createApi({
             query: () => '/general',
             providesTags: ['Statistics']
         }),
-        addStatistics: builder.mutation({
+        general: builder.mutation({
             query: (params) => ({
                 url: '/general/update',
                 method: 'POST',
@@ -123,7 +123,7 @@ export const handexApi = createApi({
 
 export const {
     useGetGeneralQuery,
-    useAddStatisticsMutation,
+    useGeneralMutation,
     useGetHeroHomeQuery,
     useAddHeroMutation,
     useGetCustomersQuery,

@@ -12,7 +12,7 @@ import {
   Check,
   X
 } from "lucide-react"
-import { useAddStatisticsMutation, useGetGeneralQuery } from "@/store/handexApi"
+import { useGeneralMutation, useGetGeneralQuery } from "@/store/handexApi"
 import { Button } from "./ui/button"
 import { useEffect, useState } from "react"
 import { Input } from "./ui/input"
@@ -22,7 +22,7 @@ export function StatisticsPage() {
   const [inputValue, setInputValue] = useState("")
 
   const { data: general, refetch: fetchStatistics, isFetching } = useGetGeneralQuery('')
-  const [addStatistic, { isError, isSuccess, data }] = useAddStatisticsMutation()
+  const [addStatistic, { isError, isSuccess, data }] = useGeneralMutation()
 
 
 

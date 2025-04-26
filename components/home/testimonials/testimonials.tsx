@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { Edit, Globe, Loader2, Plus, Trash2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Edit, Globe, Loader2, Plus, Trash2 } from "lucide-react"
 import { useDeleteCustomersMutation, useGetCustomersQuery } from "@/store/handexApi"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
@@ -14,11 +14,17 @@ import TestimonialsEditModal from "./testimonials-edit"
 const Testimonials = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedTestimonial, setSelectedTestimonial] = useState<any>(null)
+    const [currentPage, setCurrentPage] = useState(1)
     const [addData, setAddData] = useState<boolean>(false)
     const [currentLanguage, setCurrentLanguage] = useState<string>("az")
 
     const { data: getCustomers, isLoading, isError, refetch } = useGetCustomersQuery(currentLanguage)
     const [deleteCustomer] = useDeleteCustomersMutation()
+
+    const startIndex = (currentPage - 1) * 4
+    const endIndex = startIndex + 4
+    const displayedGraduates = getCustomers?.slice(startIndex, endIndex)
+    const pageView = Math.ceil((getCustomers?.length || 0) / 4) || 1
 
     const handleEdit = (testimonial: any) => {
         setSelectedTestimonial(testimonial)
@@ -77,15 +83,15 @@ const Testimonials = () => {
                 </CardContent>
             ) : (
                 <CardContent>
-                    <div className={isLoading ? "flex" : "grid grid-cols-1 md:grid-cols-3 gap-4"}>
+                    <div className={isLoading ? "flex" : "grid grid-cols-1 md:grid-cols-2 gap-4"}>
                         {isLoading ? (
                             <div className="w-full h-full flex !justify-center items-center">
                                 <Loader2 className="h-8 w-8 animate-spin" />
                             </div>
                         ) : isError ? (
                             <div className="col-span-2 text-center py-8 text-red-500">Məlumatları yükləyərkən xəta baş verdi</div>
-                        ) : getCustomers && getCustomers.length > 0 ? (
-                            getCustomers.map((testimonial: any) => (
+                        ) : displayedGraduates.length > 0 ? (
+                            displayedGraduates.map((testimonial: any) => (
                                 <div key={testimonial.id} className="relative border rounded-lg p-4">
                                     <div className="absolute right-2 top-3 flex gap-1">
                                         <Button size="icon" variant="ghost" onClick={() => handleEdit(testimonial)}>
@@ -119,7 +125,7 @@ const Testimonials = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="text-sm mt-2">{testimonial.comment}</div>
+                                    <div className="text-sm mt-2 break-words">{testimonial.comment}</div>
                                     <div className="mt-2 text-xs text-muted-foreground flex items-center">
                                         <Globe className="h-3 w-3 mr-1" />
                                         {currentLanguage === "az" ? "Azərbaycan" : currentLanguage === "en" ? "English" : "Русский"}
@@ -133,6 +139,27 @@ const Testimonials = () => {
                 </CardContent>
             )}
 
+            <CardFooter className="flex justify-between">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}
+                    disabled={currentPage === 1}
+                >
+                    <ChevronLeft className="h-4 w-4 mr-1" /> Əvvəlki
+                </Button>
+                <div className="text-sm">
+                    Səhifə {currentPage} / {pageView}
+                </div>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(currentPage < pageView ? currentPage + 1 : currentPage)}
+                    disabled={currentPage === pageView}
+                >
+                    Növbəti <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+            </CardFooter>
             {/* Edit Testimonials Modal */}
             {isModalOpen && selectedTestimonial && (
                 <TestimonialsEditModal
