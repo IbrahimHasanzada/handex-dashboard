@@ -1,351 +1,254 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import type React from "react"
+
+import { useEffect, useRef } from "react"
 import Image from "next/image"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { Camera, Check, Globe, X } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Camera, Loader2 } from "lucide-react"
-import { useUploadFileMutation, useUpdateCustomersMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
-import { validateImage } from "@/validations/upload.validation"
-import { testimonialFormSchema } from "@/validations/testimonials.validation"
-import { TestimonialsModalProps } from "@/types/home/testimonials.dto"
+import { useUpdateCustomersMutation, useUploadFileMutation } from "@/store/handexApi"
+import { DialogTitle } from "@radix-ui/react-dialog"
+import { testimonialEditSchema, TestimonialEditValues } from "@/validations/testimonials.validation"
+import { TestimonialsEditModalProps, TestimonialSubmit } from "@/types/home/testimonials.dto"
 
-
-
-type TestimonialEditValues = z.infer<typeof testimonialFormSchema>
-
-
-export function TestimonialsEditModal({
-    isOpen,
-    onClose,
+const TestimonialsEditModal = ({
     testimonial,
+    onClose,
     refetch,
     currentLanguage,
-}: TestimonialsModalProps) {
-    const [activeTab, setActiveTab] = useState(currentLanguage)
-    const [profilePreview, setProfilePreview] = useState<string | null>(null)
-    const [bankLogoPreview, setBankLogoPreview] = useState<string | null>(null)
-    const [isSubmitting, setIsSubmitting] = useState(false)
-
-    const [uploadImage] = useUploadFileMutation()
+    isOpen,
+}: TestimonialsEditModalProps) => {
+    const profileImageInputRef = useRef<HTMLInputElement>(null)
+    const logoImageInputRef = useRef<HTMLInputElement>(null)
     const [updateCustomers] = useUpdateCustomersMutation()
+    const [uploadImage] = useUploadFileMutation()
 
-    const form = useForm<TestimonialEditValues>({
-        resolver: zodResolver(testimonialFormSchema),
+    const getInitialComment = () => {
+        if (testimonial.comment) {
+            return testimonial.comment
+        }
+
+        if (testimonial.translations && testimonial.translations.length > 0) {
+            const translation = testimonial.translations.find(t => t.lang === currentLanguage)
+            return translation ? translation.comment : ""
+        }
+
+        return ""
+    }
+
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        watch,
+        reset,
+        formState: { errors },
+    } = useForm<TestimonialEditValues>({
+        resolver: zodResolver(testimonialEditSchema),
         defaultValues: {
-            name: "",
-            bank_name: "",
-            customer_profile: -1,
-            bank_logo: -1,
-            translations: [{ comment: "", lang: currentLanguage }],
+            id: testimonial?.id || "",
+            name: testimonial?.name || "",
+            bank_name: testimonial?.bank_name || "",
+            comment: getInitialComment(),
+            bank_logo_id: testimonial?.bank_logo?.id,
+            customer_profile_id: testimonial?.customer_profile?.id,
+            currentLanguage,
         },
     })
 
     useEffect(() => {
-
         if (testimonial) {
-            form.reset({
+            reset({
+                id: testimonial.id,
                 name: testimonial.name || "",
                 bank_name: testimonial.bank_name || "",
-                customer_profile: testimonial.customer_profile?.id || -1,
-                bank_logo: testimonial.bank_logo?.id || -1,
-                translations: [{ comment: testimonial.comment || "", lang: currentLanguage }],
+                comment: getInitialComment(),
+                bank_logo_id: testimonial?.bank_logo?.id,
+                customer_profile_id: testimonial?.customer_profile?.id,
+                currentLanguage,
             })
-
-            setProfilePreview(testimonial.customer_profile?.url || null)
-            setBankLogoPreview(testimonial.bank_logo?.url || null)
         }
-    }, [testimonial, form, currentLanguage])
+    }, [testimonial, reset, currentLanguage])
 
-    const handleImageUpload = async (field: "customer_profile" | "bank_logo", file: File) => {
-        const validationImage = validateImage(file, '', '')
-        if (!validationImage) return
+    const formValues = watch()
+
+    const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
         try {
             const formData = new FormData()
             formData.append("file", file)
-            const response = await uploadImage(formData).unwrap()
 
-            if (field === "customer_profile") {
-                setProfilePreview(response.url)
-                form.setValue("customer_profile", response.id)
-            } else {
-                setBankLogoPreview(response.url)
-                form.setValue("bank_logo", response.id)
-            }
+            const response = await uploadImage(formData)
+            setValue("customer_profile_id", response?.data.id, { shouldDirty: true })
+
+            toast.success("Profil şəkli yükləndi")
         } catch (error) {
-            toast.error("Şəkil yüklənərkən xəta baş verdi")
+            console.error(error)
+            toast.error("Şəkil yükləmə xətası")
         }
     }
 
-    const onSubmit = async (data: TestimonialEditValues) => {
-        if (!testimonial?.id) return
+    const handleLogoImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
 
-        setIsSubmitting(true)
         try {
-            await updateCustomers({
-                params: data,
-                id: testimonial.id,
-            }).unwrap()
+            const formData = new FormData()
+            formData.append("file", file)
 
+            const response = await uploadImage(formData)
+
+            setValue("bank_logo_id", response?.data.id, { shouldDirty: true })
+
+            toast.success("Şirkət logosu yükləndi")
+        } catch (error) {
+            console.error(error)
+            toast.error("Şəkil yükləmə xətası")
+        }
+    }
+
+    const onSaveEdit = async (data: TestimonialEditValues) => {
+        try {
+            const submitData: TestimonialSubmit = {
+                id: data.id,
+                name: data.name,
+                bank_name: data.bank_name,
+                bank_logo: data.bank_logo_id || 0,
+                customer_profile: data.customer_profile_id || 0,
+                translations: [
+                    {
+                        comment: data.comment,
+                        lang: data.currentLanguage,
+                    },
+                ],
+            }
+            console.log(submitData, data.id)
+            await updateCustomers({ params: submitData, id: data.id })
             toast.success("Rəy uğurla yeniləndi!")
             await refetch()
             onClose()
         } catch (error: any) {
-            toast.error(error?.data?.message?.join?.(",") || "Xəta baş verdi")
-        } finally {
-            setIsSubmitting(false)
+            console.log(error)
+            toast.error(error?.data?.message || "Xəta baş verdi")
         }
     }
 
-    // Get language display name
-    const getLanguageName = (lang: string) => {
-        switch (lang) {
-            case "az":
-                return "Azərbaycan"
-            case "en":
-                return "English"
-            case "ru":
-                return "Русский"
-            default:
-                return lang
-        }
+    const languageNames = {
+        az: "Azərbaycan",
+        en: "English",
+        ru: "Русский",
     }
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
-                    <DialogTitle>Rəyi Redaktə Et</DialogTitle>
+                    <DialogTitle>
+                        Rəyi dəyiş
+                    </DialogTitle>
                 </DialogHeader>
-
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Customer Profile Image */}
-                            <FormField
-                                control={form.control}
-                                name="customer_profile"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Müştəri Profil Şəkli</FormLabel>
-                                        <FormControl>
-                                            <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 h-40 relative">
-                                                {profilePreview ? (
-                                                    <div className="relative w-full h-full">
-                                                        <Image
-                                                            src={profilePreview || "/placeholder.svg"}
-                                                            alt="Müştəri profil şəkli"
-                                                            fill
-                                                            className="object-contain rounded-full"
-                                                        />
-                                                        <Button
-                                                            type="button"
-                                                            variant="secondary"
-                                                            size="icon"
-                                                            className="absolute top-2 right-2 h-6 w-6 rounded-full"
-                                                            onClick={() => {
-                                                                const input = document.createElement("input")
-                                                                input.type = "file"
-                                                                input.accept = "image/*"
-                                                                input.onchange = (e) => {
-                                                                    const file = (e.target as HTMLInputElement).files?.[0]
-                                                                    if (file) handleImageUpload("customer_profile", file)
-                                                                }
-                                                                input.click()
-                                                            }}
-                                                        >
-                                                            <Camera className="h-3 w-3" />
-                                                        </Button>
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex flex-col items-center justify-center w-full h-full">
-                                                        <Button
-                                                            type="button"
-                                                            variant="outline"
-                                                            onClick={() => {
-                                                                const input = document.createElement("input")
-                                                                input.type = "file"
-                                                                input.accept = "image/*"
-                                                                input.onchange = (e) => {
-                                                                    const file = (e.target as HTMLInputElement).files?.[0]
-                                                                    if (file) handleImageUpload("customer_profile", file)
-                                                                }
-                                                                input.click()
-                                                            }}
-                                                        >
-                                                            Şəkil Yüklə
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Bank Logo */}
-                            <FormField
-                                control={form.control}
-                                name="bank_logo"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Şirkət Logosu</FormLabel>
-                                        <FormControl>
-                                            <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 h-40 relative">
-                                                {bankLogoPreview ? (
-                                                    <div className="relative w-full h-full">
-                                                        <Image
-                                                            src={bankLogoPreview || "/placeholder.svg"}
-                                                            alt="Şirkət logosu"
-                                                            fill
-                                                            className="object-contain"
-                                                        />
-                                                        <Button
-                                                            type="button"
-                                                            variant="secondary"
-                                                            size="icon"
-                                                            className="absolute top-2 right-2 h-6 w-6 rounded-full"
-                                                            onClick={() => {
-                                                                const input = document.createElement("input")
-                                                                input.type = "file"
-                                                                input.accept = "image/*"
-                                                                input.onchange = (e) => {
-                                                                    const file = (e.target as HTMLInputElement).files?.[0]
-                                                                    if (file) handleImageUpload("bank_logo", file)
-                                                                }
-                                                                input.click()
-                                                            }}
-                                                        >
-                                                            <Camera className="h-3 w-3" />
-                                                        </Button>
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex flex-col items-center justify-center w-full h-full">
-                                                        <Button
-                                                            type="button"
-                                                            variant="outline"
-                                                            onClick={() => {
-                                                                const input = document.createElement("input")
-                                                                input.type = "file"
-                                                                input.accept = "image/*"
-                                                                input.onchange = (e) => {
-                                                                    const file = (e.target as HTMLInputElement).files?.[0]
-                                                                    if (file) handleImageUpload("bank_logo", file)
-                                                                }
-                                                                input.click()
-                                                            }}
-                                                        >
-                                                            Logo Yüklə
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-
-                        {/* Customer Name */}
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Müştəri Adı</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="John Doe" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Bank Name */}
-                        <FormField
-                            control={form.control}
-                            name="bank_name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Şirkət Adı</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Handex MMC" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Testimonial Text with Language Tabs */}
-                        <div className="space-y-2">
-                            <Label>Rəy Mətni</Label>
-                            <Tabs value={activeTab} onValueChange={setActiveTab}>
-                                <TabsList className="mb-2">
-                                    <TabsTrigger value="az">AZ</TabsTrigger>
-                                    <TabsTrigger value="en">EN</TabsTrigger>
-                                    <TabsTrigger value="ru">RU</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value={activeTab}>
-                                    <FormField
-                                        control={form.control}
-                                        name="translations.0.comment"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Textarea
-                                                        placeholder={
-                                                            activeTab === "az"
-                                                                ? "Rəy mətnini daxil edin..."
-                                                                : activeTab === "en"
-                                                                    ? "Enter testimonial text..."
-                                                                    : "Введите текст отзыва..."
-                                                        }
-                                                        rows={5}
-                                                        {...field}
-                                                        onChange={(e) => {
-                                                            field.onChange(e)
-                                                            // Update the form data for the current language
-                                                            form.setValue("translations", [{ comment: e.target.value, lang: activeTab }])
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
+                <form onSubmit={handleSubmit(onSaveEdit)}>
+                    <div className="mb-4">
+                            <div className="flex justify-between">
+                                <div className="relative">
+                                    <Image
+                                        src={testimonial?.customer_profile?.url || "/placeholder.svg?height=40&width=40"}
+                                        alt={formValues.name || "Customer profile"}
+                                        width={60}
+                                        height={60}
+                                        className="rounded-full object-cover"
                                     />
-                                </TabsContent>
-                            </Tabs>
+                                    <Button
+                                        size="icon"
+                                        variant="secondary"
+                                        className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full"
+                                        onClick={() => profileImageInputRef.current?.click()}
+                                        type="button"
+                                    >
+                                        <Camera className="h-3 w-3" />
+                                    </Button>
+                                    <Input
+                                        type="file"
+                                        ref={profileImageInputRef}
+                                        onChange={handleProfileImageChange}
+                                        accept="image/*"
+                                        className="hidden"
+                                    />
+                                </div>
+                                <div>
+                                    <Input {...register("name")} placeholder="Ad Soyad" className="w-full" />
+                                    {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+                                </div>
+                            </div>
+                        <div className="flex justify-between">
+                            <div className="relative">
+                                <Image
+                                    src={testimonial?.bank_logo?.url || "/placeholder.svg?height=50&width=50"}
+                                    alt={formValues.bank_name || "Company logo"}
+                                    width={60}
+                                    height={60}
+                                    className="rounded-full object-cover"
+                                />
+                                <Button
+                                    size="icon"
+                                    variant="secondary"
+                                    className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full"
+                                    onClick={() => logoImageInputRef.current?.click()}
+                                    type="button"
+                                >
+                                    <Camera className="h-3 w-3" />
+                                </Button>
+                                <input
+                                    type="file"
+                                    ref={logoImageInputRef}
+                                    onChange={handleLogoImageChange}
+                                    accept="image/*"
+                                    className="hidden"
+                                />
+                            </div>
+
+                            <div>
+                                <Input {...register("bank_name")} placeholder="Vəzifə" className="w-full" />
+                                {errors.bank_name && <p className="text-sm text-destructive">{errors.bank_name.message}</p>}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-3">
+                        <Textarea
+                            {...register("comment")}
+                            placeholder="Rəy"
+                            rows={3}
+                        />
+                        {errors.comment && <p className="text-sm text-destructive">{errors.comment.message}</p>}
+                    </div>
+                    <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+                        <div className="flex items-center">
+                            <Globe className="h-3 w-3 mr-1" />
+                            {languageNames[currentLanguage as keyof typeof languageNames] || currentLanguage}
+                            <span className="ml-1">(Düzəliş edilir)</span>
                         </div>
 
-                        <DialogFooter>
-                            <Button type="button" variant="outline" onClick={onClose}>
-                                Ləğv Et
+                        <div className="flex gap-1">
+                            <Button size="sm" className="bg-black hover:bg-white hover:border border-black group" type="submit">
+                                <Check className="h-4 w-4 mr-1 text-white group-hover:text-black" /> <span className="text-white group-hover:text-black">Saxla</span>
                             </Button>
-                            <Button type="submit" disabled={isSubmitting}>
-                                {isSubmitting ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Yenilənir...
-                                    </>
-                                ) : (
-                                    "Yadda Saxla"
-                                )}
+                            <Button size="sm" variant="ghost" type="button" onClick={onClose}>
+                                <X className="h-4 w-4" />
                             </Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
+                        </div>
+                    </div>
+                </form>
             </DialogContent>
         </Dialog>
     )
 }
+
+export default TestimonialsEditModal

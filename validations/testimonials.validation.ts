@@ -20,3 +20,16 @@ export const testimonialFormSchema = z.object({
 })
 
 export type TestimonialFormValues = z.infer<typeof testimonialFormSchema>
+
+
+export const testimonialEditSchema = z.object({
+  id: z.union([z.string(), z.number()]),
+  name: z.string().min(2, { message: "Müştəri adı ən az 2 simvol olmalıdır" }),
+  bank_name: z.string().min(2, { message: "Şirkət adı ən az 2 simvol olmalıdır" }),
+  comment: z.string().min(10, { message: "Rəy mətni ən az 10 simvol olmalıdır" }),
+  bank_logo_id: z.number().optional(),
+  customer_profile_id: z.number().optional(),
+  currentLanguage: z.string(),
+})
+
+export type TestimonialEditValues = z.infer<typeof testimonialEditSchema>

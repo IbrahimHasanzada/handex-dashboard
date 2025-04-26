@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
@@ -8,11 +8,11 @@ import { Edit, Globe, Loader2, Plus, Trash2 } from "lucide-react"
 import { useDeleteCustomersMutation, useGetCustomersQuery } from "@/store/handexApi"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
-import { TestimonialsEditModal } from "./testimonials-edit"
 import { TestimonialsAdd } from "./testimonials-add"
+import TestimonialsEditModal from "./testimonials-edit"
 
 const Testimonials = () => {
-    const [isModalOpen, setisModalOpen] = useState(false)
+    const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedTestimonial, setSelectedTestimonial] = useState<any>(null)
     const [addData, setAddData] = useState<boolean>(false)
     const [currentLanguage, setCurrentLanguage] = useState<string>("az")
@@ -22,15 +22,13 @@ const Testimonials = () => {
 
     const handleEdit = (testimonial: any) => {
         setSelectedTestimonial(testimonial)
-        setisModalOpen(true)
+        setIsModalOpen(true)
     }
 
     const handleCloseModal = () => {
-        setisModalOpen(false)
+        setIsModalOpen(false)
         setSelectedTestimonial(null)
     }
-
-    
     const handleDelete = async (id: number | string) => {
         try {
             showDeleteConfirmation(deleteCustomer, id, refetch, {
@@ -67,6 +65,7 @@ const Testimonials = () => {
                     </Button>
                 </div>
             </CardHeader>
+
             {addData ? (
                 <CardContent>
                     <TestimonialsAdd
@@ -93,7 +92,7 @@ const Testimonials = () => {
                                             <div className="w-full flex justify-between items-center">
                                                 <div className="h-10 w-15">
                                                     <img
-                                                        src={testimonial.customer_profile.url || "/placeholder.svg?height=40&width=40"}
+                                                        src={testimonial.customer_profile?.url || "/placeholder.svg?height=40&width=40"}
                                                         alt={testimonial.name}
                                                         className="rounded-full object-cover w-full h-full"
                                                     />
@@ -104,7 +103,7 @@ const Testimonials = () => {
                                             </div>
                                             <div className="w-full flex justify-between items-center">
                                                 <Image
-                                                    src={testimonial.bank_logo.url || "/placeholder.svg?height=50&width=50"}
+                                                    src={testimonial.bank_logo?.url || "/placeholder.svg?height=50&width=50"}
                                                     alt={testimonial.bank_name || ""}
                                                     width={50}
                                                     height={50}
@@ -136,14 +135,16 @@ const Testimonials = () => {
                 </CardContent>
             )}
 
-            {/* Edit Modal */}
-            <TestimonialsEditModal
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                testimonial={selectedTestimonial}
-                refetch={refetch}
-                currentLanguage={currentLanguage}
-            />
+            {/* Edit Modal - Render outside of the conditional logic */}
+            {isModalOpen && selectedTestimonial && (
+                <TestimonialsEditModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    testimonial={selectedTestimonial}
+                    refetch={refetch}
+                    currentLanguage={currentLanguage}
+                />
+            )}
         </Card>
     )
 }
