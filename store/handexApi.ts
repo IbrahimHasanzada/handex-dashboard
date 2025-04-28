@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 
-let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTY2MzM2MSwiZXhwIjoxNzQ1NzQ5NzYxfQ.cKqq68-5YJw3CcX_x9M_srgv7_Gs2VvuwHU1BH7VMD8'
+let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTgzNzM4NiwiZXhwIjoxNzQ1OTIzNzg2fQ.-jmZuUOSMgAX2L2-ahSyz-AnYkuoIFBBmH7QR1xNMdc'
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'https://api.drafts.az/api' }),
@@ -117,6 +117,17 @@ export const handexApi = createApi({
                 }
             })
         }),
+        addNews: builder.mutation({
+            query: (params) => ({
+                url: `/news`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
 
     }),
 })
@@ -134,5 +145,6 @@ export const {
     useAddProfilesMutation,
     useDeleteProfilesMutation,
     useUpdateProfilesMutation,
-    useUpdateCustomersMutation
+    useUpdateCustomersMutation,
+    useAddNewsMutation
 } = handexApi

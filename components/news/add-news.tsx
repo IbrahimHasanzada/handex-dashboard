@@ -1,52 +1,126 @@
 "use client"
-import { useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { ImageIcon, Loader2, Save } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CardFooter } from "../ui/card"
+import { ImageIcon, Loader2, Save } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 import { Editor } from '@tinymce/tinymce-react';
+import { editorConfig } from "@/utils/editor-config"
+import { placeholdersNews } from "@/utils/input-placeholders"
+import { useAddNewsMutation, useUploadFileMutation } from "@/store/handexApi"
+import { Textarea } from "../ui/textarea"
+import { toast } from "react-toastify"
 import { formSchemaNews } from "@/validations/news.validation"
+import { imageState } from "@/types/home/graduates.dto"
+import { validateImage } from "@/validations/upload.validation"
+
+
 
 export function NewsForm({ id }: { id?: string }) {
-    const [isSubmitting, setIsSubmitting] = useState(false)
-
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY;
-    console.log(apiKey)
+    const [selectedLanguage, setSelectedLanguage] = useState("az");
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [selectedTab, setSelectedTab] = useState("content");
+    const [imageState, setImageState] = useState<imageState>({ preview: null, id: null, error: null })
+    const [uploadImage, { isLoading: upLoading, isSuccess: upSucces }] = useUploadFileMutation()
+    const [addNews, { isLoading: newsLoading, isSuccess: newsSucces }] = useAddNewsMutation()
+
     const defaultValues = id
         ? {
-            title: "ABB və Handex arasında yeni əməkdaşlıq",
-            content:
-                "Azərbaycan Beynəlxalq Bankı (ABB) və Handex arasında yeni əməkdaşlıq razılaşması imzalanıb. Bu əməkdaşlıq çərçivəsində...",
-            category: "finance",
-            featuredImage: "/placeholder.svg",
+            title_az: "ABB və Handex arasında yeni əməkdaşlıq",
+            title_en: "New cooperation between AIB and Handex",
+            title_ru: "Новое сотрудничество между МБА и Handex",
+            content_az: "Azərbaycan Beynəlxalq Bankı (ABB) və Handex arasında yeni əməkdaşlıq razılaşması imzalanıb. Bu əməkdaşlıq çərçivəsində...",
+            content_en: "A new cooperation agreement has been signed between Azerbaijan International Bank (AIB) and Handex. Within the framework of this cooperation...",
+            content_ru: "Между Международным Банком Азербайджана (МБА) и Handex подписано новое соглашение о сотрудничестве. В рамках этого сотрудничества...",
+            featuredImage: -1,
         }
         : {
-            title: "",
-            content: "",
-            featuredImage: "",
+            title_az: "",
+            title_en: "",
+            title_ru: "",
+            content_az: "",
+            content_en: "",
+            content_ru: "",
+            featuredImage: -1,
+            meta_az: "",
+            meta_en: "",
+            meta_ru: "",
         }
 
-    const form = useForm<z.infer<typeof formSchemaNews>>({
-        resolver: zodResolver(formSchemaNews),
-        defaultValues,
-    })
+    const form = useForm<z.infer<typeof formSchemaNews>>({ defaultValues });
 
-    function onSubmit(values: z.infer<typeof formSchemaNews>) {
-        setIsSubmitting(true)
+    async function onSubmit(values: z.infer<typeof formSchemaNews>) {
+        try {
+            const postValue = {
+                image: values.featuredImage,
+                translations: [
+                    { title: values.title_az, description: values.content_az, lang: "az" },
+                    { title: values.title_en, description: values.content_en, lang: "en" },
+                    { title: values.title_ru, description: values.content_ru, lang: "ru" },
+                ],
+                meta: [
+                    {
+                        translations: [
+                            { name: "news", value: values.meta_az, lang: "az" },
+                            { name: "news", value: values.meta_en, lang: "en" },
+                            { name: "news", value: values.meta_ru, lang: "ru" }
+                        ]
+                    }
+                ]
+            }
 
-        setTimeout(() => {
-            console.log(values)
-            setIsSubmitting(false)
-        }, 1000)
+
+            await addNews(postValue).unwrap()
+            toast.success('Xəbər uğurla yükləndi')
+        } catch (error) {
+            toast.error('Xəbər yüklənərkən xəta baş verdi')
+        }
+
     }
 
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const validationImage = validateImage(file, setImageState, imageState)
+            if (validationImage === false) {
+                return
+            }
+            try {
+                const formData = new FormData()
+                formData.append("file", file)
+                const response = await uploadImage(formData).unwrap()
+                setImageState({ ...imageState, preview: response?.url })
+                form.setValue("featuredImage", response?.id);
+                upSucces && toast.success("Şəkil uğurla yükləndi")
+            } catch (error) {
+                toast.error('Şəkil yükləyərkən xəta baş verdi')
+            }
+        };
+    }
+
+
+    const handleRemoveImage = () => {
+        setImageState({ ...imageState, preview: null });
+        form.setValue("featuredImage", -1);
+    };
+
+    const handleSelectImage = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current?.click();
+        }
+    };
+
+
+
+
     return (
-        <Tabs defaultValue="content" className="w-full pt-6">
+        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full pt-6">
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="content">Content</TabsTrigger>
                 <TabsTrigger value="media">Media</TabsTrigger>
@@ -56,40 +130,82 @@ export function NewsForm({ id }: { id?: string }) {
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                         <div className="md:col-span-3">
                             <TabsContent value="content" className="space-y-6">
-                                <FormField
-                                    control={form.control}
-                                    name="title"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Title</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Article title" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Editor
-                                    apiKey={apiKey}
-                                    init={{
-                                        plugins: [
-                                            // Core editing features
-                                            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-                                            // Your account includes a free trial of TinyMCE premium features
-                                            // Try the most popular premium features until May 8, 2025:
-                                            'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
-                                        ],
-                                        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                                        tinycomments_mode: 'embedded',
-                                        tinycomments_author: 'Author name',
-                                        mergetags_list: [
-                                            { value: 'First.Name', title: 'First Name' },
-                                            { value: 'Email', title: 'Email' },
-                                        ],
-                                        ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-                                    }}
-                                    initialValue="Mətn əlavə edin..."
-                                />
+
+
+                                <Tabs value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                                    <TabsList className="grid w-full grid-cols-3">
+                                        <TabsTrigger value="az">Azərbaycanca</TabsTrigger>
+                                        <TabsTrigger value="en">English</TabsTrigger>
+                                        <TabsTrigger value="ru">Русский</TabsTrigger>
+                                    </TabsList>
+
+                                    {["az", "en", "ru"].map((lang, index) => (
+                                        <TabsContent key={index} value={lang} className="space-y-6">
+                                            <FormField
+                                                control={form.control}
+                                                name={`title_${lang}`}
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>
+                                                            {lang === "az" ? "Başlıq" : lang === "en" ? "Title" : "Заголовок"}
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                placeholder={placeholdersNews[lang].title}
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name={`content_${lang}`}
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>
+                                                            {lang === "az" ? "Məzmun" : lang === "en" ? "Content" : "Содержание"}
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Editor
+                                                                value={field.value}
+                                                                onEditorChange={(content) => {
+                                                                    field.onChange(content);
+                                                                }}
+                                                                apiKey={apiKey}
+                                                                init={{
+                                                                    ...editorConfig,
+                                                                    language: lang,
+                                                                    placeholder: placeholdersNews[lang].content
+                                                                }}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name={`meta_${lang}`}
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>
+                                                            Meta
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder={placeholdersNews[lang].meta}
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </TabsContent>
+                                    ))}
+                                </Tabs>
                             </TabsContent>
                             <TabsContent value="media" className="space-y-6">
                                 <FormField
@@ -97,37 +213,52 @@ export function NewsForm({ id }: { id?: string }) {
                                     name="featuredImage"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Featured Image</FormLabel>
+                                            <FormLabel>Seçilmiş Şəkil</FormLabel>
                                             <FormControl>
                                                 <div className="flex items-center gap-4">
                                                     <div className="relative h-40 w-40 overflow-hidden rounded-md border">
-                                                        {field.value ? (
-                                                            <img
-                                                                src={field.value || "/placeholder.svg"}
-                                                                alt="Featured image"
-                                                                className="h-full w-full object-cover"
-                                                            />
-                                                        ) : (
-                                                            <div className="flex h-full w-full items-center justify-center bg-muted">
-                                                                <ImageIcon className="h-10 w-10 text-muted-foreground" />
+                                                        {upLoading ?
+                                                            <div className="w-full h-full flex justify-center items-center">
+                                                                <Loader2 className="h-8 w-8 animate-spin" />
                                                             </div>
-                                                        )}
+                                                            :
+                                                            imageState.preview ? (
+                                                                <img
+                                                                    src={imageState.preview || "/placeholder.svg"}
+                                                                    alt="Featured image"
+                                                                    className="h-full w-full object-cover"
+                                                                />
+                                                            ) : (
+                                                                <div className="flex h-full w-full items-center justify-center bg-muted">
+                                                                    <ImageIcon className="h-10 w-10 text-muted-foreground" />
+                                                                </div>
+                                                            )}
                                                     </div>
                                                     <div className="flex flex-col gap-2">
-                                                        <Button type="button" variant="outline">
-                                                            Select Image
+                                                        <input
+                                                            ref={fileInputRef}
+                                                            type="file"
+                                                            accept="image/*"
+                                                            onChange={handleFileChange}
+                                                            className="hidden"
+                                                        />
+                                                        <Button type="button" variant="outline" onClick={handleSelectImage}>
+                                                            Şəkil seç
                                                         </Button>
-                                                        {field.value && (
-                                                            <Button type="button" variant="outline" className="text-destructive">
-                                                                Remove Image
+                                                        {(imageState.preview) && (
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                className="text-destructive"
+                                                                onClick={handleRemoveImage}
+                                                            >
+                                                                Şəkli sil
                                                             </Button>
                                                         )}
                                                     </div>
                                                 </div>
                                             </FormControl>
-                                            <FormDescription>
-                                                This image will be displayed at the top of your article and in article lists.
-                                            </FormDescription>
+                                            {imageState.error && <p className="text-sm text-destructive mt-1">{imageState.error}</p>}
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -137,16 +268,18 @@ export function NewsForm({ id }: { id?: string }) {
                     </div>
                     <CardFooter className="flex flex-col gap-2">
                         <Button
-                            disabled={isSubmitting}
-                            type="button"
-                            variant="outline"
+                            disabled={newsLoading}
+                            type="submit"
                             className="w-full">
-                            {isSubmitting ?
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            {newsLoading ?
+                                <div className="flex items-center">
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Yüklənir...
+                                </div>
                                 :
                                 <div className="flex items-center">
                                     <Save className="mr-2 h-4 w-4" />
-                                    Save & Preview
+                                    Əlavə et
                                 </div>
                             }
                         </Button>

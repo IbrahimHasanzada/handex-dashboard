@@ -1,11 +1,17 @@
 import { z } from "zod";
 
 export const formSchemaNews = z.object({
-    title: z.string().min(2, {
-        message: "Title must be at least 2 characters.",
-    }),
-    content: z.string().min(10, {
-        message: "Content must be at least 10 characters.",
-    }),
-    featuredImage: z.string().optional(),
-})
+    title_az: z.string().min(5, { message: "Ən azı 5 simvol olmalıdır" }),
+    title_en: z.string().min(5, { message: "Ən azı 5 simvol olmalıdır" }),
+    title_ru: z.string().min(5, { message: "Ən azı 5 simvol olmalıdır" }),
+    content_az: z.string().min(20, { message: "Ən azı 20 simvol olmalıdır" }),
+    content_en: z.string().min(20, { message: "Ən azı 20 simvol olmalıdır" }),
+    content_ru: z.string().min(20, { message: "Ən azı 20 simvol olmalıdır" }),
+    meta_az: z.string().optional(),
+    meta_en: z.string().optional(),
+    meta_ru: z.string().optional(),
+    featuredImage: z
+        .number({ required_error: "Şəkil tələb olunur." })
+        .refine((val) => val !== -1, { message: "Şəkil tələb olunur." }),
+    category: z.string().optional()
+});
