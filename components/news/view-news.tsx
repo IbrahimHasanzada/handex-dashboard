@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useRouter } from "next/navigation"
-import { useDeleteNewsMutation, useGetNewsByIdQuery } from "@/store/handexApi"
+import { useDeleteNewsMutation, useGetNewsByIdQuery, useGetNewsQuery } from "@/store/handexApi"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { ViewArticleProps } from "@/types/news/news-view.dto"
@@ -17,12 +17,14 @@ import { ViewArticleProps } from "@/types/news/news-view.dto"
 export function ViewNews({ id, onEdit, onDelete }: ViewArticleProps) {
 
     const { data: news, isLoading: newsLoading, isError, error, refetch } = useGetNewsByIdQuery(id, { pollingInterval: 0, refetchOnMountOrArgChange: true, skip: !id })
+    const { refetch: refetchNews } = useGetNewsQuery('')
     const [deleteNews, { isSuccess, isLoading }] = useDeleteNewsMutation()
     const router = useRouter()
     const handleDelete = () => {
         try {
             showDeleteConfirmation(deleteNews, id, () => {
                 router.push('/news')
+                refetchNews()
             }, {
                 title: "Xəbəri silmək istəyirsinizmi?",
                 text: "Bu əməliyyat geri qaytarıla bilməz!",
@@ -32,8 +34,6 @@ export function ViewNews({ id, onEdit, onDelete }: ViewArticleProps) {
             toast.error('Xəbər silərkən xəta baş verdi!')
         }
     }
-
-    console.log(news)
     return (
         <div>
             {newsLoading ? (
@@ -42,7 +42,7 @@ export function ViewNews({ id, onEdit, onDelete }: ViewArticleProps) {
                 </div>
             ) : (
                 <div className="space-y-6">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-start md:items-center gap-5 justify-between flex-col md:flex-row mt-5">
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/news">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -50,12 +50,6 @@ export function ViewNews({ id, onEdit, onDelete }: ViewArticleProps) {
                             </Link>
                         </Button>
                         <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm" asChild>
-                                {/* <Link href={`/news/${news.slug}`} target="_blank">
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    View Live
-                                </Link> */}
-                            </Button>
                             <Button variant="outline" size="sm" onClick={onEdit}>
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit

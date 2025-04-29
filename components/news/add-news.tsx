@@ -120,9 +120,6 @@ export function NewsForm({ id }: { id?: string }) {
         }
     };
 
-
-
-
     return (
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full pt-6">
             <TabsList className="grid w-full grid-cols-2">
