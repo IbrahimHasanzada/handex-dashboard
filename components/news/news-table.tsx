@@ -17,83 +17,33 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
+import { useDeleteNewsMutation, useGetNewsQuery } from "@/store/handexApi"
+import { showDeleteConfirmation } from "@/utils/sweet-alert"
+import { toast } from "react-toastify"
 
 export function ArticlesTable() {
-    const [articles] = useState([
-        {
-            id: "1",
-            title: "ABB və Handex arasında yeni əməkdaşlıq",
-            excerpt: "Azərbaycan Beynəlxalq Bankı (ABB) və Handex arasında yeni əməkdaşlıq razılaşması...",
-            date: "14 yanvar 2024",
-            status: "published",
-            views: 1245,
-            image: "/placeholder.svg",
-            category: "Finance",
-            author: "Admin User",
-        },
-        {
-            id: "2",
-            title: "ABB və Handex arasında yeni əməkdaşlıq",
-            excerpt: "Azərbaycan Beynəlxalq Bankı (ABB) və Handex arasında yeni əməkdaşlıq razılaşması...",
-            date: "14 yanvar 2024",
-            status: "draft",
-            views: 0,
-            image: "/placeholder.svg",
-            category: "Business",
-            author: "Editor User",
-        },
-        {
-            id: "3",
-            title: "ABB və Handex arasında yeni əməkdaşlıq",
-            excerpt: "Azərbaycan Beynəlxalq Bankı (ABB) və Handex arasında yeni əməkdaşlıq razılaşması...",
-            date: "14 yanvar 2024",
-            status: "published",
-            views: 876,
-            image: "/placeholder.svg",
-            category: "Finance",
-            author: "Admin User",
-        },
-        {
-            id: "4",
-            title: "ABB və Handex arasında yeni əməkdaşlıq",
-            excerpt: "Azərbaycan Beynəlxalq Bankı (ABB) və Handex arasında yeni əməkdaşlıq razılaşması...",
-            date: "14 yanvar 2024",
-            status: "scheduled",
-            views: 0,
-            image: "/placeholder.svg",
-            category: "Technology",
-            author: "Content Writer",
-        },
-        {
-            id: "5",
-            title: "ABB və Handex arasında yeni əməkdaşlıq",
-            excerpt: "Azərbaycan Beynəlxalq Bankı (ABB) və Handex arasında yeni əməkdaşlıq razılaşması...",
-            date: "14 yanvar 2024",
-            status: "published",
-            views: 543,
-            image: "/placeholder.svg",
-            category: "Finance",
-            author: "Admin User",
-        },
-        {
-            id: "6",
-            title: "ABB və Handex arasında yeni əməkdaşlıq",
-            excerpt: "Azərbaycan Beynəlxalq Bankı (ABB) və Handex arasında yeni əməkdaşlıq razılaşması...",
-            date: "14 yanvar 2024",
-            status: "draft",
-            views: 0,
-            image: "/placeholder.svg",
-            category: "Business",
-            author: "Editor User",
-        },
-    ])
 
+    const { data: news, refetch } = useGetNewsQuery('')
+    const [deleteNews, { isLoading: delLoading }] = useDeleteNewsMutation()
+    console.log(news)
+
+    const handleDeleteNews = (id: number) => {
+        try {
+            showDeleteConfirmation(deleteNews, id, refetch, {
+                title: "Xəbəri silmək istəyirsinizmi?",
+                text: "Bu əməliyyat geri qaytarıla bilməz!",
+                successText: "Xəbər uğurla silindi.",
+            })
+        } catch (error) {
+            toast.error('Xəbər silərkən xəta baş verdi!')
+        }
+    }
     return (
         <div className="rounded-md border">
             <div className="flex items-center justify-between p-4">
                 <div className="flex flex-1 items-center space-x-2">
                     <h2 className="text-xl font-semibold">Xəbərlər</h2>
-                    <Badge>{articles.length}</Badge>
+                    <Badge>{news?.data.length}</Badge>
                 </div>
                 <div className="flex items-center space-x-2">
                     <Link href='/news/new'>
@@ -121,7 +71,7 @@ export function ArticlesTable() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {articles.map((article) => (
+                    {news?.data.map((article: any) => (
                         <TableRow key={article.id}>
                             <TableCell>
                                 <Checkbox />
@@ -130,15 +80,14 @@ export function ArticlesTable() {
                                 <div className="flex items-center space-x-3">
                                     <div className="relative h-10 w-10 overflow-hidden rounded">
                                         <Image
-                                            src={article.image || "/placeholder.svg"}
-                                            alt={article.title}
+                                            src={article.image.url || "/placeholder.svg"}
+                                            alt={article.id}
                                             fill
                                             className="object-cover"
                                         />
                                     </div>
                                     <div>
-                                        <div className="font-medium">{article.title}</div>
-                                        <div className="text-sm text-muted-foreground">By {article.author}</div>
+                                        <div className="font-medium">{(article.translations[1].value)}</div>
                                     </div>
                                 </div>
                             </TableCell>
@@ -167,7 +116,7 @@ export function ArticlesTable() {
                                             </DropdownMenuItem>
                                         </Link>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem className="text-destructive">
+                                        <DropdownMenuItem onClick={() => handleDeleteNews(article.id)} className="text-destructive">
                                             <Trash2 className="mr-2 h-4 w-4" /> Delete
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>

@@ -23,7 +23,7 @@ interface DeleteConfirmationOptions {
 export const showDeleteConfirmation = async (
     deleteFunction: (id: number | string | object) => Promise<any>,
     id: number | string | object,
-    refetchFunction?: () => Promise<any>,
+    refetchFunction?: () => Promise<any> | void,
     options?: DeleteConfirmationOptions
 ): Promise<boolean> => {
     const defaultOptions: Required<DeleteConfirmationOptions> = {

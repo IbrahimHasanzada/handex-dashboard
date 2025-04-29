@@ -5,7 +5,7 @@ let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NT
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'https://api.drafts.az/api' }),
-    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General'],
+    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News'],
     endpoints: (builder) => ({
         getGeneral: builder.query({
             query: () => '/general',
@@ -117,6 +117,10 @@ export const handexApi = createApi({
                 }
             })
         }),
+        getNews: builder.query({
+            query: () => `/news`,
+            providesTags: ['News']
+        }),
         addNews: builder.mutation({
             query: (params) => ({
                 url: `/news`,
@@ -128,6 +132,19 @@ export const handexApi = createApi({
                 body: params
             }),
         }),
+        deleteNews: builder.mutation({
+            query: (id) => ({
+                url: `/news/${id}`,
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }),
+        }),
+        getNewsById: builder.query({
+            query: (id) => `/news/${id}`,
+            providesTags: ['News']
+        })
 
     }),
 })
@@ -146,5 +163,8 @@ export const {
     useDeleteProfilesMutation,
     useUpdateProfilesMutation,
     useUpdateCustomersMutation,
-    useAddNewsMutation
+    useAddNewsMutation,
+    useGetNewsQuery,
+    useDeleteNewsMutation,
+    useGetNewsByIdQuery
 } = handexApi

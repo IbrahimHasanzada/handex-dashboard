@@ -34,7 +34,7 @@ const Graduates = () => {
                 successText: "Məzun uğurla silindi.",
             })
         } catch (error) {
-            toast.success('Məzunu silərkən xəta baş verdi!')
+            toast.error('Məzunu silərkən xəta baş verdi!')
         }
     }
     return (

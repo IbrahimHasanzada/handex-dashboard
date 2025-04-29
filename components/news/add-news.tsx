@@ -17,6 +17,7 @@ import { toast } from "react-toastify"
 import { formSchemaNews } from "@/validations/news.validation"
 import { imageState } from "@/types/home/graduates.dto"
 import { validateImage } from "@/validations/upload.validation"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 
 
@@ -52,7 +53,10 @@ export function NewsForm({ id }: { id?: string }) {
             meta_ru: "",
         }
 
-    const form = useForm<z.infer<typeof formSchemaNews>>({ defaultValues });
+    const form = useForm<z.infer<typeof formSchemaNews>>({
+        defaultValues,
+        resolver: zodResolver(formSchemaNews)
+    });
 
     async function onSubmit(values: z.infer<typeof formSchemaNews>) {
         try {
