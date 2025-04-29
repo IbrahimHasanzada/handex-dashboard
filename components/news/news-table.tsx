@@ -18,13 +18,13 @@ import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { format } from "date-fns"
 import { useEffect, useState } from "react"
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs"
 
 export function ArticlesTable() {
-
-    const { data: news, refetch, isLoading: newsLoading } = useGetNewsQuery('')
+    const [currentLanguage, setCurrentLanguage] = useState<string>("az")
+    const { data: news, refetch, isLoading: newsLoading } = useGetNewsQuery(currentLanguage, { skip: !currentLanguage });
     const [deleteNews, { isLoading: delLoading }] = useDeleteNewsMutation()
     const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
-
 
     useEffect(() => {
         function handleResize() {
@@ -33,8 +33,6 @@ export function ArticlesTable() {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-
-    console.log(windowWidth)
     const handleDeleteNews = (id: number) => {
         try {
             showDeleteConfirmation(deleteNews, id, refetch, {
@@ -46,6 +44,10 @@ export function ArticlesTable() {
             toast.error('Xəbər silərkən xəta baş verdi!')
         }
     }
+
+    const handleLanguageChange = (language: string) => {
+        setCurrentLanguage(language)
+    }
     return (
         <div className="rounded-md border">
             <div className="flex md:items-center justify-between  p-4">
@@ -54,6 +56,13 @@ export function ArticlesTable() {
                     <Badge>{news?.data.length}</Badge>
                 </div>
                 <div className="flex items-center space-x-2">
+                    <Tabs value={currentLanguage} onValueChange={handleLanguageChange} className="mr-4">
+                        <TabsList>
+                            <TabsTrigger value="az">AZ</TabsTrigger>
+                            <TabsTrigger value="en">EN</TabsTrigger>
+                            <TabsTrigger value="ru">RU</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
                     <Link href='/news/new'>
                         <Button>
                             <Plus className="mr-2 h-4 w-4" />

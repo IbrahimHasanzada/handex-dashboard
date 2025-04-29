@@ -5,13 +5,13 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CardFooter } from "../ui/card"
-import { ImageIcon, Loader2, Save } from "lucide-react"
+import { ImageIcon, Loader, Loader2, Save } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Editor } from '@tinymce/tinymce-react';
 import { editorConfig } from "@/utils/editor-config"
 import { placeholdersNews } from "@/utils/input-placeholders"
-import { useAddNewsMutation, useUploadFileMutation } from "@/store/handexApi"
+import { useAddNewsMutation, useGetNewsByIdQuery, useUploadFileMutation } from "@/store/handexApi"
 import { Textarea } from "../ui/textarea"
 import { toast } from "react-toastify"
 import { formSchemaNews } from "@/validations/news.validation"
@@ -29,12 +29,22 @@ export function NewsForm({ id }: { id?: string }) {
     const [imageState, setImageState] = useState<imageState>({ preview: null, id: null, error: null })
     const [uploadImage, { isLoading: upLoading, isSuccess: upSucces }] = useUploadFileMutation()
     const [addNews, { isLoading: newsLoading, isSuccess: newsSucces }] = useAddNewsMutation()
-
+    const { data: news, isLoading: newsByIdLoading, isError, error, refetch } = useGetNewsByIdQuery(
+        {
+            id,
+            selectedLanguage
+        },
+        {
+            pollingInterval: 0,
+            refetchOnMountOrArgChange: true,
+            skip: !id
+        }
+    )
     const defaultValues = id
         ? {
-            title_az: "ABB və Handex arasında yeni əməkdaşlıq",
-            title_en: "New cooperation between AIB and Handex",
-            title_ru: "Новое сотрудничество между МБА и Handex",
+            title_az: selectedLanguage === "az" ? news?.title : "",
+            title_en: selectedLanguage === "en" ? news?.title : "",
+            title_ru: selectedLanguage === "ru" ? news?.title : "",
             content_az: "Azərbaycan Beynəlxalq Bankı (ABB) və Handex arasında yeni əməkdaşlıq razılaşması imzalanıb. Bu əməkdaşlıq çərçivəsində...",
             content_en: "A new cooperation agreement has been signed between Azerbaijan International Bank (AIB) and Handex. Within the framework of this cooperation...",
             content_ru: "Между Международным Банком Азербайджана (МБА) и Handex подписано новое соглашение о сотрудничестве. В рамках этого сотрудничества...",
@@ -52,6 +62,26 @@ export function NewsForm({ id }: { id?: string }) {
             meta_en: "",
             meta_ru: "",
         }
+    console.log(defaultValues)
+
+
+    useEffect(() => {
+        if (id && news) {
+
+            ["az", "en", "ru"].forEach((item) => {
+                if (item === selectedLanguage) {
+                    form.setValue(`title_${item}` as "title_az" | "title_en" | "title_ru", news.title);
+                    form.setValue(`content_${item}` as "content_az" | "content_en" | "content_ru", news.description);
+                    form.setValue(`meta_${item}` as "meta_az" | "meta_en" | "meta_ru", news.meta);
+                }
+            })
+
+            if (news.image?.id) {
+                form.setValue("featuredImage", news.image.id);
+                setImageState({ ...imageState, preview: news.image.url || null, id: news.image.id });
+            }
+        }
+    }, [news, selectedLanguage, id]);
 
     const form = useForm<z.infer<typeof formSchemaNews>>({
         defaultValues,
@@ -121,172 +151,178 @@ export function NewsForm({ id }: { id?: string }) {
     };
 
     return (
-        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full pt-6">
-            <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="content">Content</TabsTrigger>
-                <TabsTrigger value="media">Media</TabsTrigger>
-            </TabsList>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-6">
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                        <div className="md:col-span-3">
-                            <TabsContent value="content" className="space-y-6">
+        newsByIdLoading ?
+            <div className="flex items-center justify-center">
+                <Loader2 className="animate-spin w-10 h-10" />
+            </div >
+            :
+            <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full pt-6">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="content">Content</TabsTrigger>
+                    <TabsTrigger value="media">Media</TabsTrigger>
+                </TabsList>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-6">
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                            <div className="md:col-span-3">
+                                <TabsContent value="content" className="space-y-6">
 
 
-                                <Tabs value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                                    <TabsList className="grid w-full grid-cols-3">
-                                        <TabsTrigger value="az">Azərbaycanca</TabsTrigger>
-                                        <TabsTrigger value="en">English</TabsTrigger>
-                                        <TabsTrigger value="ru">Русский</TabsTrigger>
-                                    </TabsList>
+                                    <Tabs value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                                        <TabsList className="grid w-full grid-cols-3">
+                                            <TabsTrigger value="az">Azərbaycanca</TabsTrigger>
+                                            <TabsTrigger value="en">English</TabsTrigger>
+                                            <TabsTrigger value="ru">Русский</TabsTrigger>
+                                        </TabsList>
 
-                                    {["az", "en", "ru"].map((lang, index) => (
-                                        <TabsContent key={index} value={lang} className="space-y-6">
-                                            <FormField
-                                                control={form.control}
-                                                name={`title_${lang}`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            {lang === "az" ? "Başlıq" : lang === "en" ? "Title" : "Заголовок"}
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder={placeholdersNews[lang].title}
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name={`content_${lang}`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            {lang === "az" ? "Məzmun" : lang === "en" ? "Content" : "Содержание"}
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Editor
-                                                                value={field.value}
-                                                                onEditorChange={(content) => {
-                                                                    field.onChange(content);
-                                                                }}
-                                                                apiKey={apiKey}
-                                                                init={{
-                                                                    ...editorConfig,
-                                                                    language: lang,
-                                                                    placeholder: placeholdersNews[lang].content
-                                                                }}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name={`meta_${lang}`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            Meta
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Textarea
-                                                                placeholder={placeholdersNews[lang].meta}
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </TabsContent>
-                                    ))}
-                                </Tabs>
-                            </TabsContent>
-                            <TabsContent value="media" className="space-y-6">
-                                <FormField
-                                    control={form.control}
-                                    name="featuredImage"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Seçilmiş Şəkil</FormLabel>
-                                            <FormControl>
-                                                <div className="flex items-center gap-4">
-                                                    <div className="relative h-40 w-40 overflow-hidden rounded-md border">
-                                                        {upLoading ?
-                                                            <div className="w-full h-full flex justify-center items-center">
-                                                                <Loader2 className="h-8 w-8 animate-spin" />
-                                                            </div>
-                                                            :
-                                                            imageState.preview ? (
-                                                                <img
-                                                                    src={imageState.preview || "/placeholder.svg"}
-                                                                    alt="Featured image"
-                                                                    className="h-full w-full object-cover"
+                                        {["az", "en", "ru"].map((lang, index) => (
+                                            <TabsContent key={index} value={lang} className="space-y-6">
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`title_${lang}`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>
+                                                                {lang === "az" ? "Başlıq" : lang === "en" ? "Title" : "Заголовок"}
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    placeholder={placeholdersNews[lang].title}
+                                                                    {...field}
                                                                 />
-                                                            ) : (
-                                                                <div className="flex h-full w-full items-center justify-center bg-muted">
-                                                                    <ImageIcon className="h-10 w-10 text-muted-foreground" />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`content_${lang}`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>
+                                                                {lang === "az" ? "Məzmun" : lang === "en" ? "Content" : "Содержание"}
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Editor
+                                                                    value={field.value}
+                                                                    onEditorChange={(content) => {
+                                                                        field.onChange(content);
+                                                                    }}
+                                                                    apiKey={apiKey}
+                                                                    init={{
+                                                                        ...editorConfig,
+                                                                        language: lang,
+                                                                        placeholder: placeholdersNews[lang].content
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`meta_${lang}`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>
+                                                                Meta
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Textarea
+                                                                    placeholder={placeholdersNews[lang].meta}
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </TabsContent>
+                                        ))}
+                                    </Tabs>
+                                </TabsContent>
+                                <TabsContent value="media" className="space-y-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="featuredImage"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Seçilmiş Şəkil</FormLabel>
+                                                <FormControl>
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="relative h-40 w-40 overflow-hidden rounded-md border">
+                                                            {upLoading ?
+                                                                <div className="w-full h-full flex justify-center items-center">
+                                                                    <Loader2 className="h-8 w-8 animate-spin" />
                                                                 </div>
-                                                            )}
-                                                    </div>
-                                                    <div className="flex flex-col gap-2">
-                                                        <input
-                                                            ref={fileInputRef}
-                                                            type="file"
-                                                            accept="image/*"
-                                                            onChange={handleFileChange}
-                                                            className="hidden"
-                                                        />
-                                                        <Button type="button" variant="outline" onClick={handleSelectImage}>
-                                                            Şəkil seç
-                                                        </Button>
-                                                        {(imageState.preview) && (
-                                                            <Button
-                                                                type="button"
-                                                                variant="outline"
-                                                                className="text-destructive"
-                                                                onClick={handleRemoveImage}
-                                                            >
-                                                                Şəkli sil
+                                                                :
+                                                                imageState.preview ? (
+                                                                    <img
+                                                                        src={imageState.preview || "/placeholder.svg"}
+                                                                        alt="Featured image"
+                                                                        className="h-full w-full object-cover"
+                                                                    />
+                                                                ) : (
+                                                                    <div className="flex h-full w-full items-center justify-center bg-muted">
+                                                                        <ImageIcon className="h-10 w-10 text-muted-foreground" />
+                                                                    </div>
+                                                                )}
+                                                        </div>
+                                                        <div className="flex flex-col gap-2">
+                                                            <input
+                                                                ref={fileInputRef}
+                                                                type="file"
+                                                                accept="image/*"
+                                                                onChange={handleFileChange}
+                                                                className="hidden"
+                                                            />
+                                                            <Button type="button" variant="outline" onClick={handleSelectImage}>
+                                                                Şəkil seç
                                                             </Button>
-                                                        )}
+                                                            {(imageState.preview) && (
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="outline"
+                                                                    className="text-destructive"
+                                                                    onClick={handleRemoveImage}
+                                                                >
+                                                                    Şəkli sil
+                                                                </Button>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </FormControl>
-                                            {imageState.error && <p className="text-sm text-destructive mt-1">{imageState.error}</p>}
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </TabsContent>
+                                                </FormControl>
+                                                {imageState.error && <p className="text-sm text-destructive mt-1">{imageState.error}</p>}
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TabsContent>
+                            </div>
                         </div>
-                    </div>
-                    <CardFooter className="flex flex-col gap-2">
-                        <Button
-                            disabled={newsLoading}
-                            type="submit"
-                            className="w-full">
-                            {newsLoading ?
-                                <div className="flex items-center">
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Yüklənir...
-                                </div>
-                                :
-                                <div className="flex items-center">
-                                    <Save className="mr-2 h-4 w-4" />
-                                    Əlavə et
-                                </div>
-                            }
-                        </Button>
-                    </CardFooter>
-                </form>
-            </Form>
-        </Tabs>
+                        <CardFooter className="flex flex-col gap-2">
+                            <Button
+                                disabled={newsLoading}
+                                type="submit"
+                                className="w-full">
+                                {newsLoading ?
+                                    <div className="flex items-center">
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Yüklənir...
+                                    </div>
+                                    :
+                                    <div className="flex items-center">
+                                        <Save className="mr-2 h-4 w-4" />
+                                        Əlavə et
+                                    </div>
+                                }
+                            </Button>
+                        </CardFooter>
+                    </form>
+                </Form>
+            </Tabs>
+
     )
 }

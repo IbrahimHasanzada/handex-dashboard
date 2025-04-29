@@ -118,7 +118,7 @@ export const handexApi = createApi({
             })
         }),
         getNews: builder.query({
-            query: () => `/news`,
+            query: (lang) => `/news?lang=${lang}`,
             providesTags: ['News']
         }),
         addNews: builder.mutation({
@@ -142,7 +142,7 @@ export const handexApi = createApi({
             }),
         }),
         getNewsById: builder.query({
-            query: (id) => `/news/${id}`,
+            query: ({ id, selectedLanguage }) =>  `/news/${id}?lang=${selectedLanguage}`,
             providesTags: ['News']
         })
 
