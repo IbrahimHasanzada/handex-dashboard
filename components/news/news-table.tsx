@@ -45,9 +45,6 @@ export function ArticlesTable() {
         }
     }
 
-    const handleLanguageChange = (language: string) => {
-        setCurrentLanguage(language)
-    }
     return (
         <div className="rounded-md border">
             <div className="flex md:items-center justify-between  p-4">
@@ -56,7 +53,7 @@ export function ArticlesTable() {
                     <Badge>{news?.data.length}</Badge>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <Tabs value={currentLanguage} onValueChange={handleLanguageChange} className="mr-4">
+                    <Tabs value={currentLanguage} onValueChange={(language: string) => setCurrentLanguage(language)} className="mr-4">
                         <TabsList>
                             <TabsTrigger value="az">AZ</TabsTrigger>
                             <TabsTrigger value="en">EN</TabsTrigger>

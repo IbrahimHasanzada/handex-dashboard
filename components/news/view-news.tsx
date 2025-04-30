@@ -11,20 +11,21 @@ import { useDeleteNewsMutation, useGetNewsByIdQuery, useGetNewsQuery } from "@/s
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { ViewArticleProps } from "@/types/news/news-view.dto"
+import { useEffect, useState } from "react"
 
 
 
 export function ViewNews({ id, onEdit, onDelete }: ViewArticleProps) {
-
-    const { data: news, isLoading: newsLoading, isError, error, refetch } = useGetNewsByIdQuery(id, { pollingInterval: 0, refetchOnMountOrArgChange: true, skip: !id })
+    const [currentLanguage, setCurrentLanguage] = useState<string>("az")
+    const { data: news, isLoading: newsLoading, isError, error, refetch: refetchNewsById } = useGetNewsByIdQuery({ id: id, language: currentLanguage }, { pollingInterval: 0, refetchOnMountOrArgChange: true, skip: !id })
     const { refetch: refetchNews } = useGetNewsQuery('')
     const [deleteNews, { isSuccess, isLoading }] = useDeleteNewsMutation()
     const router = useRouter()
     const handleDelete = () => {
         try {
-            showDeleteConfirmation(deleteNews, id, () => {
+            showDeleteConfirmation(deleteNews, id, async () => {
+                await refetchNews()
                 router.push('/news')
-                refetchNews()
             }, {
                 title: "Xəbəri silmək istəyirsinizmi?",
                 text: "Bu əməliyyat geri qaytarıla bilməz!",
@@ -49,15 +50,24 @@ export function ViewNews({ id, onEdit, onDelete }: ViewArticleProps) {
                                 Xəbərlərə qayıt
                             </Link>
                         </Button>
-                        <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm" onClick={onEdit}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit
-                            </Button>
-                            <Button onClick={handleDelete} variant="destructive" size="sm">
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
-                            </Button>
+                        <div className="flex items-center">
+                            <Tabs value={currentLanguage} onValueChange={(language: string) => setCurrentLanguage(language)} className="mr-4">
+                                <TabsList>
+                                    <TabsTrigger value="az">AZ</TabsTrigger>
+                                    <TabsTrigger value="en">EN</TabsTrigger>
+                                    <TabsTrigger value="ru">RU</TabsTrigger>
+                                </TabsList>
+                            </Tabs>
+                            <div className="flex items-center gap-2">
+                                <Button variant="outline" size="sm" onClick={onEdit}>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Edit
+                                </Button>
+                                <Button onClick={handleDelete} variant="destructive" size="sm">
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete
+                                </Button>
+                            </div>
                         </div>
                     </div>
 
@@ -73,7 +83,7 @@ export function ViewNews({ id, onEdit, onDelete }: ViewArticleProps) {
                                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                         <span className="flex items-center gap-1">
                                             <Calendar className="h-4 w-4" />
-                                            {format(new Date(news.createdAt), "PPP")}
+                                            {/* {format(new Date(news.createdAt), "PPP")} */}
                                         </span>
                                     </div>
 

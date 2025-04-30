@@ -11,7 +11,7 @@ import { z } from "zod"
 import { Editor } from '@tinymce/tinymce-react';
 import { editorConfig } from "@/utils/editor-config"
 import { placeholdersNews } from "@/utils/input-placeholders"
-import { useAddNewsMutation, useGetNewsByIdQuery, useUploadFileMutation } from "@/store/handexApi"
+import { useAddNewsMutation, useGetNewsByIdQuery, useUpdateNewsMutation, useUploadFileMutation } from "@/store/handexApi"
 import { Textarea } from "../ui/textarea"
 import { toast } from "react-toastify"
 import { formSchemaNews } from "@/validations/news.validation"
@@ -23,65 +23,51 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 export function NewsForm({ id }: { id?: string }) {
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY;
-    const [selectedLanguage, setSelectedLanguage] = useState("az");
+    const [selectedLanguage, setSelectedLanguage] = useState<string>("az");
+    const [languagesSkip, setLanguagesSkip] = useState<string[]>([])
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [selectedTab, setSelectedTab] = useState("content");
     const [imageState, setImageState] = useState<imageState>({ preview: null, id: null, error: null })
     const [uploadImage, { isLoading: upLoading, isSuccess: upSucces }] = useUploadFileMutation()
     const [addNews, { isLoading: newsLoading, isSuccess: newsSucces }] = useAddNewsMutation()
+    const [updateNews, { isLoading: newsUpLoading, isSuccess: newsUpSucces }] = useUpdateNewsMutation()
     const { data: news, isLoading: newsByIdLoading, isError, error, refetch } = useGetNewsByIdQuery(
         {
             id,
-            selectedLanguage
+            language: selectedLanguage ? selectedLanguage : "az"
         },
         {
             pollingInterval: 0,
             refetchOnMountOrArgChange: true,
-            skip: !id
+            skip: languagesSkip.includes(selectedLanguage) || !id
         }
     )
-    const defaultValues = id
-        ? {
-            title_az: selectedLanguage === "az" ? news?.title : "",
-            title_en: selectedLanguage === "en" ? news?.title : "",
-            title_ru: selectedLanguage === "ru" ? news?.title : "",
-            content_az: "Azərbaycan Beynəlxalq Bankı (ABB) və Handex arasında yeni əməkdaşlıq razılaşması imzalanıb. Bu əməkdaşlıq çərçivəsində...",
-            content_en: "A new cooperation agreement has been signed between Azerbaijan International Bank (AIB) and Handex. Within the framework of this cooperation...",
-            content_ru: "Между Международным Банком Азербайджана (МБА) и Handex подписано новое соглашение о сотрудничестве. В рамках этого сотрудничества...",
-            featuredImage: -1,
-        }
-        : {
-            title_az: "",
-            title_en: "",
-            title_ru: "",
-            content_az: "",
-            content_en: "",
-            content_ru: "",
-            featuredImage: -1,
-            meta_az: "",
-            meta_en: "",
-            meta_ru: "",
-        }
-    console.log(defaultValues)
-
+    const defaultValues = {
+        title_az: "",
+        title_en: "",
+        title_ru: "",
+        content_az: "",
+        content_en: "",
+        content_ru: "",
+        featuredImage: -1,
+        meta_az: "",
+        meta_en: "",
+        meta_ru: "",
+    }
 
     useEffect(() => {
         if (id && news) {
 
-            ["az", "en", "ru"].forEach((item) => {
-                if (item === selectedLanguage) {
-                    form.setValue(`title_${item}` as "title_az" | "title_en" | "title_ru", news.title);
-                    form.setValue(`content_${item}` as "content_az" | "content_en" | "content_ru", news.description);
-                    form.setValue(`meta_${item}` as "meta_az" | "meta_en" | "meta_ru", news.meta);
-                }
-            })
+            form.setValue(`title_${selectedLanguage}` as "title_az" | "title_en" | "title_ru", news.title);
+            form.setValue(`content_${selectedLanguage}` as "content_az" | "content_en" | "content_ru", news.description);
+            form.setValue(`meta_${selectedLanguage}` as "meta_az" | "meta_en" | "meta_ru", news.meta ? news.meta : "");
 
             if (news.image?.id) {
                 form.setValue("featuredImage", news.image.id);
                 setImageState({ ...imageState, preview: news.image.url || null, id: news.image.id });
             }
         }
-    }, [news, selectedLanguage, id]);
+    }, [news, id]);
 
     const form = useForm<z.infer<typeof formSchemaNews>>({
         defaultValues,
@@ -109,14 +95,13 @@ export function NewsForm({ id }: { id?: string }) {
             }
 
 
-            await addNews(postValue).unwrap()
+            !id ? await addNews(postValue).unwrap() : await updateNews({ params: postValue, id }).unwrap()
             toast.success('Xəbər uğurla yükləndi')
         } catch (error) {
             toast.error('Xəbər yüklənərkən xəta baş verdi')
         }
 
     }
-
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -168,7 +153,11 @@ export function NewsForm({ id }: { id?: string }) {
                                 <TabsContent value="content" className="space-y-6">
 
 
-                                    <Tabs value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                                    <Tabs value={selectedLanguage} onValueChange={(language) => {
+                                        setSelectedLanguage(language);
+                                        setLanguagesSkip((prev) => [...prev, selectedLanguage])
+
+                                    }}>
                                         <TabsList className="grid w-full grid-cols-3">
                                             <TabsTrigger value="az">Azərbaycanca</TabsTrigger>
                                             <TabsTrigger value="en">English</TabsTrigger>
@@ -322,7 +311,7 @@ export function NewsForm({ id }: { id?: string }) {
                         </CardFooter>
                     </form>
                 </Form>
-            </Tabs>
+            </Tabs>)
 
-    )
+
 }

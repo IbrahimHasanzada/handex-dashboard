@@ -142,9 +142,20 @@ export const handexApi = createApi({
             }),
         }),
         getNewsById: builder.query({
-            query: ({ id, selectedLanguage }) =>  `/news/${id}?lang=${selectedLanguage}`,
+            query: ({ id, language }) => `/news/${id}?lang=${language}`,
             providesTags: ['News']
-        })
+        }),
+        updateNews: builder.mutation({
+            query: ({ params, id }) => ({
+                url: `/news/${id}`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
 
     }),
 })
@@ -166,5 +177,6 @@ export const {
     useAddNewsMutation,
     useGetNewsQuery,
     useDeleteNewsMutation,
-    useGetNewsByIdQuery
+    useGetNewsByIdQuery,
+    useUpdateNewsMutation
 } = handexApi
