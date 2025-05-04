@@ -20,3 +20,11 @@ export type BannerData = {
     slug?: string 
     meta: MetaTranslation[]
 }
+
+
+export type FormValues = {
+    title: string
+    desc: string
+    meta: string
+    image?: FileList
+}

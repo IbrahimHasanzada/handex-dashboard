@@ -20,6 +20,7 @@ export function ViewNews({ id, onEdit, onDelete }: ViewArticleProps) {
     const { data: news, isLoading: newsLoading, isError, error, refetch: refetchNewsById } = useGetNewsByIdQuery({ id: id, language: currentLanguage }, { pollingInterval: 0, refetchOnMountOrArgChange: true, skip: !id })
     const { refetch: refetchNews } = useGetNewsQuery('')
     const [deleteNews, { isSuccess, isLoading }] = useDeleteNewsMutation()
+    console.log(news)
     const router = useRouter()
     const handleDelete = () => {
         try {

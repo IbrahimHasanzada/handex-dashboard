@@ -1,12 +1,22 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 
-let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTgzNzM4NiwiZXhwIjoxNzQ1OTIzNzg2fQ.-jmZuUOSMgAX2L2-ahSyz-AnYkuoIFBBmH7QR1xNMdc'
+let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NjM3NTYxMCwiZXhwIjoxNzQ2NDYyMDEwfQ.cUeoDsLXbeUtYnAy5mOQwK05ZeoZg1LBoGpf55xtr8M'
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'https://api.drafts.az/api' }),
     tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News'],
     endpoints: (builder) => ({
+        login: builder.mutation({
+            query: (params) => ({
+                url: '/auth/login',
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            }),
+        }),
         getGeneral: builder.query({
             query: () => '/general',
             providesTags: ['Statistics']
@@ -178,5 +188,6 @@ export const {
     useGetNewsQuery,
     useDeleteNewsMutation,
     useGetNewsByIdQuery,
-    useUpdateNewsMutation
+    useUpdateNewsMutation,
+    useLoginMutation
 } = handexApi

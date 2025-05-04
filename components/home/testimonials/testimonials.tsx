@@ -125,7 +125,7 @@ const Testimonials = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="text-sm mt-2 break-words">{testimonial.comment}</div>
+                                    <div className="text-sm mt-2 break-words line-clamp-2">{testimonial.comment}</div>
                                     <div className="mt-2 text-xs text-muted-foreground flex items-center">
                                         <Globe className="h-3 w-3 mr-1" />
                                         {currentLanguage === "az" ? "Azərbaycan" : currentLanguage === "en" ? "English" : "Русский"}

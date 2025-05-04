@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Provider } from 'react-redux'
 import { store } from "@/store/store"
 import { Bounce, ToastContainer } from 'react-toastify';
+import { useRouter } from "next/navigation"
 const inter = Inter({ subsets: ["latin"] })
 
 export default function RootLayout({
@@ -13,6 +14,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const router = useRouter()
+  let token = localStorage.getItem('token')
+  !token && router.push('/login')
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
