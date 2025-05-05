@@ -84,7 +84,7 @@ export function ArticlesTable() {
                                     <ArrowUpDown className="ml-2 h-4 w-4" />
                                 </Button>
                             </TableHead>
-                            <TableHead className="w-[80px] hidden md:block">Actions</TableHead>
+                            <TableHead className="w-[80px]  hidden md:block">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

@@ -10,6 +10,7 @@ export const formSchemaNews = z.object({
     meta_az: z.string().optional(),
     meta_en: z.string().optional(),
     meta_ru: z.string().optional(),
+    slug: z.string().min(3, { message: "Ən azı 3 simvol olmalıdır" }),
     featuredImage: z
         .number({ required_error: "Şəkil tələb olunur." })
         .refine((val) => val !== -1, { message: "Şəkil tələb olunur." }),

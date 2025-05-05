@@ -53,6 +53,7 @@ export function NewsForm({ id }: { id?: string }) {
         meta_az: "",
         meta_en: "",
         meta_ru: "",
+        slug: ""
     }
 
     useEffect(() => {
@@ -66,6 +67,7 @@ export function NewsForm({ id }: { id?: string }) {
                 form.setValue("featuredImage", news.image.id);
                 setImageState({ ...imageState, preview: news.image.url || null, id: news.image.id });
             }
+            form.setValue("slug", news.slug)
         }
     }, [news, id]);
 
@@ -91,7 +93,8 @@ export function NewsForm({ id }: { id?: string }) {
                             { name: "news", value: values.meta_ru, lang: "ru" }
                         ]
                     }
-                ]
+                ],
+                slug: values.slug
             }
 
 
@@ -142,9 +145,10 @@ export function NewsForm({ id }: { id?: string }) {
             </div >
             :
             <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full pt-6">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="content">Content</TabsTrigger>
                     <TabsTrigger value="media">Media</TabsTrigger>
+                    <TabsTrigger value="slug">Media</TabsTrigger>
                 </TabsList>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-6">
@@ -289,11 +293,30 @@ export function NewsForm({ id }: { id?: string }) {
                                         )}
                                     />
                                 </TabsContent>
+                                <TabsContent value="slug" className="space-y-6">
+                                    <FormField
+                                        control={form.control}
+                                        name='slug'
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    Slug
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Textarea
+                                                        placeholder='Slug əlavə edin'
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TabsContent>
                             </div>
                         </div>
                         <CardFooter className="flex flex-col gap-2">
                             <Button
-                                disabled={newsLoading}
                                 type="submit"
                                 className="w-full">
                                 {newsLoading ?
