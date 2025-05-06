@@ -17,6 +17,7 @@ import { formSchema, type FormValues } from "@/validations/home/hero.validation"
 import { toast } from "react-toastify"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { ImageUploadFormItem } from "../image-upload-form-item"
+import { validateImage } from "@/validations/upload.validation"
 
 const HomeHero = () => {
     const [activeLanguage, setActiveLanguage] = useState<string>("az")
@@ -44,8 +45,7 @@ const HomeHero = () => {
         defaultValues: {
             title: "",
             desc: "",
-            meta: "",
-            image: null,
+            image: -1,
         },
     })
 
@@ -53,10 +53,9 @@ const HomeHero = () => {
         fetchHero()
         if (!isLoading && heroData) {
             form.reset({
-                title: heroData[0]?.title || "",
-                desc: heroData[0]?.desc || "",
-                meta: heroData[0]?.meta?.find((m: any) => m.translations[0]?.name === "hero")?.translations[0]?.value || "",
-                image: null,
+                title: heroData[0].title || "",
+                desc: heroData[0].desc || "",
+                image: heroData[0].images[0].id || -1,
             })
 
             if (heroData[0]?.images && heroData[0]?.images[0]?.url) {
@@ -73,51 +72,22 @@ const HomeHero = () => {
         const file = e.target.files?.[0]
         if (!file) return
 
-        // Validate file type
-        if (!file.type.startsWith("image/")) {
-            setImageState({
-                ...imageState,
-                error: "Zəhmət olmasa şəkil faylı yükləyin",
-            })
-            return
-        }
-
-        // Validate file size (e.g., 5MB limit)
-        if (file.size > 5 * 1024 * 1024) {
-            setImageState({
-                ...imageState,
-                error: "Şəkil ölçüsü 5MB-dan az olmalıdır",
-            })
-            return
-        }
-
+        let imageValidation = validateImage(file, setImageState, imageState)
+        console.log(imageState)
+        if (imageValidation === false) return
         try {
-            // Create a preview URL
-            const previewUrl = URL.createObjectURL(file)
-
-            // Set the preview while uploading
-            setImageState({
-                preview: previewUrl,
-                id: null,
-                error: null,
-            })
-
-            // Create form data for upload
             const formData = new FormData()
             formData.append("file", file)
 
-            // Upload the file
             const response = await uploadImage(formData)
 
             if (response.data) {
-                // Update state with the uploaded image ID
                 setImageState({
-                    preview: previewUrl,
+                    preview: response.data.url,
                     id: response.data.id,
                     error: null,
                 })
 
-                // Update form value
                 form.setValue("image", response.data.id)
             }
         } catch (error) {
@@ -138,19 +108,10 @@ const HomeHero = () => {
                         lang: activeLanguage,
                     },
                 ],
-                meta: [
-                    {
-                        translations: [
-                            {
-                                name: "hero",
-                                value: data.meta,
-                                lang: activeLanguage,
-                            },
-                        ],
-                    },
-                ],
-                ...(imageState.id && { image: imageState.id }),
+                ...(imageState.id && { images: [imageState.id] }),
             }
+
+            console.log(newBannerData)
 
             await addHero({ params: newBannerData, id: heroData?.[0]?.id })
             setIsEditing(false)
@@ -160,7 +121,7 @@ const HomeHero = () => {
         }
     }
 
-    const editHero = () => setIsEditing(!isEditing)
+    console.log(heroData?.[0])
 
     return (
         <Card>
@@ -171,7 +132,7 @@ const HomeHero = () => {
                 </div>
                 {isEditing ? (
                     <div className="space-x-2">
-                        <Button variant="outline" onClick={editHero} disabled={isSubmitting}>
+                        <Button variant="outline" onClick={() => setIsEditing(!isEditing)} disabled={isSubmitting}>
                             Ləğv Et
                         </Button>
                         <Button onClick={form.handleSubmit(onSubmit)} disabled={isSubmitting || isUploading}>
@@ -179,7 +140,7 @@ const HomeHero = () => {
                         </Button>
                     </div>
                 ) : (
-                    <Button variant="outline" onClick={editHero}>
+                    <Button variant="outline" onClick={() => setIsEditing(!isEditing)}>
                         Redaktə Et
                     </Button>
                 )}
@@ -189,12 +150,6 @@ const HomeHero = () => {
                     <Form {...form}>
                         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
                             <Tabs defaultValue="az" value={activeLanguage} onValueChange={setActiveLanguage}>
-                                <TabsList className="mb-4">
-                                    <TabsTrigger value="az">Azərbaycan</TabsTrigger>
-                                    <TabsTrigger value="en">English</TabsTrigger>
-                                    <TabsTrigger value="ru">Русский</TabsTrigger>
-                                </TabsList>
-
                                 <TabsContent value={activeLanguage} className="space-y-4">
                                     <FormField
                                         control={form.control}
@@ -223,41 +178,11 @@ const HomeHero = () => {
                                             </FormItem>
                                         )}
                                     />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="meta"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Meta</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Meta məlumatı" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
                                 </TabsContent>
                             </Tabs>
 
                             <div className="space-y-4">
                                 <Label>Banner Şəkli</Label>
-
-                                <div className="relative w-full max-w-[300px] aspect-video bg-purple-100 rounded-lg flex items-center justify-center overflow-hidden mb-4">
-                                    {imageState.preview ? (
-                                        <Image
-                                            src={imageState.preview || "/placeholder.svg"}
-                                            alt="Banner preview"
-                                            fill
-                                            className="object-contain"
-                                        />
-                                    ) : (
-                                        <div className="flex flex-col items-center justify-center text-muted-foreground">
-                                            <Upload className="h-10 w-10 mb-2" />
-                                            <span>Şəkil seçilməyib</span>
-                                        </div>
-                                    )}
-                                </div>
 
                                 <ImageUploadFormItem
                                     form={form}

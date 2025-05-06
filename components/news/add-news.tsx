@@ -70,7 +70,7 @@ export function NewsForm({ slug }: { slug?: string }) {
             form.setValue("slug", news.slug)
         }
     }, [news, slug]);
-
+    console.log(news)
     const form = useForm<z.infer<typeof formSchemaNews>>({
         defaultValues,
         resolver: zodResolver(formSchemaNews)
@@ -88,16 +88,16 @@ export function NewsForm({ slug }: { slug?: string }) {
                 meta: [
                     {
                         translations: [
-                            { name: "news", value: values.meta_az, lang: "az" },
-                            { name: "news", value: values.meta_en, lang: "en" },
-                            { name: "news", value: values.meta_ru, lang: "ru" }
+                            { name: "description", value: values.meta_az, lang: "az" },
+                            { name: "description", value: values.meta_en, lang: "en" },
+                            { name: "description", value: values.meta_ru, lang: "ru" }
                         ]
                     }
                 ],
                 slug: values.slug
             }
 
-
+            console.log(postValue)
             !slug ? await addNews(postValue).unwrap() : await updateNews({ params: postValue, id: news.id }).unwrap()
             toast.success('Xəbər uğurla yükləndi')
         } catch (error) {
