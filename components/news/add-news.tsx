@@ -21,7 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 
 
-export function NewsForm({ id }: { id?: string }) {
+export function NewsForm({ slug }: { slug?: string }) {
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY;
     const [selectedLanguage, setSelectedLanguage] = useState<string>("az");
     const [languagesSkip, setLanguagesSkip] = useState<string[]>([])
@@ -33,13 +33,13 @@ export function NewsForm({ id }: { id?: string }) {
     const [updateNews, { isLoading: newsUpLoading, isSuccess: newsUpSucces }] = useUpdateNewsMutation()
     const { data: news, isLoading: newsByIdLoading, isError, error, refetch } = useGetNewsByIdQuery(
         {
-            id,
+            slug,
             language: selectedLanguage ? selectedLanguage : "az"
         },
         {
             pollingInterval: 0,
             refetchOnMountOrArgChange: true,
-            skip: languagesSkip.includes(selectedLanguage) || !id
+            skip: languagesSkip.includes(selectedLanguage) || !slug
         }
     )
     const defaultValues = {
@@ -57,7 +57,7 @@ export function NewsForm({ id }: { id?: string }) {
     }
 
     useEffect(() => {
-        if (id && news) {
+        if (slug && news) {
 
             form.setValue(`title_${selectedLanguage}` as "title_az" | "title_en" | "title_ru", news.title);
             form.setValue(`content_${selectedLanguage}` as "content_az" | "content_en" | "content_ru", news.description);
@@ -69,7 +69,7 @@ export function NewsForm({ id }: { id?: string }) {
             }
             form.setValue("slug", news.slug)
         }
-    }, [news, id]);
+    }, [news, slug]);
 
     const form = useForm<z.infer<typeof formSchemaNews>>({
         defaultValues,
@@ -98,7 +98,7 @@ export function NewsForm({ id }: { id?: string }) {
             }
 
 
-            !id ? await addNews(postValue).unwrap() : await updateNews({ params: postValue, id }).unwrap()
+            !slug ? await addNews(postValue).unwrap() : await updateNews({ params: postValue, id: news.id }).unwrap()
             toast.success('Xəbər uğurla yükləndi')
         } catch (error) {
             toast.error('Xəbər yüklənərkən xəta baş verdi')
@@ -334,7 +334,8 @@ export function NewsForm({ id }: { id?: string }) {
                         </CardFooter>
                     </form>
                 </Form>
-            </Tabs>)
+            </Tabs>
+    )
 
 
 }

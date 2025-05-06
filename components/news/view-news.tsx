@@ -6,7 +6,7 @@ import { ArrowLeft, Calendar, Edit, Loader2, Share2, Trash2 } from "lucide-react
 import { Button } from "@/components/ui/button"
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useRouter } from "next/navigation"
+import { useParams, usePathname, useRouter } from "next/navigation"
 import { useDeleteNewsMutation, useGetNewsByIdQuery, useGetNewsQuery } from "@/store/handexApi"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
@@ -15,16 +15,15 @@ import { useEffect, useState } from "react"
 
 
 
-export function ViewNews({ id, onEdit, onDelete }: ViewArticleProps) {
+export function ViewNews({ slug, onEdit, onDelete }: ViewArticleProps) {
     const [currentLanguage, setCurrentLanguage] = useState<string>("az")
-    const { data: news, isLoading: newsLoading, isError, error, refetch: refetchNewsById } = useGetNewsByIdQuery({ id: id, language: currentLanguage }, { pollingInterval: 0, refetchOnMountOrArgChange: true, skip: !id })
+    const { data: news, isLoading: newsLoading, isError, error, refetch: refetchNewsById } = useGetNewsByIdQuery({ slug: slug, language: currentLanguage }, { pollingInterval: 0, refetchOnMountOrArgChange: true, skip: !slug })
     const { refetch: refetchNews } = useGetNewsQuery('')
     const [deleteNews, { isSuccess, isLoading }] = useDeleteNewsMutation()
-    console.log(news)
     const router = useRouter()
     const handleDelete = () => {
         try {
-            showDeleteConfirmation(deleteNews, id, async () => {
+            showDeleteConfirmation(deleteNews, news.id, async () => {
                 await refetchNews()
                 router.push('/news')
             }, {

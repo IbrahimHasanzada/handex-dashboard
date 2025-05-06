@@ -122,13 +122,13 @@ export function ArticlesTable() {
                                         <DropdownMenuContent align="end">
                                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                             <DropdownMenuSeparator />
-                                            <Link className="flex item-center" href={`/news/${article.id}/view`}>
+                                            <Link className="flex item-center" href={`/news/${article.slug}/view`}>
                                                 <DropdownMenuItem className="w-full cursor-pointer">
                                                     <Eye className="mr-2 h-4 w-4" />
                                                     <span>View</span>
                                                 </DropdownMenuItem>
                                             </Link>
-                                            <Link className="flex item-center w-full" href={`/news/${article.id}/edit`}>
+                                            <Link className="flex item-center w-full" href={`/news/${article.slug}/edit`}>
                                                 <DropdownMenuItem className="w-full cursor-pointer">
                                                     <Edit className="mr-2 h-4 w-4" />
                                                     <span>Edit</span>

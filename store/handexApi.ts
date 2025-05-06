@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 
-let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NjM3NTYxMCwiZXhwIjoxNzQ2NDYyMDEwfQ.cUeoDsLXbeUtYnAy5mOQwK05ZeoZg1LBoGpf55xtr8M'
+let token = localStorage.getItem('token')
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'https://api.drafts.az/api' }),
@@ -152,7 +152,7 @@ export const handexApi = createApi({
             }),
         }),
         getNewsById: builder.query({
-            query: ({ id, language }) => `/news/${id}?lang=${language}`,
+            query: ({ slug, language }) => `/news/${slug}?lang=${language}`,
             providesTags: ['News']
         }),
         updateNews: builder.mutation({

@@ -1,9 +1,9 @@
 "use client"
 
+import type React from "react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -11,11 +11,12 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Label } from "@/components/ui/label"
-import { AlertCircle, Upload } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Upload } from "lucide-react"
 import { useAddHeroMutation, useGetHeroHomeQuery, useUploadFileMutation } from "@/store/handexApi"
-import { formSchema, FormValues } from "@/validations/home/hero.validation"
+import { formSchema, type FormValues } from "@/validations/home/hero.validation"
 import { toast } from "react-toastify"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { ImageUploadFormItem } from "../image-upload-form-item"
 
 const HomeHero = () => {
     const [activeLanguage, setActiveLanguage] = useState<string>("az")
@@ -26,70 +27,109 @@ const HomeHero = () => {
         isLoading,
     } = useGetHeroHomeQuery(activeLanguage, { skip: false })
     const [addHero, { data: addHeroData, isLoading: isSubmitting }] = useAddHeroMutation()
-    const [uploadImage, { data: UploadData }] = useUploadFileMutation()
+    const [uploadImage, { data: uploadData, isLoading: isUploading }] = useUploadFileMutation()
+    const [imageState, setImageState] = useState<{
+        preview: string | null
+        id: string | null
+        error: string | null
+    }>({
+        preview: null,
+        id: null,
+        error: null,
+    })
     const [isEditing, setIsEditing] = useState(false)
-    const [imagePreview, setImagePreview] = useState<string | null>(null)
 
-    console.log(heroData)
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        watch,
-        reset,
-        formState: { errors },
-    } = useForm<FormValues>({
+    const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             title: "",
             desc: "",
             meta: "",
+            image: null,
         },
     })
-
-    const watchImage = watch("image")
-
-    useEffect(() => {
-        if (watchImage && watchImage.length > 0) {
-            const file = watchImage[0]
-            const reader = new FileReader()
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string)
-            }
-            reader.readAsDataURL(file)
-        }
-    }, [watchImage])
 
     useEffect(() => {
         fetchHero()
         if (!isLoading && heroData) {
-            reset({
+            form.reset({
                 title: heroData[0]?.title || "",
                 desc: heroData[0]?.desc || "",
                 meta: heroData[0]?.meta?.find((m: any) => m.translations[0]?.name === "hero")?.translations[0]?.value || "",
+                image: null,
             })
 
             if (heroData[0]?.images && heroData[0]?.images[0]?.url) {
-                setImagePreview(heroData[0].images[0].url)
+                setImageState({
+                    preview: heroData[0].images[0].url,
+                    id: heroData[0].images[0].id,
+                    error: null,
+                })
             }
         }
-    }, [isEditing, heroData, activeLanguage, reset, isLoading])
+    }, [isEditing, heroData, activeLanguage, form.reset, isLoading])
+
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        // Validate file type
+        if (!file.type.startsWith("image/")) {
+            setImageState({
+                ...imageState,
+                error: "Zəhmət olmasa şəkil faylı yükləyin",
+            })
+            return
+        }
+
+        // Validate file size (e.g., 5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+            setImageState({
+                ...imageState,
+                error: "Şəkil ölçüsü 5MB-dan az olmalıdır",
+            })
+            return
+        }
+
+        try {
+            // Create a preview URL
+            const previewUrl = URL.createObjectURL(file)
+
+            // Set the preview while uploading
+            setImageState({
+                preview: previewUrl,
+                id: null,
+                error: null,
+            })
+
+            // Create form data for upload
+            const formData = new FormData()
+            formData.append("file", file)
+
+            // Upload the file
+            const response = await uploadImage(formData)
+
+            if (response.data) {
+                // Update state with the uploaded image ID
+                setImageState({
+                    preview: previewUrl,
+                    id: response.data.id,
+                    error: null,
+                })
+
+                // Update form value
+                form.setValue("image", response.data.id)
+            }
+        } catch (error) {
+            setImageState({
+                ...imageState,
+                error: "Şəkil yükləyərkən xəta baş verdi",
+            })
+        }
+    }
 
     const onSubmit = async (data: FormValues) => {
         try {
-            let imageData = null
-            if (data.image && data.image.length > 0) {
-                try {
-                    const formData = new FormData()
-                    formData.append("file", data.image[0])
-                    const response = await uploadImage(formData)
-                    console.log(response)
-                    if (response.data) imageData = response.data.id
-                } catch (error) {
-                    toast.error("Şəkil yükləyərkən xəta baş verdi.")
-                }
-            }
-
             const newBannerData = {
                 translations: [
                     {
@@ -109,12 +149,12 @@ const HomeHero = () => {
                         ],
                     },
                 ],
-                ...(imageData && { image: imageData }),
+                ...(imageState.id && { image: imageState.id }),
             }
 
-            console.log(newBannerData)
-            await addHero({ params: newBannerData, id: heroData?.[0].id })
+            await addHero({ params: newBannerData, id: heroData?.[0]?.id })
             setIsEditing(false)
+            toast.success("Məlumat uğurla yeniləndi")
         } catch (error) {
             toast.error("Məlumatı yükləyərkən xəta baş verdi")
         }
@@ -134,7 +174,7 @@ const HomeHero = () => {
                         <Button variant="outline" onClick={editHero} disabled={isSubmitting}>
                             Ləğv Et
                         </Button>
-                        <Button onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+                        <Button onClick={form.handleSubmit(onSubmit)} disabled={isSubmitting || isUploading}>
                             {isSubmitting ? "Yüklənir..." : "Yadda Saxla"}
                         </Button>
                     </div>
@@ -146,95 +186,92 @@ const HomeHero = () => {
             </CardHeader>
             <CardContent>
                 {isEditing ? (
-                    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-                        <Tabs defaultValue="az" value={activeLanguage} onValueChange={setActiveLanguage}>
-                            <TabsList className="mb-4">
-                                <TabsTrigger value="az">Azərbaycan</TabsTrigger>
-                                <TabsTrigger value="en">English</TabsTrigger>
-                                <TabsTrigger value="ru">Русский</TabsTrigger>
-                            </TabsList>
+                    <Form {...form}>
+                        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+                            <Tabs defaultValue="az" value={activeLanguage} onValueChange={setActiveLanguage}>
+                                <TabsList className="mb-4">
+                                    <TabsTrigger value="az">Azərbaycan</TabsTrigger>
+                                    <TabsTrigger value="en">English</TabsTrigger>
+                                    <TabsTrigger value="ru">Русский</TabsTrigger>
+                                </TabsList>
 
-                            <TabsContent value={activeLanguage} className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="title" className={errors.title ? "text-destructive" : ""}>
-                                        Başlıq
-                                    </Label>
-                                    <Input id="title" {...register("title")} className={errors.title ? "border-destructive" : ""} />
-                                    {errors.title && <p className="text-sm text-destructive">{errors.title.message}</p>}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="desc" className={errors.desc ? "text-destructive" : ""}>
-                                        Alt Başlıq
-                                    </Label>
-                                    <Textarea
-                                        id="desc"
-                                        {...register("desc")}
-                                        rows={3}
-                                        className={errors.desc ? "border-destructive" : ""}
+                                <TabsContent value={activeLanguage} className="space-y-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="title"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Başlıq</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Banner başlığı" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                    {errors.desc && <p className="text-sm text-destructive">{errors.desc.message}</p>}
-                                </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="meta" className={errors.meta ? "text-destructive" : ""}>
-                                        Meta
-                                    </Label>
-                                    <Input id="meta" {...register("meta")} className={errors.meta ? "border-destructive" : ""} />
-                                    {errors.meta && <p className="text-sm text-destructive">{errors.meta.message}</p>}
-                                </div>
-                            </TabsContent>
-                        </Tabs>
-
-                        <div className="space-y-4">
-                            <Label>Banner Şəkli</Label>
-
-                            <div className="relative w-full max-w-[300px] aspect-video bg-purple-100 rounded-lg flex items-center justify-center overflow-hidden">
-                                {imagePreview ? (
-                                    <Image
-                                        src={imagePreview || "/placeholder.svg"}
-                                        alt="Banner preview"
-                                        fill
-                                        className="object-contain"
+                                    <FormField
+                                        control={form.control}
+                                        name="desc"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Alt Başlıq</FormLabel>
+                                                <FormControl>
+                                                    <Textarea placeholder="Banner alt başlığı" rows={3} {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                ) : (
-                                    <div className="flex flex-col items-center justify-center text-muted-foreground">
-                                        <Upload className="h-10 w-10 mb-2" />
-                                        <span>Şəkil seçilməyib</span>
-                                    </div>
-                                )}
-                            </div>
 
-                            <div className="flex items-center gap-2">
-                                <Label htmlFor="image" className="cursor-pointer">
-                                    <div className="flex h-10 px-4 py-2 bg-secondary text-secondary-foreground rounded-md items-center justify-center text-sm font-medium">
-                                        Şəkli Dəyişdir
-                                    </div>
-                                    <Input id="image" type="file" accept="image/*" className="sr-only" {...register("image")} />
-                                </Label>
-                                {imagePreview && (
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => {
-                                            setValue("image", undefined)
-                                            setImagePreview(null)
-                                        }}
-                                    >
-                                        Şəkli Sil
-                                    </Button>
-                                )}
-                            </div>
+                                    <FormField
+                                        control={form.control}
+                                        name="meta"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Meta</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Meta məlumatı" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TabsContent>
+                            </Tabs>
 
-                            {errors.image && (
-                                <Alert variant="destructive">
-                                    <AlertCircle className="h-4 w-4" />
-                                    <AlertDescription>{errors.image.message}</AlertDescription>
-                                </Alert>
-                            )}
-                        </div>
-                    </form>
+                            <div className="space-y-4">
+                                <Label>Banner Şəkli</Label>
+
+                                <div className="relative w-full max-w-[300px] aspect-video bg-purple-100 rounded-lg flex items-center justify-center overflow-hidden mb-4">
+                                    {imageState.preview ? (
+                                        <Image
+                                            src={imageState.preview || "/placeholder.svg"}
+                                            alt="Banner preview"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center text-muted-foreground">
+                                            <Upload className="h-10 w-10 mb-2" />
+                                            <span>Şəkil seçilməyib</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <ImageUploadFormItem
+                                    form={form}
+                                    name="image"
+                                    imageState={imageState}
+                                    setImageState={setImageState}
+                                    handleImageChange={handleImageChange}
+                                    isUploading={isUploading}
+                                    imageInputId="banner-image"
+                                    label="Şəkli Dəyişdir"
+                                />
+                            </div>
+                        </form>
+                    </Form>
                 ) : (
                     <div className="flex flex-col md:flex-row gap-6 items-center">
                         <div className="flex-1">

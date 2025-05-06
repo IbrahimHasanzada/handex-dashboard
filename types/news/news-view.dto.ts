@@ -1,5 +1,5 @@
 export interface ViewArticleProps {
-    id: string
+    slug: string
     onEdit?: () => void
     onDelete?: () => void
 }
