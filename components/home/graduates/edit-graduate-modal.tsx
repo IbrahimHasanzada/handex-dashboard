@@ -7,7 +7,7 @@ import { useUpdateProfilesMutation, useUploadFileMutation } from "@/store/handex
 import type { z } from "zod"
 import { validateImage } from "@/validations/upload.validation"
 import type { EditGraduateModalProps } from "@/types/home/graduates.dto"
-import { formSchema } from "@/validations/graduate.validation"
+import { formSchema } from "@/validations/home/graduate.validation"
 import GraduateFormModal from "./graduate-form-modal"
 import { toast } from "react-toastify"
 

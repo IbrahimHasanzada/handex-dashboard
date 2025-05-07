@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useParams, usePathname, useRouter } from "next/navigation"
-import { useDeleteNewsMutation, useGetNewsBySlugQuery, useGetNewsQuery } from "@/store/handexApi"
+import { useDeleteNewsMutation, useGetBlogsBySlugQuery, useGetNewsBySlugQuery, useGetNewsQuery } from "@/store/handexApi"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { ViewArticleProps } from "@/types/news/news-view.dto"
@@ -15,17 +15,17 @@ import { useEffect, useState } from "react"
 
 
 
-export function ViewNews({ slug, onEdit, onDelete }: ViewArticleProps) {
+export function ViewBlogs({ slug, onEdit, onDelete }: ViewArticleProps) {
     const [currentLanguage, setCurrentLanguage] = useState<string>("az")
-    const { data: news, isLoading: newsLoading, isError, error, refetch: refetchNewsById } = useGetNewsBySlugQuery({ slug: slug, language: currentLanguage }, { pollingInterval: 0, refetchOnMountOrArgChange: true, skip: !slug })
-    const { refetch: refetchNews } = useGetNewsQuery('')
+    const { data: blogs, isLoading: blogsLoading, isError, error, refetch: refetchBlogsById } = useGetBlogsBySlugQuery({ slug: slug, language: currentLanguage }, { pollingInterval: 0, refetchOnMountOrArgChange: true, skip: !slug })
+    const { refetch: refetchBlogs } = useGetNewsQuery('')
     const [deleteNews, { isSuccess, isLoading }] = useDeleteNewsMutation()
     const router = useRouter()
     const handleDelete = () => {
         try {
-            showDeleteConfirmation(deleteNews, news.id, async () => {
-                await refetchNews()
-                router.push('/news')
+            showDeleteConfirmation(deleteNews, blogs.id, async () => {
+                await refetchBlogs()
+                router.push('/blogs')
             }, {
                 title: "Xəbəri silmək istəyirsinizmi?",
                 text: "Bu əməliyyat geri qaytarıla bilməz!",
@@ -37,7 +37,7 @@ export function ViewNews({ slug, onEdit, onDelete }: ViewArticleProps) {
     }
     return (
         <div>
-            {newsLoading ? (
+            {blogsLoading ? (
                 <div className="flex items-center justify-center p-10">
                     <Loader2 className="animate-spin h-10 w-10" />
                 </div>
@@ -45,9 +45,9 @@ export function ViewNews({ slug, onEdit, onDelete }: ViewArticleProps) {
                 <div className="space-y-6">
                     <div className="flex items-start md:items-center gap-5 justify-between flex-col md:flex-row mt-5">
                         <Button variant="outline" size="sm" asChild>
-                            <Link href="/news">
+                            <Link href="/blog">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Xəbərlərə qayıt
+                                Bloqlara qayıt
                             </Link>
                         </Button>
                         <div className="flex items-center">
@@ -87,20 +87,20 @@ export function ViewNews({ slug, onEdit, onDelete }: ViewArticleProps) {
                                         </span>
                                     </div>
 
-                                    <h1 className="mt-2 text-3xl font-bold">{news?.title}</h1>
+                                    <h1 className="mt-2 text-3xl font-bold">{blogs?.title}</h1>
                                 </div>
 
                                 <div className="relative mb-6 aspect-video w-full overflow-hidden rounded-lg">
                                     <Image
-                                        src={news?.image?.url || "/placeholder.svg"}
-                                        alt={news?.title || "News image"}
+                                        src={blogs?.image?.url || "/placeholder.svg"}
+                                        alt={blogs?.title || "News image"}
                                         fill
                                         className="object-cover"
                                     />
                                 </div>
 
                                 <div className="prose max-w-none dark:prose-invert">
-                                    <div dangerouslySetInnerHTML={{ __html: news?.description || "" }} />
+                                    <div dangerouslySetInnerHTML={{ __html: blogs?.description || "" }} />
                                 </div>
                             </div>
                         </TabsContent>
@@ -111,7 +111,7 @@ export function ViewNews({ slug, onEdit, onDelete }: ViewArticleProps) {
                                     <CardTitle>News Metadata</CardTitle>
                                 </CardHeader>
                                 <CardFooter className="flex justify-between">
-                                    <p>{news?.meta[0].translations[1].value}</p>
+                                    <p>{blogs?.meta[0].translations[1].value}</p>
                                 </CardFooter>
                             </Card>
                         </TabsContent>

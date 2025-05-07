@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "react-toastify"
 import { useUpdateCustomersMutation, useUploadFileMutation } from "@/store/handexApi"
 import { DialogTitle } from "@radix-ui/react-dialog"
-import { testimonialEditSchema, TestimonialEditValues } from "@/validations/testimonials.validation"
+import { testimonialEditSchema, TestimonialEditValues } from "@/validations/home/testimonials.validation"
 import { TestimonialsEditModalProps, TestimonialSubmit } from "@/types/home/testimonials.dto"
 
 const TestimonialsEditModal = ({

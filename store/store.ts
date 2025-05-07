@@ -1,11 +1,14 @@
-import { configureStore } from '@reduxjs/toolkit'
-import { handexApi } from './handexApi'
+import { configureStore } from '@reduxjs/toolkit';
+import { handexApi } from './handexApi';
+
 export const store = configureStore({
     reducer: {
-        [handexApi.reducerPath]: handexApi.reducer
+        [handexApi.reducerPath]: handexApi.reducer,
     },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(handexApi.middleware)
-})
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(handexApi.middleware),
+});
+
 
 
 export type RootState = ReturnType<typeof store.getState>

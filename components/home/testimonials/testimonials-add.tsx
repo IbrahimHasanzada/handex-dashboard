@@ -17,7 +17,7 @@ import { DialogTitle } from "@radix-ui/react-dialog"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { testimonialFormSchema, TestimonialFormValues } from "@/validations/testimonials.validation"
+import { testimonialFormSchema, TestimonialFormValues } from "@/validations/home/testimonials.validation"
 
 export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData, refetch, currentLanguage }) => {
   const [activeTab, setActiveTab] = useState("az")

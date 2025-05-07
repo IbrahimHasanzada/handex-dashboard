@@ -12,6 +12,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { LoginFormValues, loginSchema } from "@/validations/login/login.validation"
 import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
+import Cookies from 'js-cookie';
+
 
 
 
@@ -29,20 +31,21 @@ export default function LoginPage() {
 
     const onSubmit = async (values: LoginFormValues) => {
         try {
-            await login({
+            const response = await login({
                 username: values.email,
                 password: values.password,
-            }).unwrap()
-            if (isSuccess) {
-                toast.success('Daxil olundu')
-                localStorage.setItem('token', data.token)
-                router.push('/')
-            }
+            }).unwrap();
 
+            Cookies.set('token', response.token, {
+                expires: 7,
+            });
+            toast.success('Daxil olundu');
+            router.push('/');
         } catch (error) {
-            toast.error('Uğursuz cəhd')
+            toast.error('Uğursuz cəhd');
         }
-    }
+    };
+
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">

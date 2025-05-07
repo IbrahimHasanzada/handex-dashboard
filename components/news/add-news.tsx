@@ -11,10 +11,10 @@ import { z } from "zod"
 import { Editor } from '@tinymce/tinymce-react';
 import { editorConfig } from "@/utils/editor-config"
 import { placeholdersNews } from "@/utils/input-placeholders"
-import { useAddNewsMutation, useGetNewsByIdQuery, useUpdateNewsMutation, useUploadFileMutation } from "@/store/handexApi"
+import { useAddNewsMutation, useGetNewsBySlugQuery, useUpdateNewsMutation, useUploadFileMutation } from "@/store/handexApi"
 import { Textarea } from "../ui/textarea"
 import { toast } from "react-toastify"
-import { formSchemaNews } from "@/validations/news.validation"
+import { formSchemaNews } from "@/validations/home/news.validation"
 import { imageState } from "@/types/home/graduates.dto"
 import { validateImage } from "@/validations/upload.validation"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -31,7 +31,7 @@ export function NewsForm({ slug }: { slug?: string }) {
     const [uploadImage, { isLoading: upLoading, isSuccess: upSucces }] = useUploadFileMutation()
     const [addNews, { isLoading: newsLoading, isSuccess: newsSucces }] = useAddNewsMutation()
     const [updateNews, { isLoading: newsUpLoading, isSuccess: newsUpSucces }] = useUpdateNewsMutation()
-    const { data: news, isLoading: newsByIdLoading, isError, error, refetch } = useGetNewsByIdQuery(
+    const { data: news, isLoading: newsByIdLoading, isError, error, refetch } = useGetNewsBySlugQuery(
         {
             slug,
             language: selectedLanguage ? selectedLanguage : "az"
@@ -70,7 +70,6 @@ export function NewsForm({ slug }: { slug?: string }) {
             form.setValue("slug", news.slug)
         }
     }, [news, slug]);
-    console.log(news)
     const form = useForm<z.infer<typeof formSchemaNews>>({
         defaultValues,
         resolver: zodResolver(formSchemaNews)
@@ -97,7 +96,6 @@ export function NewsForm({ slug }: { slug?: string }) {
                 slug: values.slug
             }
 
-            console.log(postValue)
             !slug ? await addNews(postValue).unwrap() : await updateNews({ params: postValue, id: news.id }).unwrap()
             toast.success('Xəbər uğurla yükləndi')
         } catch (error) {
@@ -148,7 +146,7 @@ export function NewsForm({ slug }: { slug?: string }) {
                 <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="content">Content</TabsTrigger>
                     <TabsTrigger value="media">Media</TabsTrigger>
-                    <TabsTrigger value="slug">Media</TabsTrigger>
+                    <TabsTrigger value="slug">Slug</TabsTrigger>
                 </TabsList>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-6">

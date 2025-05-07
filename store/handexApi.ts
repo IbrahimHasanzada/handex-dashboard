@@ -1,12 +1,12 @@
 "use client"
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import Cookies from 'js-cookie'
 
-
-let token = localStorage.getItem('token')
+let token = Cookies.get('token')
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'https://api.drafts.az/api' }),
-    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News'],
+    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (params) => ({
@@ -152,13 +152,52 @@ export const handexApi = createApi({
                 }
             }),
         }),
-        getNewsById: builder.query({
+        getNewsBySlug: builder.query({
             query: ({ slug, language }) => `/news/${slug}?lang=${language}`,
             providesTags: ['News']
         }),
         updateNews: builder.mutation({
             query: ({ params, id }) => ({
                 url: `/news/${id}`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
+        getBlogs: builder.query({
+            query: (lang) => `/blogs?lang=${lang}`,
+            providesTags: ['Blog']
+        }),
+        addBlogs: builder.mutation({
+            query: (params) => ({
+                url: `/blogs`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
+        deleteBlogs: builder.mutation({
+            query: (id) => ({
+                url: `/blog/${id}`,
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }),
+        }),
+        getBlogsBySlug: builder.query({
+            query: ({ slug, language }) => `/blogs/${slug}?lang=${language}`,
+            providesTags: ['News']
+        }),
+        updateBlogs: builder.mutation({
+            query: ({ params, id }) => ({
+                url: `/blogs/${id}`,
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -188,7 +227,12 @@ export const {
     useAddNewsMutation,
     useGetNewsQuery,
     useDeleteNewsMutation,
-    useGetNewsByIdQuery,
+    useGetNewsBySlugQuery,
     useUpdateNewsMutation,
-    useLoginMutation
+    useLoginMutation,
+    useAddBlogsMutation,
+    useDeleteBlogsMutation,
+    useGetBlogsBySlugQuery,
+    useGetBlogsQuery,
+    useUpdateBlogsMutation
 } = handexApi

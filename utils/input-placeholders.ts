@@ -1,4 +1,4 @@
-export const placeholdersNews = {
+export const placeholdersNews: any = {
     az: {
         title: "Azərbaycan dilində başlıq əlavə edin...",
         content: "Azərbaycan dilində mətn əlavə edin...",
