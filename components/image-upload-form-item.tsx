@@ -5,25 +5,9 @@ import { FormControl, FormField, FormItem, FormMessage } from "@/components/ui/f
 import { Button } from "@/components/ui/button"
 import { Loader2, Upload, X } from "lucide-react"
 import Image from "next/image"
+import { ImageUploadFormItemProps } from "@/types/image-upload.dto"
 
-interface ImageUploadFormItemProps {
-    form: any
-    name: string
-    imageState: {
-        preview: string | null
-        id: string | null
-        error: string | null
-    }
-    setImageState: (state: {
-        preview: string | null
-        id: string | null
-        error: string | null
-    }) => void
-    handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-    isUploading: boolean
-    imageInputId?: string
-    label?: string
-}
+
 
 export function ImageUploadFormItem({
     form,

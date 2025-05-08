@@ -22,7 +22,6 @@ const Partners = () => {
     const handleDeletePartner = async (id: number) => {
         try {
             const updatedPartners = compaines.filter((item: any) => item.id !== id).map((elem: any) => elem.id)
-            // await addPartner({ company: updatedPartners })
             fetchPartners()
             showDeleteConfirmation(updatePartner, { company: updatedPartners }, fetchPartners, {
                 title: "Tərəfdaşı silmək istəyirsinizmi?",

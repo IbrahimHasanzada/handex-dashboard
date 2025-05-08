@@ -14,7 +14,7 @@ import {
 } from "lucide-react"
 import { useGeneralMutation, useGetGeneralQuery } from "@/store/handexApi"
 import { Button } from "./ui/button"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Input } from "./ui/input"
 
 export function StatisticsPage() {

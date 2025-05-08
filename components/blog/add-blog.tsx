@@ -176,7 +176,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
                                                 <TabsContent key={index} value={lang} className="space-y-6">
                                                     <FormField
                                                         control={form.control}
-                                                        name={`title_${lang}`}
+                                                        name={`title_${lang}` as keyof z.infer<typeof formSchemaNews>}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel>
@@ -194,7 +194,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
                                                     />
                                                     <FormField
                                                         control={form.control}
-                                                        name={`content_${lang}`}
+                                                        name={`content_${lang}` as keyof z.infer<typeof formSchemaNews>}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel>
@@ -202,7 +202,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
                                                                 </FormLabel>
                                                                 <FormControl>
                                                                     <Editor
-                                                                        value={field.value}
+                                                                        value={field.value as string}
                                                                         onEditorChange={(content) => {
                                                                             field.onChange(content);
                                                                         }}
@@ -220,7 +220,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
                                                     />
                                                     <FormField
                                                         control={form.control}
-                                                        name={`meta_${lang}`}
+                                                        name={`meta_${lang}` as keyof z.infer<typeof formSchemaNews>}
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel>
