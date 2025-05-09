@@ -1,0 +1,25 @@
+import { DashboardLayout } from "@/components/dashboard-layout"
+import { ProjectsForm } from "@/components/projects/add-projects"
+import { ProjectsHeader } from "@/components/projects/projects-header"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
+
+export default function EditProjectsPage({ params }: { params: { slug: string } }) {
+    return (
+        <DashboardLayout>
+            <div className="p-6">
+                <ProjectsHeader heading="Xidməti redaktə edin" text="Xidmətdə dəyişikliklər edin." />
+                <div className="my-5">
+                    <Button variant="outline" size="sm" asChild>
+                        <Link href="/projects">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Layihələrə qayıt
+                        </Link>
+                    </Button>
+                </div>
+                <ProjectsForm slug={params.slug} />
+            </div>
+        </DashboardLayout>
+    )
+}

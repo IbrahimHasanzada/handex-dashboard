@@ -6,7 +6,7 @@ let token = Cookies.get('token')
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'https://api.drafts.az/api' }),
-    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service'],
+    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (params) => ({
@@ -245,6 +245,45 @@ export const handexApi = createApi({
                 body: params
             }),
         }),
+        getProjects: builder.query({
+            query: (lang) => `/project?lang=${lang}`,
+            providesTags: ['Projects']
+        }),
+        addProjects: builder.mutation({
+            query: (params) => ({
+                url: `/project`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
+        deleteProjects: builder.mutation({
+            query: (id) => ({
+                url: `/project/${id}`,
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }),
+        }),
+        getProjectsBySlug: builder.query({
+            query: ({ slug, language }) => `/project/${slug}?lang=${language}`,
+            providesTags: ['Projects']
+        }),
+        updateProjects: builder.mutation({
+            query: ({ params, id }) => ({
+                url: `/project/${id}`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
 
     }),
 })
@@ -278,5 +317,10 @@ export const {
     useAddServiceMutation,
     useDeleteServiceMutation,
     useGetServiceBySlugQuery,
-    useUpdateServiceMutation
+    useUpdateServiceMutation,
+    useAddProjectsMutation,
+    useGetProjectsBySlugQuery,
+    useGetProjectsQuery,
+    useDeleteProjectsMutation,
+    useUpdateProjectsMutation
 } = handexApi
