@@ -6,7 +6,7 @@ let token = Cookies.get('token')
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'https://api.drafts.az/api' }),
-    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog'],
+    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (params) => ({
@@ -193,11 +193,50 @@ export const handexApi = createApi({
         }),
         getBlogsBySlug: builder.query({
             query: ({ slug, language }) => `/blogs/${slug}?lang=${language}`,
-            providesTags: ['News']
+            providesTags: ['Blog']
         }),
         updateBlogs: builder.mutation({
             query: ({ params, id }) => ({
                 url: `/blogs/${id}`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
+        getService: builder.query({
+            query: (lang) => `/service?lang=${lang}`,
+            providesTags: ['Service']
+        }),
+        addService: builder.mutation({
+            query: (params) => ({
+                url: `/service`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
+        deleteService: builder.mutation({
+            query: (id) => ({
+                url: `/service/${id}`,
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }),
+        }),
+        getServiceBySlug: builder.query({
+            query: ({ slug, language }) => `/service/${slug}?lang=${language}`,
+            providesTags: ['Service']
+        }),
+        updateService: builder.mutation({
+            query: ({ params, id }) => ({
+                url: `/service/${id}`,
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -234,5 +273,10 @@ export const {
     useDeleteBlogsMutation,
     useGetBlogsBySlugQuery,
     useGetBlogsQuery,
-    useUpdateBlogsMutation
+    useUpdateBlogsMutation,
+    useGetServiceQuery,
+    useAddServiceMutation,
+    useDeleteServiceMutation,
+    useGetServiceBySlugQuery,
+    useUpdateServiceMutation
 } = handexApi

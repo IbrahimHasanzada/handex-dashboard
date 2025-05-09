@@ -38,7 +38,7 @@ export function BlogsTable() {
             showDeleteConfirmation(deleteBlogs, id, refetch, {
                 title: "Bloqu silmək istəyirsinizmi?",
                 text: "Bu əməliyyat geri qaytarıla bilməz!",
-                successText: "Xəbər uğurla silindi.",
+                successText: "Bloq uğurla silindi.",
             })
         } catch (error) {
             toast.error('Bloq silərkən xəta baş verdi!')
