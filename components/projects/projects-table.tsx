@@ -49,7 +49,7 @@ export function ProjectsTable() {
             <div className="flex flex-col gap-5 md:gap-0 md:flex-row md:items-center justify-between  p-4">
                 <div className="flex flex-1 items-center space-x-2">
                     <h2 className="text-xl font-semibold">Layihələr</h2>
-                    <Badge>{projects?.data.length}</Badge>
+                    <Badge>{projects?.totalItems}</Badge>
                 </div>
                 <div className="flex items-center space-x-2">
                     <Tabs value={currentLanguage} onValueChange={(language: string) => setCurrentLanguage(language)} className="mr-4">

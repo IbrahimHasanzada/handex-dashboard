@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image"
-import { MoreHorizontal, Eye, Edit, Trash2, ArrowUpDown, Plus, Loader2 } from "lucide-react"
+import { MoreHorizontal, Eye, Edit, Trash2, ArrowUpDown, Plus, Loader2, Package } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -24,8 +24,7 @@ export function ArticlesTable() {
     const [currentLanguage, setCurrentLanguage] = useState<string>("az")
     const { data: news, refetch, isLoading: newsLoading } = useGetNewsQuery(currentLanguage, { skip: !currentLanguage });
     const [deleteNews, { isLoading: delLoading }] = useDeleteNewsMutation()
-    const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
-
+    const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0)
     useEffect(() => {
         function handleResize() {
             setWindowWidth(window.innerWidth);
@@ -50,7 +49,7 @@ export function ArticlesTable() {
             <div className="flex md:items-center justify-between  p-4">
                 <div className="flex flex-1 items-center space-x-2">
                     <h2 className="text-xl font-semibold">Xəbərlər</h2>
-                    <Badge>{news?.data.length}</Badge>
+                    <Badge>{news?.totalItems}</Badge>
                 </div>
                 <div className="flex items-center space-x-2">
                     <Tabs value={currentLanguage} onValueChange={(language: string) => setCurrentLanguage(language)} className="mr-4">
@@ -74,78 +73,85 @@ export function ArticlesTable() {
                     <Loader2 className="w-10 h-10 animate-spin" />
                 </div>
                 :
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Article</TableHead>
-                            <TableHead>
-                                <Button variant="ghost" className="p-0 hover:bg-transparent">
-                                    Date
-                                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                                </Button>
-                            </TableHead>
-                            <TableHead className="w-[80px]  hidden md:block">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {news?.data.map((article: any) => (
-                            <TableRow key={article.id}>
-                                <TableCell>
-                                    <div className="flex items-center space-x-3">
-                                        <div className="relative h-10 w-10 overflow-hidden rounded">
-                                            <Image
-                                                src={article.image.url || "/placeholder.svg"}
-                                                alt={article.id}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                        <div>
-                                            <div className="font-medium">
-                                                {(article.translations.find((item: any) => item.field === 'title')?.value ?? "").length > (windowWidth < 768 ? 20 : 50)
-                                                    ? `${(article.translations.find((item: any) => item.field === 'title')?.value ?? "").slice(0, (windowWidth < 768 ? 20 : 50))}...`
-                                                    : (article.translations.find((item: any) => item.field === 'title')?.value ?? "")}
-                                            </div>
 
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="hidden md:block py-7"> {format(new Date(article.createdAt), "PPP")}</TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon">
-                                                <MoreHorizontal className="h-4 w-4" />
-                                                <span className="sr-only">Open menu</span>
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <Link className="flex item-center" href={`/news/${article.slug}/view`}>
-                                                <DropdownMenuItem className="w-full cursor-pointer">
-                                                    <Eye className="mr-2 h-4 w-4" />
-                                                    <span>View</span>
-                                                </DropdownMenuItem>
-                                            </Link>
-                                            <Link className="flex item-center w-full" href={`/news/${article.slug}/edit`}>
-                                                <DropdownMenuItem className="w-full cursor-pointer">
-                                                    <Edit className="mr-2 h-4 w-4" />
-                                                    <span>Edit</span>
-                                                </DropdownMenuItem>
-                                            </Link>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem onClick={() => handleDeleteNews(article.id)} className="text-destructive">
-                                                <Trash2 className="mr-2 h-4 w-4" /> Delete
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
+                news?.data.length == 0 ?
+                    <div className="flex flex-col items-center gap-5 justify-center w-full p-5">
+                        <Package className="w-10 h-10 md:w-20 md:h-20" />
+                        <span className="text-xl">Xəbər tapılmadı</span>
+                    </div>
+                    :
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Article</TableHead>
+                                <TableHead>
+                                    <Button variant="ghost" className="p-0 hover:bg-transparent">
+                                        Date
+                                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </TableHead>
+                                <TableHead className="w-[80px]  hidden md:block">Actions</TableHead>
                             </TableRow>
-                        ))}
+                        </TableHeader>
+                        <TableBody>
+                            {news?.data.map((article: any) => (
+                                <TableRow key={article.id}>
+                                    <TableCell>
+                                        <div className="flex items-center space-x-3">
+                                            <div className="relative h-10 w-10 overflow-hidden rounded">
+                                                <Image
+                                                    src={article.image.url || "/placeholder.svg"}
+                                                    alt={article.id}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </div>
+                                            <div>
+                                                <div className="font-medium">
+                                                    {(article.translations.find((item: any) => item.field === 'title')?.value ?? "").length > (windowWidth < 768 ? 20 : 50)
+                                                        ? `${(article.translations.find((item: any) => item.field === 'title')?.value ?? "").slice(0, (windowWidth < 768 ? 20 : 50))}...`
+                                                        : (article.translations.find((item: any) => item.field === 'title')?.value ?? "")}
+                                                </div>
 
-                    </TableBody>
-                </Table >
+                                            </div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="hidden md:block py-7"> {format(new Date(article.createdAt), "PPP")}</TableCell>
+                                    <TableCell>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                    <span className="sr-only">Open menu</span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <Link className="flex item-center" href={`/news/${article.slug}/view`}>
+                                                    <DropdownMenuItem className="w-full cursor-pointer">
+                                                        <Eye className="mr-2 h-4 w-4" />
+                                                        <span>View</span>
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link className="flex item-center w-full" href={`/news/${article.slug}/edit`}>
+                                                    <DropdownMenuItem className="w-full cursor-pointer">
+                                                        <Edit className="mr-2 h-4 w-4" />
+                                                        <span>Edit</span>
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => handleDeleteNews(article.id)} className="text-destructive">
+                                                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+
+                        </TableBody>
+                    </Table >
             }
         </div >
     )
