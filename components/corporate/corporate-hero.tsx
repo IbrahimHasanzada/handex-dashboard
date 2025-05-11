@@ -20,14 +20,14 @@ import { ImageUploadFormItem } from "../image-upload-form-item"
 import { validateImage } from "@/validations/upload.validation"
 import { imageState } from "@/types/home/graduates.dto"
 
-const HomeHero = () => {
+const CorporateHero = () => {
     const [activeLanguage, setActiveLanguage] = useState<string>("az")
     const {
         data: heroData,
         refetch: fetchHero,
         isFetching,
         isLoading,
-    } = useGetHeroQuery({ slug: "hero", lang: activeLanguage, scope: "componentA" }, { skip: false })
+    } = useGetHeroQuery({ slug: "corporate", lang: activeLanguage, scope: "componentA" }, { skip: false })
     const [addHero, { data: addHeroData, isLoading: isSubmitting }] = useAddHeroMutation()
     const [uploadImage, { data: uploadData, isLoading: isUploading }] = useUploadFileMutation()
     const [imageState, setImageState] = useState<imageState>({
@@ -87,11 +87,11 @@ const HomeHero = () => {
                 form.setValue("image", response.data.id)
             }
         } catch (error) {
-            toast.error("Şəkil yükləyərkən xəta baş vedi")
             setImageState({
                 ...imageState,
                 error: "Şəkil yükləyərkən xəta baş verdi",
             })
+            toast.error("Şəkil yükləyərkən xəta baş vedi")
         }
     }
 
@@ -108,7 +108,6 @@ const HomeHero = () => {
                 ...(imageState.id && { images: [imageState.id] }),
             }
 
-
             await addHero({ params: newBannerData, id: heroData?.[0]?.id })
             setIsEditing(false)
             toast.success("Məlumat uğurla yeniləndi")
@@ -122,8 +121,8 @@ const HomeHero = () => {
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                    <CardTitle>Ana Səhifə Banner</CardTitle>
-                    <CardDescription>Saytın əsas banner bölməsini idarə edin</CardDescription>
+                    <CardTitle>Korporativ Banner</CardTitle>
+                    <CardDescription>Saytın korporativ banner bölməsini idarə edin</CardDescription>
                 </div>
                 {isEditing ? (
                     <div className="space-x-2">
@@ -236,4 +235,4 @@ const HomeHero = () => {
     )
 }
 
-export default HomeHero
+export default CorporateHero

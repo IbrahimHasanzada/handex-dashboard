@@ -33,13 +33,23 @@ export const handexApi = createApi({
                 body: params
             }),
         }),
-        getHeroHome: builder.query({
-            query: (lang) => `/content/hero?lang=${lang}`,
-            providesTags: ['HomeHero']
+        getHero: builder.query({
+            query: ({ slug, lang }) => `/content/${slug}?lang=${lang}`,
         }),
         addHero: builder.mutation({
             query: ({ params, id }) => ({
                 url: `/content/${id}`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            }),
+        }),
+        addContent: builder.mutation({
+            query: (params) => ({
+                url: '/content',
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -291,8 +301,9 @@ export const handexApi = createApi({
 export const {
     useGetGeneralQuery,
     useGeneralMutation,
-    useGetHeroHomeQuery,
+    useGetHeroQuery,
     useAddHeroMutation,
+    useAddContentMutation,
     useGetCustomersQuery,
     useUploadFileMutation,
     useDeleteCustomersMutation,
