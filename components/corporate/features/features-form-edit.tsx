@@ -19,8 +19,6 @@ import { Tabs, TabsContent } from "@/components/ui/tabs"
 import type { EditFeatureFormProps } from "@/types/corporate/features.dto"
 
 export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, features, lang, upLoading }: EditFeatureFormProps) {
-    const [activeTab, setActiveTab] = useState<Language>("az")
-
     const [title, setTitle] = useState("")
     const [desc, setDesc] = useState("")
     useEffect(() => {
@@ -31,7 +29,7 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
                 form.setValue("images", [features.images[0].id])
             }
         }
-    }, [features, activeTab])
+    }, [features, lang])
 
     const [imageState, setImageState] = useState<imageState>({
         preview: null,
@@ -63,7 +61,7 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
     useEffect(() => {
         if (title || desc) {
             const currentTranslations = [...form.getValues("translations")]
-            const index = currentTranslations.findIndex((t) => t.lang === activeTab)
+            const index = currentTranslations.findIndex((t) => t.lang === lang)
 
             if (index !== -1) {
                 currentTranslations[index] = {
@@ -75,13 +73,13 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
                 currentTranslations.push({
                     title: title,
                     desc: desc,
-                    lang: activeTab,
+                    lang,
                 })
             }
 
             form.setValue("translations", currentTranslations, { shouldValidate: true })
         }
-    }, [title, desc, activeTab, form])
+    }, [title, desc, lang, form])
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -137,8 +135,8 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
                     label="Şəkli Dəyişdir"
                 />
 
-                <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Language)}>
-                    <TabsContent value={activeTab} className="space-y-4 mt-4">
+                <Tabs value={lang}>
+                    <TabsContent value={lang} className="space-y-4 mt-4">
                         <FormItem>
                             <FormLabel>Başlıq ({lang})</FormLabel>
                             <FormControl>
