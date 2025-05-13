@@ -122,7 +122,6 @@ const TestimonialsEditModal = ({
             await refetch()
             !cusLoading && onClose()
         } catch (error: any) {
-            console.log(error)
             toast.error(error?.data?.message || "Xəta baş verdi")
         }
     }

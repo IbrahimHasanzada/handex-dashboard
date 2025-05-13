@@ -11,26 +11,34 @@ import { Textarea } from "@/components/ui/textarea"
 import { Form, FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { ImageUploadFormItem } from "@/components/image-upload-form-item"
 import { validateImage } from "@/validations/upload.validation"
-import { useUploadFileMutation } from "@/store/handexApi"
+import { useGetHeroQuery, useUploadFileMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
 import { type FeatureFormValues, FeatureSchema, type Language } from "@/validations/corporate/fetures.validation"
 import type { imageState } from "@/types/home/graduates.dto"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { FeatureFormProps } from "@/types/corporate/features.dto"
 
-export default function FeatureForm({ defaultValues, onSubmit, onCancel, isFeatLoading }: FeatureFormProps) {
+export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, id }: FeatureFormProps) {
     const [activeTab, setActiveTab] = useState<Language>("az")
+    const {
+        data: featuresData,
+        refetch: fetchFeatures,
+        isFetching,
+        isLoading,
+    } = useGetHeroQuery({ slug, lang: activeTab, scope: "componentC" }, { skip: false })
+    const [defaultValues, setDefaultValue] = useState<string[] | any>()
+    useEffect(() => {
+        id && setDefaultValue(featuresData.filter((item: any) => item.id === id))
+    }, [activeTab, id])
     const [imageState, setImageState] = useState<imageState>({
         preview: null,
-        id: defaultValues?.images?.[0] || null,
+        id: defaultValues?.images?.[0].id || null,
         error: null,
     })
-
     const [uploadImage, { isLoading: isUpLoading }] = useUploadFileMutation()
-
     const form = useForm<FeatureFormValues>({
         resolver: zodResolver(FeatureSchema),
-        defaultValues: defaultValues || {
+        defaultValues: defaultValues?.[0] || {
             images: [],
             translations: [
                 { title: "", desc: "", lang: "az" },
@@ -137,11 +145,13 @@ export default function FeatureForm({ defaultValues, onSubmit, onCancel, isFeatL
                 />
 
                 <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Language)}>
-                    <TabsList className="grid grid-cols-3 w-full">
-                        <TabsTrigger value="az">AZ</TabsTrigger>
-                        <TabsTrigger value="en">EN</TabsTrigger>
-                        <TabsTrigger value="ru">RU</TabsTrigger>
-                    </TabsList>
+                    {!id &&
+                        <TabsList className="grid grid-cols-3 w-full">
+                            <TabsTrigger value="az">AZ</TabsTrigger>
+                            <TabsTrigger value="en">EN</TabsTrigger>
+                            <TabsTrigger value="ru">RU</TabsTrigger>
+                        </TabsList>
+                    }
 
                     <TabsContent value={activeTab} className="space-y-4 mt-4">
                         <FormItem>

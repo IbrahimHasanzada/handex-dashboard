@@ -15,12 +15,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Feature } from "@/validations/corporate/fetures.validation"
 import FeatureForm from "./features-form"
 import { toast } from "react-toastify"
-import { useAddContentMutation, useGetHeroQuery } from "@/store/handexApi"
+import { useAddContentMutation, useDeleteContentMutation, useGetHeroQuery, useUpdateContentMutation } from "@/store/handexApi"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { showDeleteConfirmation } from "@/utils/sweet-alert"
+import EditFeatureForm from "./features-form-edit"
 
 export default function AdminFeaturesPage() {
     type Language = "az" | "en" | "ru"
     const [addFeatures, { isLoading: isFeatLoading }] = useAddContentMutation()
+    const [delFeatures] = useDeleteContentMutation()
+    const [updateFeature, { isLoading: upLoading }] = useUpdateContentMutation()
     const [activeLanguage, setActiveLanguage] = useState<string>("az")
     const {
         data: featuresData,
@@ -30,34 +34,46 @@ export default function AdminFeaturesPage() {
     } = useGetHeroQuery({ slug: "corporate-features", lang: activeLanguage, scope: "componentC" }, { skip: false })
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-    const [currentFeature, setCurrentFeature] = useState<Feature | null>(null)
-    const openEditDialog = (feature: Feature) => {
-        setCurrentFeature(feature)
+    const [currentFeature, setCurrentFeature] = useState<Feature>()
+
+    const openEditDialog = (features: Feature) => {
+        setCurrentFeature(features)
         setIsEditDialogOpen(true)
     }
-
-    const openDeleteDialog = (feature: Feature) => {
-        setCurrentFeature(feature)
-    }
-
     const handleAddFeature = async (data: Omit<Feature, "id">) => {
-
-        await addFeatures({ slug: "corporate-features", ...data }).unwrap()
-        setIsAddDialogOpen(false)
-        toast.success("Xüsusiyyət uğurla əlavə edildi")
+        try {
+            await addFeatures({ slug: "corporate-features", ...data }).unwrap()
+            fetchFeatures()
+            setIsAddDialogOpen(false)
+            toast.success("Xüsusiyyət uğurla əlavə edildi")
+        } catch (error) {
+            toast.error("Məlumatı əlavə edərkən xəta baş verdi")
+        }
     }
 
-    const handleUpdateFeature = (data: Omit<Feature, "id">) => {
-        setIsEditDialogOpen(false)
-        toast.success("Xüsusiyyət uğurla yeniləndi")
+    const handleUpdateFeature = async (data: Omit<Feature, "id">, id: number) => {
+        try {
+            await updateFeature({ params: data, id }).unwrap()
+            fetchFeatures()
+            setIsEditDialogOpen(false)
+            toast.success("Xüsusiyyət uğurla yeniləndi")
+        } catch (error) {
+            toast.error("Məlumatları daxil edərkən xəta baş verdi")
+        }
     }
 
 
 
-    const handleDeleteFeature = () => {
-        if (!currentFeature) return
-
-        toast.success("Xüsusiyyət uğurla silindi")
+    const handleDeleteFeature = async (id: number) => {
+        try {
+            showDeleteConfirmation(delFeatures, id, fetchFeatures, {
+                title: "Xüsusiyəti silmək istəyirsinizmi?",
+                text: "Bu əməliyyat geri qaytarıla bilməz!",
+                successText: "Xüsusiyət uğurla silindi.",
+            })
+        } catch (error) {
+            toast.error('Məlumatı silərkən xəta baş verdi')
+        }
     }
     const handleLanguageChange = (language: Language) => {
         setActiveLanguage(language)
@@ -114,7 +130,7 @@ export default function AdminFeaturesPage() {
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             className="text-destructive focus:text-destructive"
-                                            onClick={() => openDeleteDialog(feature)}
+                                            onClick={() => handleDeleteFeature(feature.id)}
                                         >
                                             <Trash className="mr-2 h-4 w-4" /> Delete
                                         </DropdownMenuItem>
@@ -135,7 +151,11 @@ export default function AdminFeaturesPage() {
                     <DialogHeader>
                         <DialogTitle>Yeni Xüsusiyyət əlavə edin</DialogTitle>
                     </DialogHeader>
-                    <FeatureForm isFeatLoading={isFeatLoading} onSubmit={handleAddFeature} onCancel={() => setIsAddDialogOpen(false)} />
+                    <FeatureForm
+                        isFeatLoading={isFeatLoading}
+                        onSubmit={handleAddFeature}
+                        onCancel={() => setIsAddDialogOpen(false)}
+                    />
                 </DialogContent>
             </Dialog>
 
@@ -144,12 +164,14 @@ export default function AdminFeaturesPage() {
                     <DialogHeader>
                         <DialogTitle>Xüsusiyyəti Redaktə et</DialogTitle>
                     </DialogHeader>
-                    {currentFeature && (
-                        <FeatureForm
-                            defaultValues={currentFeature}
+                    {featuresData && (
+                        <EditFeatureForm
                             onSubmit={handleUpdateFeature}
                             onCancel={() => setIsEditDialogOpen(false)}
                             isFeatLoading={isFeatLoading}
+                            features={currentFeature}
+                            lang={activeLanguage}
+                            upLoading={upLoading}
                         />
                     )}
                 </DialogContent>

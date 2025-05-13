@@ -58,6 +58,28 @@ export const handexApi = createApi({
                 body: JSON.stringify(params)
             }),
         }),
+        updateContent: builder.mutation({
+            query: ({ params, id }) => ({
+                url: `/content/${id}`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            }),
+        }),
+        deleteContent: builder.mutation({
+            query: (id) => ({
+                url: `/content/${id}`,
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+            }),
+        }),
+
         getCustomers: builder.query({
             query: (lang) => `/customers?lang=${lang}`,
             providesTags: ['Customers']
@@ -333,5 +355,7 @@ export const {
     useGetProjectsBySlugQuery,
     useGetProjectsQuery,
     useDeleteProjectsMutation,
-    useUpdateProjectsMutation
+    useUpdateProjectsMutation,
+    useDeleteContentMutation,
+    useUpdateContentMutation
 } = handexApi
