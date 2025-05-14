@@ -107,9 +107,9 @@ export function ProjectsTable() {
                                             </div>
                                             <div>
                                                 <div className="font-medium">
-                                                    {(project.translations.find((item: any) => item.field === 'title')?.value ?? "").length > (windowWidth < 768 ? 20 : 50)
-                                                        ? `${(project.translations.find((item: any) => item.field === 'title')?.value ?? "").slice(0, (windowWidth < 768 ? 20 : 50))}...`
-                                                        : (project.translations.find((item: any) => item.field === 'title')?.value ?? "")}
+                                                    {(project.title ?? "").length > (windowWidth < 768 ? 20 : 50)
+                                                        ? `${project.title.slice(0, (windowWidth < 768 ? 20 : 50))}...`
+                                                        : (project.title ?? "")}
                                                 </div>
 
                                             </div>
