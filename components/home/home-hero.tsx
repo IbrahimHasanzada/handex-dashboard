@@ -52,7 +52,7 @@ const HomeHero = () => {
             form.reset({
                 title: heroData[0].title || "",
                 desc: heroData[0].desc || "",
-                image: heroData[0].images[0].id || -1,
+                image: heroData[0].images[0]?.id || -1,
             })
 
             if (heroData[0]?.images && heroData[0]?.images[0]?.url) {
@@ -75,19 +75,18 @@ const HomeHero = () => {
             const formData = new FormData()
             formData.append("file", file)
 
-            const response = await uploadImage(formData)
-
-            if (response.data) {
+            const response = await uploadImage(formData).unwrap()
+            if (response) {
                 setImageState({
-                    preview: response.data.url,
-                    id: response.data.id,
+                    preview: response.url,
+                    id: response.id,
                     error: null,
                 })
 
-                form.setValue("image", response.data.id)
+                form.setValue("image", response.id)
             }
-        } catch (error) {
-            toast.error("Şəkil yükləyərkən xəta baş vedi")
+        } catch (error: any) {
+            toast.error(error.data.message)
             setImageState({
                 ...imageState,
                 error: "Şəkil yükləyərkən xəta baş verdi",
@@ -116,7 +115,6 @@ const HomeHero = () => {
             toast.error("Məlumatı yükləyərkən xəta baş verdi")
         }
     }
-
 
     return (
         <Card>
@@ -217,7 +215,7 @@ const HomeHero = () => {
                         <div className="relative w-full max-w-[300px] aspect-video bg-purple-100 rounded-lg flex items-center justify-center overflow-hidden">
                             {heroData?.[0]?.images?.[0]?.url ? (
                                 <Image
-                                    src={heroData[0].images[0].url || "/placeholder.svg"}
+                                    src={heroData[0]?.images[0]?.url || "/placeholder.svg"}
                                     alt="Banner image"
                                     fill
                                     className="object-contain"
