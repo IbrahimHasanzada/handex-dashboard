@@ -316,6 +316,17 @@ export const handexApi = createApi({
                 body: params
             }),
         }),
+        addSectionAbout: builder.mutation({
+            query: (params) => ({
+                url: `/section`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
 
     }),
 })
@@ -357,5 +368,6 @@ export const {
     useDeleteProjectsMutation,
     useUpdateProjectsMutation,
     useDeleteContentMutation,
-    useUpdateContentMutation
+    useUpdateContentMutation,
+    useAddSectionAboutMutation
 } = handexApi
