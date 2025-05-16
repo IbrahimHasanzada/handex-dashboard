@@ -12,7 +12,6 @@ export function AddSectionModal({ open, onOpenChange }) {
                         <DialogDescription>Haqqımızda səhifənizə hər iki tərəf üçün məzmunlu yeni bölmə əlavə edin.</DialogDescription>
                     </div>
                 </DialogHeader>
-
                 <div className="-mx-6">
                     <AddSection onComplete={() => onOpenChange(false)} />
                 </div>

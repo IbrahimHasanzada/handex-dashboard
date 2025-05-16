@@ -9,7 +9,7 @@ import { ImageUploadFormItem } from "../image-upload-form-item"
 import { FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { editorConfig } from "@/utils/editor-config"
 import { Editor } from '@tinymce/tinymce-react';
-const Side = ({ form, control, side, contentType, imageStates, setImageStates, handleImageChange, upLoading }) => {
+export default function Side({ form, control, side, contentType, imageStates, setImageStates, handleImageChange, upLoading }) {
     const sideName = `${side}_side`
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
 
@@ -171,5 +171,3 @@ const Side = ({ form, control, side, contentType, imageStates, setImageStates, h
         </TabsContent>
     )
 }
-
-export default Side

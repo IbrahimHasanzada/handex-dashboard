@@ -7,11 +7,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Save } from "lucide-react"
 import { Form } from "@/components/ui/form"
-import Side from "./Side"
 import { useAddSectionAboutMutation, useUploadFileMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
-import { validateImage } from "@/validations/upload.validation"
-
+import Side from '@/components/about/section-sides'
 export default function AddSection({ onComplete }) {
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
     const [saving, setSaving] = useState(false)
