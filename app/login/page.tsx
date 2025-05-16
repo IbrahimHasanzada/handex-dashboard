@@ -37,7 +37,7 @@ export default function LoginPage() {
             }).unwrap();
 
             Cookies.set('token', response.token, {
-                expires: 7,
+                expires: 1,
             });
             toast.success('Daxil olundu');
             router.push('/');
