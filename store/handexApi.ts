@@ -327,6 +327,20 @@ export const handexApi = createApi({
                 body: params
             }),
         }),
+        getAbout: builder.query({
+            query: (language) => `/about?lang=${language}`,
+        }),
+        addAbout: builder.mutation({
+            query: (params) => ({
+                url: `/about`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
 
     }),
 })
@@ -369,5 +383,7 @@ export const {
     useUpdateProjectsMutation,
     useDeleteContentMutation,
     useUpdateContentMutation,
-    useAddSectionAboutMutation
+    useAddSectionAboutMutation,
+    useGetAboutQuery,
+    useAddAboutMutation
 } = handexApi

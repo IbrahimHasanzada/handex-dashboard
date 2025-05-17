@@ -29,6 +29,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
+import Cookies from "js-cookie"
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -44,6 +45,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     { name: "Layihələr", href: "/projects", icon: FolderKanban },
     { name: "Statistika", href: "/statistics", icon: BarChart3 },
   ]
+
+  const handleLogOut = () => {
+    Cookies.remove('token')
+    location.reload()
+  }
 
   return (
     <SidebarProvider>
@@ -95,10 +101,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <SidebarFooter>
             <div className="flex items-center justify-between px-4 py-2">
               <ModeToggle />
-              <Button variant="outline" size="icon">
-                <Settings className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="icon">
+              <Button onClick={handleLogOut} variant="outline" size="icon">
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>

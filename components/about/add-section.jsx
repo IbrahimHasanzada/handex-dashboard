@@ -10,6 +10,7 @@ import { Form } from "@/components/ui/form"
 import { useAddSectionAboutMutation, useUploadFileMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
 import Side from '@/components/about/section-sides'
+import { validateImage } from "@/validations/upload.validation"
 export default function AddSection({ onComplete }) {
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
     const [saving, setSaving] = useState(false)
@@ -121,8 +122,8 @@ export default function AddSection({ onComplete }) {
 
         const file = files[0]
         try {
-            // const validateImage = validateImage(file)
-            // if (validateImage == false) return
+            const validitonFile = validateImage(file)
+            if (validitonFile == false) return
             const formData = new FormData()
             formData.append("file", file)
             const response = await uploadImage(formData).unwrap()
