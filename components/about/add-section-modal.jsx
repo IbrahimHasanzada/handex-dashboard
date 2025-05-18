@@ -1,8 +1,9 @@
 "use client"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import AddSection from "./add-section"
+import EditSection from "./edit-section"
 
-export function AddSectionModal({ open, onOpenChange }) {
+export function SectionModal({ open, onOpenChange, edit, data, refetch }) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
@@ -13,7 +14,11 @@ export function AddSectionModal({ open, onOpenChange }) {
                     </div>
                 </DialogHeader>
                 <div className="-mx-6">
-                    <AddSection onComplete={() => onOpenChange(false)} />
+                    {edit ?
+                        <EditSection edit={edit} onComplete={() => onOpenChange(false)} data={data} refetch={refetch} />
+                        :
+                        <AddSection edit={edit} onComplete={() => onOpenChange(false)} refetch={refetch} />
+                    }
                 </div>
             </DialogContent>
         </Dialog>

@@ -5,13 +5,14 @@ import { ImageUploadFormItem } from "../image-upload-form-item"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FormProvider, useForm } from "react-hook-form"
-import { useAddAboutMutation, useUploadFileMutation } from "@/store/handexApi"
+import { useUpdateAboutMutation, useUploadFileMutation } from "@/store/handexApi"
 import { Button } from "../ui/button"
 import { toast } from "react-toastify"
 import { Save } from "lucide-react"
 import { aboutImageSchema } from "@/validations/about/image-about"
+import { validateImage } from "@/validations/upload.validation"
 
-export function AddImageModal({ open, onOpenChange }) {
+export function AddImageModal({ open, onOpenChange, refetch, data }) {
     const [imageState, setImageState] = useState({ preview: null, id: null, error: null })
     const form = useForm({
         defaultValues: {
@@ -29,21 +30,21 @@ export function AddImageModal({ open, onOpenChange }) {
         getValues,
     } = form
     const [uploadImage, { isLoading: upLoading }] = useUploadFileMutation()
-    const [addImageAbout, { isLoading }] = useAddAboutMutation()
+    const [addImageAbout, { isLoading }] = useUpdateAboutMutation()
 
-    const onSubmit = async (data) => {
-        console.log("Form submitted with data:", data)
+    const onSubmit = async (imagesData) => {
         try {
-            if (data.image === -1) {
+            if (imagesData.image === -1) {
                 setImageState({ ...imageState, error: "Şəkil seçilməyib" })
                 return
             }
-
-            await addImageAbout({ images: [imageState.id] }).unwrap()
+            await addImageAbout({ images: [...data, imageState.id] }).unwrap()
+            refetch()
             toast.success("Məlumat uğurla yükləndi")
             onOpenChange(false)
+            setImageState({ id: null, error: null, preview: null })
         } catch (error) {
-            toast.error("Məlumat yüklənərkən xəta baş verdi", error)
+            toast.error("Məlumat yüklənərkən xəta baş verdi", error.data.message)
         }
     }
 
@@ -56,11 +57,12 @@ export function AddImageModal({ open, onOpenChange }) {
         }
         const file = files[0]
         try {
+            const validationImage = validateImage(file, setImageState, imageState)
+            if (validationImage == false) return
             const formData = new FormData()
             formData.append("file", file)
 
             const response = await uploadImage(formData).unwrap()
-
             toast.success("Şəkil uğurla yükləndi")
             if (response) {
                 setImageState({
@@ -71,10 +73,8 @@ export function AddImageModal({ open, onOpenChange }) {
             }
 
             setValue("image", response.id)
-            console.log(form.getValues())
         } catch (error) {
-            console.log(error)
-            toast.error("Şəkil yükləyərkən xəta baş verdi", error.message)
+            toast.error(error.data.message)
             setImageState({ preview: null, id: null, error: "Şəkil yükləyərkən xəta baş verdi" })
         }
     }

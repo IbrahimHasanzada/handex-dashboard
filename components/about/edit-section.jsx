@@ -7,39 +7,32 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Save } from "lucide-react"
 import { Form } from "@/components/ui/form"
-import { useAddSectionAboutMutation, useUploadFileMutation } from "@/store/handexApi"
+import { useEditSectionsMutation, useUploadFileMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
 import Side from '@/components/about/section-sides'
 import { validateImage } from "@/validations/upload.validation"
-export default function AddSection({ onComplete, edit, refetch }) {
-    const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
-    const [saving, setSaving] = useState(false)
-    const [addSection, { isLoading }] = useAddSectionAboutMutation()
+export default function EditSection({ onComplete, edit, data, refetch }) {
+    const [editSection, { isLoading }] = useEditSectionsMutation()
     const [uploadImage, { isLoading: upLoading }] = useUploadFileMutation()
     const [imageStates, setImageStates] = useState({
         left: { preview: null, id: null, error: null },
         right: { preview: null, id: null, error: null },
     })
-
     const form = useForm({
         defaultValues: {
             left_side: {
-                type: "text",
+                type: data?.left_side.type,
                 translations: [
-                    { value: "", lang: "az" },
-                    { value: "", lang: "en" },
-                    { value: "", lang: "ru" },
+                    { value: data?.left_side.translations?.[0]?.value, lang: data?.left_side.translations?.[0]?.lang },
                 ],
-                url: "",
+                url: data?.left_side.url && data?.left_side.url,
             },
             right_side: {
-                type: "text",
+                type: data?.right_side.type,
                 translations: [
-                    { value: "", lang: "az" },
-                    { value: "", lang: "en" },
-                    { value: "", lang: "ru" },
+                    { value: data?.right_side.translations?.[0]?.value, lang: data?.right_side.translations?.[0]?.lang },
                 ],
-                url: "",
+                url: data?.right_side.url && data?.right_side.url,
             },
         },
     })
@@ -48,7 +41,6 @@ export default function AddSection({ onComplete, edit, refetch }) {
 
     useEffect(() => {
         const formValues = form.getValues()
-
         setImageStates({
             left: {
                 preview: formValues.left_side.url || null,
@@ -61,49 +53,47 @@ export default function AddSection({ onComplete, edit, refetch }) {
                 error: null,
             },
         })
-    }, [form])
-
-    const onSubmit = async (data) => {
-        setSaving(true)
+    }, [data, form])
+    const onSubmit = async (editedData) => {
         try {
             const processedData = {
                 left_side: {
-                    type: data.left_side.type,
-                    ...(data.left_side.type === "text"
+                    type: editedData.left_side.type,
+                    ...(editedData.left_side.type === "text"
                         ? {
-                            translations: data.left_side.translations,
+                            translations: editedData.left_side.translations,
                         }
                         : {}),
-                    ...(data.left_side.type === "image"
+                    ...(editedData.left_side.type === "image"
                         ? {
-                            url: data.left_side.url,
+                            url: editedData.left_side.url,
                         }
                         : {}),
                 },
                 right_side: {
-                    type: data.right_side.type,
-                    ...(data.right_side.type === "text"
+                    type: editedData.right_side.type,
+                    ...(editedData.right_side.type === "text"
                         ? {
-                            translations: data.right_side.translations,
+                            translations: editedData.right_side.translations,
                         }
                         : {}),
-                    ...(data.right_side.type === "image"
+                    ...(editedData.right_side.type === "image"
                         ? {
-                            url: data.right_side.url,
+                            url: editedData.right_side.url,
                         }
                         : {}),
                 },
             }
-            await addSection(processedData).unwrap()
-            refetch()
 
+            await editSection({ params: processedData, id: data.id }).unwrap()
+            refetch()
             toast.success("Bölmə uğurla əlavə edildi")
 
             if (onComplete) {
                 onComplete()
             }
         } catch (error) {
-            toast.success("Bölmə əlavə edilərkən xəta baş verdi", error.message)
+            toast.error("Bölmə əlavə edilərkən xəta baş verdi", error.message)
         }
     }
 
@@ -162,9 +152,9 @@ export default function AddSection({ onComplete, edit, refetch }) {
                                     imageStates={imageStates}
                                     setImageStates={setImageStates}
                                     handleImageChange={handleImageChange}
-                                    apiKey={apiKey}
                                     upLoading={upLoading}
                                     edit={edit}
+                                    data={data}
                                 />
 
                                 <Side
@@ -175,9 +165,9 @@ export default function AddSection({ onComplete, edit, refetch }) {
                                     imageStates={imageStates}
                                     setImageStates={setImageStates}
                                     handleImageChange={handleImageChange}
-                                    apiKey={apiKey}
                                     upLoading={upLoading}
                                     edit={edit}
+                                    data={data}
                                 />
                             </Tabs>
                         </CardContent>
