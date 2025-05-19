@@ -361,6 +361,29 @@ export const handexApi = createApi({
                 }
             }),
         }),
+        addMeta: builder.mutation({
+            query: (params) => ({
+                url: `/meta`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
+        getMeta: builder.query({
+            query: ({ language, slug }) => `/meta/${slug}?lang=${language}`,
+        }),
+        deleteMeta: builder.mutation({
+            query: (id) => ({
+                url: `/meta/${id}`,
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }),
+        }),
 
     }),
 })
@@ -407,5 +430,8 @@ export const {
     useGetAboutQuery,
     useUpdateAboutMutation,
     useDeleteSectionsMutation,
-    useEditSectionsMutation
+    useAddMetaMutation,
+    useGetMetaQuery,
+    useDeleteMetaMutation
+
 } = handexApi

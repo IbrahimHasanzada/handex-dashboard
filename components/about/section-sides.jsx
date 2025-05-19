@@ -7,8 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useEffect } from "react"
 import { ImageUploadFormItem } from "../image-upload-form-item"
 import { FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
-import { editorConfig } from "@/utils/editor-config"
 import { Editor } from '@tinymce/tinymce-react';
+import { editorConfig } from "@/utils/editor-config"
 export default function Side({ form, control, side, contentType, imageStates, setImageStates, handleImageChange, upLoading, edit, data }) {
     const sideName = `${side}_side`
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
@@ -73,8 +73,22 @@ export default function Side({ form, control, side, contentType, imageStates, se
                                                 apiKey={apiKey}
                                                 init={{
                                                     ...editorConfig,
-                                                    // language: data.left_side.translations[0].lang,
-                                                    placeholder: 'Dəyişdirmək istədiyiniz məzmunu daxil edin...',
+                                                    language: "az",
+                                                    placeholder: "Azərbaycan dilində mətn əlavə edin",
+                                                    // Alət panelinin pozisiyasını sabitləyin
+                                                    toolbar_sticky: true,
+                                                    toolbar_sticky_offset: 0,
+                                                    // Redaktorun ölçüsünü özü təyin etməsinə imkan verin
+                                                    autoresize_bottom_margin: 50,
+                                                    // İnisilializasiya gözləmə vaxtını artırın
+                                                    init_instance_callback: (editor) => {
+                                                        setTimeout(() => {
+                                                            editor.execCommand('mceAutoResize');
+                                                            editor.focus();
+                                                        }, 500);
+                                                    },
+                                                    // Alət panelinin yuxarıda görünməsini məcbur edin
+                                                    fixed_toolbar_container: "#tinymce-toolbar-container",
                                                 }}
                                             />
                                         </FormControl>

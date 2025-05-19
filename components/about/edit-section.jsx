@@ -96,6 +96,7 @@ export default function EditSection({ onComplete, edit, data, refetch }) {
             toast.error("Bölmə əlavə edilərkən xəta baş verdi", error.message)
         }
     }
+    
 
     const handleImageChange = (side) => async (e) => {
         const files = e.target.files

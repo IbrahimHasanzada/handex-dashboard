@@ -10,6 +10,7 @@ export interface ImageUploadFormItemProps {
         preview: string | null
         id: number | null
         error: string | null
+        selectedFile: string | null
     }) => void
     handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void
     isUploading: boolean

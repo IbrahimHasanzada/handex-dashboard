@@ -11,6 +11,7 @@ import { useDeleteSectionsMutation, useGetAboutQuery, useUpdateAboutMutation } f
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "react-toastify"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
+import { MetaTranslations } from "@/components/meta/meta"
 
 export default function AboutPage() {
   const [currentLanguage, setCurrentLanguage] = useState<string>("az")
@@ -96,7 +97,7 @@ export default function AboutPage() {
                   aboutData?.[0].images.map((item: any, index: any) => (
                     <div key={index} className=" p-1">
                       <div className="relative h-full w-full overflow-hidden rounded-lg">
-                        <div className="absolute right-0">
+                        <div className="absolute z-[2] right-0">
                           <Button onClick={() => handleDeleteImage(item.id)}>
                             <Trash />
                           </Button>
@@ -155,6 +156,7 @@ export default function AboutPage() {
                 </div>
               ))}
             </div>
+            <MetaTranslations />
           </div>
 
         }

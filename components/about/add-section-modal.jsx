@@ -2,8 +2,10 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import AddSection from "./add-section"
 import EditSection from "./edit-section"
+import { useEffect } from "react"
 
 export function SectionModal({ open, onOpenChange, edit, data, refetch }) {
+   
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
