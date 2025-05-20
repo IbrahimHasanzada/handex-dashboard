@@ -12,6 +12,7 @@ import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { ViewArticleProps } from "@/types/news/news-view.dto"
 import { useState } from "react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
 
 
 
@@ -20,7 +21,6 @@ export function ViewBlogs({ slug, onEdit, onDelete }: ViewArticleProps) {
     const { data: blogs, isLoading: blogsLoading, isError, error, refetch: refetchBlogsById } = useGetBlogsBySlugQuery({ slug: slug, language: currentLanguage }, { pollingInterval: 0, refetchOnMountOrArgChange: true, skip: !slug })
     const { refetch: refetchBlogs } = useGetBlogsQuery('')
     const [deleteBlog, { isSuccess, isLoading }] = useDeleteBlogsMutation()
-    console.log(blogs)
     const router = useRouter()
     const handleDelete = () => {
         try {
@@ -112,7 +112,23 @@ export function ViewBlogs({ slug, onEdit, onDelete }: ViewArticleProps) {
                                     <CardTitle>News Metadata</CardTitle>
                                 </CardHeader>
                                 <CardFooter className="flex justify-between">
-                                    <p>{blogs?.meta[0].translations[1].value}</p>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Name</TableHead>
+                                                <TableHead>Description</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {blogs?.meta?.map((item: any) => (
+                                                <TableRow key={item.id}>
+                                                    <TableCell className="font-medium">{item.name}</TableCell>
+                                                    <TableCell>{item.value}</TableCell>
+                                                    {/* <TableCell className="flex justify-end"> <Button onClick={() => handleDeleteMeta(item.id)}><Trash /></Button></TableCell> */}
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
                                 </CardFooter>
                             </Card>
                         </TabsContent>

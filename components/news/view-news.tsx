@@ -12,6 +12,7 @@ import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { ViewArticleProps } from "@/types/news/news-view.dto"
 import { useEffect, useState } from "react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
 
 
 
@@ -35,6 +36,7 @@ export function ViewNews({ slug, onEdit, onDelete }: ViewArticleProps) {
             toast.error('Xəbər silərkən xəta baş verdi!')
         }
     }
+    console.log(news)
     return (
         <div>
             {newsLoading ? (
@@ -111,7 +113,23 @@ export function ViewNews({ slug, onEdit, onDelete }: ViewArticleProps) {
                                     <CardTitle>News Metadata</CardTitle>
                                 </CardHeader>
                                 <CardFooter className="flex justify-between">
-                                    <p>{news?.meta[0].translations[1].value}</p>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Name</TableHead>
+                                                <TableHead>Description</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {news?.meta?.map((item: any) => (
+                                                <TableRow key={item.id}>
+                                                    <TableCell className="font-medium">{item.name}</TableCell>
+                                                    <TableCell>{item.value}</TableCell>
+                                                    {/* <TableCell className="flex justify-end"> <Button onClick={() => handleDeleteMeta(item.id)}><Trash /></Button></TableCell> */}
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
                                 </CardFooter>
                             </Card>
                         </TabsContent>
