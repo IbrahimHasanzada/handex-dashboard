@@ -8,15 +8,15 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Form, FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { ImageUploadFormItem } from "@/components/image-upload-form-item"
 import { validateImage } from "@/validations/upload.validation"
 import { useGetHeroQuery, useUploadFileMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
 import { type FeatureFormValues, FeatureSchema, type Language } from "@/validations/corporate/fetures.validation"
-import type { imageState } from "@/types/home/graduates.dto"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { FeatureFormProps } from "@/types/corporate/features.dto"
+import { Loader2, Upload } from "lucide-react"
 
 export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, id }: FeatureFormProps) {
     const [activeTab, setActiveTab] = useState<Language>("az")
@@ -27,24 +27,34 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
         isLoading,
     } = useGetHeroQuery({ slug, lang: activeTab, scope: "componentC" }, { skip: false })
     const [defaultValues, setDefaultValue] = useState<string[] | any>()
+
     useEffect(() => {
-        id && setDefaultValue(featuresData.filter((item: any) => item.id === id))
-    }, [activeTab, id])
-    const [imageState, setImageState] = useState<imageState>({
+        id && setDefaultValue(featuresData?.filter((item: any) => item.id === id))
+    }, [activeTab, id, featuresData])
+
+    const [imageState, setImageState] = useState<any>({
         preview: null,
-        id: defaultValues?.images?.[0].id || null,
+        id: defaultValues?.[0]?.images?.[0]?.id || null,
         error: null,
+        selectedFile: null,
+        isUploading: false,
     })
+
     const [uploadImage, { isLoading: isUpLoading }] = useUploadFileMutation()
-    const form = useForm<FeatureFormValues>({
+
+    // Update the form schema to include imageAlt
+    const form = useForm<FeatureFormValues & { imageAlt: string }>({
         resolver: zodResolver(FeatureSchema),
-        defaultValues: defaultValues?.[0] || {
-            images: [],
-            translations: [
-                { title: "", desc: "", lang: "az" },
-                { title: "", desc: "", lang: "en" },
-                { title: "", desc: "", lang: "ru" },
-            ],
+        defaultValues: {
+            ...(defaultValues?.[0] || {
+                images: [],
+                translations: [
+                    { title: "", desc: "", lang: "az" },
+                    { title: "", desc: "", lang: "en" },
+                    { title: "", desc: "", lang: "ru" },
+                ],
+            }),
+            imageAlt: defaultValues?.[0]?.images?.[0]?.alt || "",
         },
     })
 
@@ -71,40 +81,66 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
         form.setValue("translations", currentTranslations, { shouldValidate: true })
     }
 
-    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Modified image change handler to only store the file without uploading
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
 
         const imageValidation = validateImage(file, setImageState, imageState)
         if (imageValidation === false) return
 
+        // Just store the file and show preview without uploading
+        setImageState({
+            preview: URL.createObjectURL(file),
+            id: null,
+            error: null,
+            selectedFile: file,
+            isUploading: false,
+        })
+    }
+
+    // Function to handle image upload with alt text
+    const uploadSelectedImage = async () => {
+        if (!imageState.selectedFile) {
+            toast.error("Zəhmət olmasa əvvəlcə şəkil seçin")
+            return
+        }
+
         try {
             const formData = new FormData()
-            formData.append("file", file)
+            formData.append("file", imageState.selectedFile)
+            formData.append("alt", form.getValues("imageAlt") || "")
 
-            const response = await uploadImage(formData)
+            setImageState({ ...imageState, isUploading: true })
+            const response = await uploadImage(formData).unwrap()
 
-            if ("data" in response) {
-                setImageState({
-                    preview: response.data.url,
-                    id: response.data.id,
-                    error: null,
-                })
-
-                form.setValue("images", [response.data.id], { shouldValidate: true })
-            }
-        } catch (error) {
-            toast.error("Şəkil yükləyərkən xəta baş vedi")
             setImageState({
-                ...imageState,
-                error: "Şəkil yükləyərkən xəta baş verdi",
+                preview: response.url,
+                id: response.id,
+                error: null,
+                selectedFile: null,
+                isUploading: false,
             })
+
+            form.setValue("images", [response.id], { shouldValidate: true })
+            toast.success("Şəkil uğurla yükləndi")
+        } catch (error) {
+            setImageState({ ...imageState, isUploading: false })
+            toast.error("Şəkil yükləyərkən xəta baş verdi")
         }
     }
 
     const onFormSubmit = form.handleSubmit(
         (data) => {
-            onSubmit(data)
+            // Check if we have an unuploaded image
+            if (imageState.selectedFile && !imageState.id) {
+                toast.error("Zəhmət olmasa əvvəlcə şəkili yükləyin")
+                return
+            }
+
+            // Remove imageAlt from data before submitting
+            const { imageAlt, ...submitData } = data
+            onSubmit(submitData)
         },
         (errors) => {
             toast.error("Zəhmət olmasa bütün sahələri doldurun")
@@ -130,28 +166,58 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
         }
     }, [form, translations])
 
+    // Set initial image state from defaultValues
+    useEffect(() => {
+        if (defaultValues?.[0]?.images?.[0]) {
+            setImageState({
+                preview: defaultValues[0].images[0].url,
+                id: defaultValues[0].images[0].id,
+                error: null,
+                selectedFile: null,
+                isUploading: false,
+            })
+            form.setValue("imageAlt", defaultValues[0].images[0].alt || "")
+        }
+    }, [defaultValues, form])
+
     return (
         <Form {...form}>
             <form onSubmit={onFormSubmit} className="space-y-6">
+                {/* Use ImageUploadFormItem component */}
                 <ImageUploadFormItem
                     form={form}
-                    name="image"
+                    name="images"
                     imageState={imageState}
                     setImageState={setImageState}
                     handleImageChange={handleImageChange}
-                    isUploading={isUpLoading}
+                    isUploading={imageState.isUploading}
                     imageInputId="feature-image"
                     label="Şəkli Dəyişdir"
                 />
 
+                <Button type="button" onClick={uploadSelectedImage} disabled={imageState.isUploading} className="w-full">
+                    {imageState.isUploading ? (
+                        <div className="flex items-center">
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Yüklənir...
+                        </div>
+                    ) : (
+                        <div className="flex items-center">
+                            <Upload className="mr-2 h-4 w-4" />
+                            Şəkili yüklə
+                        </div>
+                    )}
+                </Button>
+
+
                 <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Language)}>
-                    {!id &&
+                    {!id && (
                         <TabsList className="grid grid-cols-3 w-full">
                             <TabsTrigger value="az">AZ</TabsTrigger>
                             <TabsTrigger value="en">EN</TabsTrigger>
                             <TabsTrigger value="ru">RU</TabsTrigger>
                         </TabsList>
-                    }
+                    )}
 
                     <TabsContent value={activeTab} className="space-y-4 mt-4">
                         <FormItem>
@@ -205,7 +271,7 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
                     <Button type="button" variant="outline" onClick={onCancel}>
                         Ləğv et
                     </Button>
-                    <Button type="submit" disabled={form.formState.isSubmitting || isUpLoading}>
+                    <Button type="submit" disabled={form.formState.isSubmitting || imageState.isUploading}>
                         {form.formState.isSubmitting || isFeatLoading
                             ? "Əlavə edilir..."
                             : defaultValues && defaultValues.images?.length
@@ -214,6 +280,6 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
                     </Button>
                 </div>
             </form>
-        </Form>
+        </Form >
     )
 }

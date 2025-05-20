@@ -10,6 +10,8 @@ export interface imageState {
     preview: string | null
     id: number | null
     error: string | null
+    selectedFile: File | string | null
+
 }
 
 export interface EditGraduateModalProps {

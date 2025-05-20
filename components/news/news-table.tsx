@@ -108,9 +108,9 @@ export function ArticlesTable() {
                                             </div>
                                             <div>
                                                 <div className="font-medium">
-                                                    {(article.translations.find((item: any) => item.field === 'title')?.value ?? "").length > (windowWidth < 768 ? 20 : 50)
-                                                        ? `${(article.translations.find((item: any) => item.field === 'title')?.value ?? "").slice(0, (windowWidth < 768 ? 20 : 50))}...`
-                                                        : (article.translations.find((item: any) => item.field === 'title')?.value ?? "")}
+                                                    {(article.title ?? "").length > (windowWidth < 768 ? 20 : 50)
+                                                        ? `${article.title.slice(0, (windowWidth < 768 ? 20 : 50))}...`
+                                                        : (article.title ?? "")}
                                                 </div>
 
                                             </div>

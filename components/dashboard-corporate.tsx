@@ -4,6 +4,7 @@ import Graduates from "./home/graduates/graduates"
 import Partners from "./home/partners/partners"
 import CorporateHero from "./corporate/corporate-hero"
 import FeaturesSection from "./corporate/features/features-corporate"
+import { MetaTranslations } from "./meta/meta"
 
 export function DashboardCorporate() {
 
@@ -19,6 +20,9 @@ export function DashboardCorporate() {
 
             {/* Partners Management */}
             <Partners />
+
+            {/* Meta for corporate page */}
+            <MetaTranslations slug="corporate" />
         </div>
     )
 }

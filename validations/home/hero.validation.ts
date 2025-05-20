@@ -11,6 +11,9 @@ export const formSchema = z.object({
         .max(500, { message: "Alt başlıq 500 simvoldan çox olmamalıdır" }),
     image: z.number({ required_error: "Şəkil tələb olunur." })
         .refine((val) => val !== -1, { message: "Şəkil tələb olunur." }),
+
+    imageAlt: z.string()
+
 })
 
 export type FormValues = z.infer<typeof formSchema>

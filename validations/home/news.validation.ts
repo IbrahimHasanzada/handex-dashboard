@@ -14,5 +14,8 @@ export const formSchemaNews = z.object({
     featuredImage: z
         .number({ required_error: "Şəkil tələb olunur." })
         .refine((val) => val !== -1, { message: "Şəkil tələb olunur." }),
-    category: z.string().optional()
+    category: z.string().optional(),
+    imageAlt: z.string(),
+    metaName: z.string()
+
 });

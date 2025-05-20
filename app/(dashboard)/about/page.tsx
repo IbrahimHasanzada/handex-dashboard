@@ -58,7 +58,7 @@ export default function AboutPage() {
       toast.error("Şəkil silərkən xəta baş verdi", error.data.message)
     }
   }
-
+  console.log(aboutData?.[0].images)
   return (
     <DashboardLayout>
       <div className="mx-auto p-6">
@@ -104,7 +104,7 @@ export default function AboutPage() {
                         </div>
                         <Image
                           src={item.url ? item.url : '/placeholder.svg?height=300&width=400'}
-                          alt="Team photo 1"
+                          alt={item.alt ?? "Team photo 1"}
                           fill
                           className="object-contain" />
                       </div>
@@ -156,7 +156,7 @@ export default function AboutPage() {
                 </div>
               ))}
             </div>
-            <MetaTranslations />
+            <MetaTranslations slug="about" />
           </div>
 
         }

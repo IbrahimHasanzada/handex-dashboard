@@ -107,9 +107,9 @@ export function ServiceTable() {
                                             </div>
                                             <div>
                                                 <div className="font-medium">
-                                                    {(service.translations.find((item: any) => item.field === 'title')?.value ?? "").length > (windowWidth < 768 ? 20 : 50)
-                                                        ? `${(service.translations.find((item: any) => item.field === 'title')?.value ?? "").slice(0, (windowWidth < 768 ? 20 : 50))}...`
-                                                        : (service.translations.find((item: any) => item.field === 'title')?.value ?? "")}
+                                                    {(service.title ?? "").length > (windowWidth < 768 ? 20 : 50)
+                                                        ? `${service.title.slice(0, (windowWidth < 768 ? 20 : 50))}...`
+                                                        : (service.title ?? "")}
                                                 </div>
 
                                             </div>

@@ -21,7 +21,6 @@ const formSchema = z.object({
     lang: z.string().min(2, "Language is required"),
 })
 
-// Define the translation type based on the API response
 type Translation = {
     id: number
     field: string
@@ -30,8 +29,7 @@ type Translation = {
     value: string
 }
 
-export function MetaTranslations() {
-    // State to track when to trigger the query
+export function MetaTranslations({ slug }: { slug: string }) {
     const [queryParams, setQueryParams] = useState<{ language: string; slug: string } | null>(null)
     const [isOpenMetaModal, setIsOpenMetaModal] = useState(false)
     const [deleteMeta, { isLoading: delLoading }] = useDeleteMetaMutation()
@@ -43,28 +41,22 @@ export function MetaTranslations() {
         isFetching,
     } = useGetMetaQuery(queryParams || { language: "skip", slug: "skip" }, { skip: queryParams === null })
 
-    const translations: Translation[] = data && data["0"] && data["0"].translations ? data["0"].translations : []
-
-    // Initialize the form
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            field: "about",
+            field: slug,
             lang: "az",
         },
     })
 
-    // Handle form submission
     function onSubmit(values: z.infer<typeof formSchema>) {
         setQueryParams({
             language: values.lang,
             slug: values.field,
         })
     }
-    console.log(data)
     const handleDeleteMeta = async (id: number) => {
         try {
-            console.log(id)
             await deleteMeta(id).unwrap()
             toast.success('Meta uğurla silindi')
             refetch()
@@ -89,23 +81,6 @@ export function MetaTranslations() {
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormField
-                                    control={form.control}
-                                    name="field"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                Field <span className="text-red-500">*</span>
-                                            </FormLabel>
-                                            <FormDescription className="text-xs text-muted-foreground">(path)</FormDescription>
-                                            <FormControl>
-                                                <Input placeholder="e.g., home, about" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
                                 <FormField
                                     control={form.control}
                                     name="lang"
@@ -142,16 +117,16 @@ export function MetaTranslations() {
 
             {queryError && (
                 <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md">
-                    {typeof queryError === "string" ? queryError : "Failed to fetch translations"}
+                    {typeof queryError === "string" ? queryError : "Meta tapılmadı"}
                 </div>
             )}
 
-            {translations.length > 0 && (
+            {data?.length > 0 && (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Translation Results</CardTitle>
+                        <CardTitle>Meta nəticə</CardTitle>
                         <CardDescription>
-                            {queryParams?.language}: dili üçün {translations.length} meta göstərilir.
+                            {queryParams?.language}: dili üçün {data?.length} meta göstərilir.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -163,11 +138,11 @@ export function MetaTranslations() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {translations.map((translation) => (
-                                    <TableRow key={translation.id}>
-                                        <TableCell className="font-medium">{translation.field}</TableCell>
-                                        <TableCell>{translation.value}</TableCell>
-                                        <TableCell className="flex justify-end"> <Button onClick={() => handleDeleteMeta(translation.id)}><Trash /></Button></TableCell>
+                                {data?.map((item: any) => (
+                                    <TableRow key={item.id}>
+                                        <TableCell className="font-medium">{item.name}</TableCell>
+                                        <TableCell>{item.value}</TableCell>
+                                        <TableCell className="flex justify-end"> <Button onClick={() => handleDeleteMeta(item.id)}><Trash /></Button></TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -176,7 +151,7 @@ export function MetaTranslations() {
                 </Card>
             )}
 
-            <TranslationsDialog open={isOpenMetaModal} onOpenChange={setIsOpenMetaModal} />
+            <TranslationsDialog slug={slug} open={isOpenMetaModal} onOpenChange={setIsOpenMetaModal} />
         </div>
     )
 }

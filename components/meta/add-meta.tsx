@@ -49,9 +49,10 @@ const languages = [
 interface TranslationsDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
+    slug: string
 }
 
-export function TranslationsDialog({ open, onOpenChange }: TranslationsDialogProps) {
+export function TranslationsDialog({ open, onOpenChange, slug }: TranslationsDialogProps) {
     const [activeTab, setActiveTab] = useState("az")
     const [addMeta, { isLoading }] = useAddMetaMutation()
 
@@ -64,7 +65,7 @@ export function TranslationsDialog({ open, onOpenChange }: TranslationsDialogPro
                 value: "",
                 lang: lang.code,
             })),
-            slug: "",
+            slug: slug,
         },
     })
 
@@ -80,7 +81,7 @@ export function TranslationsDialog({ open, onOpenChange }: TranslationsDialogPro
                     lang: item.lang,
                 })),
             }
-
+            console.log(transformedData)
             await addMeta(transformedData).unwrap()
             toast.success("Meta uğurla əlavə edildi")
             form.reset() // Reset form after successful submission
@@ -101,20 +102,6 @@ export function TranslationsDialog({ open, onOpenChange }: TranslationsDialogPro
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        {/* Slug field */}
-                        <FormField
-                            control={form.control}
-                            name="slug"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Slug</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="e.g., home, about, contact" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
 
                         {/* Name field - shared across all languages */}
                         <FormField

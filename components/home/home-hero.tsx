@@ -18,7 +18,7 @@ import { toast } from "react-toastify"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { ImageUploadFormItem } from "../image-upload-form-item"
 import { validateImage } from "@/validations/upload.validation"
-import { imageState } from "@/types/home/graduates.dto"
+import type { imageState } from "@/types/home/graduates.dto"
 
 const HomeHero = () => {
     const [activeLanguage, setActiveLanguage] = useState<string>("az")
@@ -34,6 +34,7 @@ const HomeHero = () => {
         preview: null,
         id: null,
         error: null,
+        selectedFile: null,
     })
     const [isEditing, setIsEditing] = useState(false)
 
@@ -43,6 +44,7 @@ const HomeHero = () => {
             title: "",
             desc: "",
             image: -1,
+            imageAlt: "",
         },
     })
 
@@ -53,6 +55,7 @@ const HomeHero = () => {
                 title: heroData[0].title || "",
                 desc: heroData[0].desc || "",
                 image: heroData[0].images[0]?.id || -1,
+                imageAlt: heroData[0].images[0]?.alt || "",
             })
 
             if (heroData[0]?.images && heroData[0]?.images[0]?.url) {
@@ -60,6 +63,7 @@ const HomeHero = () => {
                     preview: heroData[0].images[0].url,
                     id: heroData[0].images[0].id,
                     error: null,
+                    selectedFile: null,
                 })
             }
         }
@@ -69,11 +73,28 @@ const HomeHero = () => {
         const file = e.target.files?.[0]
         if (!file) return
 
-        let imageValidation = validateImage(file, setImageState, imageState)
+        const imageValidation = validateImage(file, setImageState, imageState)
         if (imageValidation === false) return
+
+        // Just store the file and show preview without uploading
+        setImageState({
+            preview: URL.createObjectURL(file),
+            id: null,
+            error: null,
+            selectedFile: file,
+        })
+    }
+
+    const uploadSelectedImage = async () => {
+        if (!imageState.selectedFile) {
+            toast.error("Zəhmət olmasa əvvəlcə şəkil seçin")
+            return
+        }
+
         try {
             const formData = new FormData()
-            formData.append("file", file)
+            formData.append("file", imageState.selectedFile)
+            formData.append("alt", form.getValues("imageAlt") || "")
 
             const response = await uploadImage(formData).unwrap()
             if (response) {
@@ -81,12 +102,14 @@ const HomeHero = () => {
                     preview: response.url,
                     id: response.id,
                     error: null,
+                    selectedFile: null,
                 })
 
                 form.setValue("image", response.id)
+                toast.success("Şəkil uğurla yükləndi")
             }
         } catch (error: any) {
-            toast.error(error.data.message)
+            toast.error(error.data?.message || "Şəkil yükləyərkən xəta baş verdi")
             setImageState({
                 ...imageState,
                 error: "Şəkil yükləyərkən xəta baş verdi",
@@ -96,6 +119,12 @@ const HomeHero = () => {
 
     const onSubmit = async (data: FormValues) => {
         try {
+            // Check if we have an unuploaded image
+            if (imageState.selectedFile && !imageState.id) {
+                toast.error("Zəhmət olmasa əvvəlcə şəkili yükləyin")
+                return
+            }
+
             const newBannerData = {
                 translations: [
                     {
@@ -106,7 +135,6 @@ const HomeHero = () => {
                 ],
                 ...(imageState.id && { images: [imageState.id] }),
             }
-
 
             await addHero({ params: newBannerData, id: heroData?.[0]?.id })
             setIsEditing(false)
@@ -186,7 +214,14 @@ const HomeHero = () => {
                                     isUploading={isUploading}
                                     imageInputId="banner-image"
                                     label="Şəkli Dəyişdir"
+                                    altFieldName="imageAlt"
                                 />
+
+                                {imageState.preview && !imageState.id && (
+                                    <Button type="button" onClick={uploadSelectedImage} disabled={isUploading} className="w-full mt-2">
+                                        {isUploading ? "Yüklənir..." : "Şəkili yüklə"}
+                                    </Button>
+                                )}
                             </div>
                         </form>
                     </Form>

@@ -20,6 +20,7 @@ export function ViewBlogs({ slug, onEdit, onDelete }: ViewArticleProps) {
     const { data: blogs, isLoading: blogsLoading, isError, error, refetch: refetchBlogsById } = useGetBlogsBySlugQuery({ slug: slug, language: currentLanguage }, { pollingInterval: 0, refetchOnMountOrArgChange: true, skip: !slug })
     const { refetch: refetchBlogs } = useGetBlogsQuery('')
     const [deleteBlog, { isSuccess, isLoading }] = useDeleteBlogsMutation()
+    console.log(blogs)
     const router = useRouter()
     const handleDelete = () => {
         try {

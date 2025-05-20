@@ -3,6 +3,7 @@ import HomeHero from "./home/home-hero"
 import Testimonials from "./home/testimonials/testimonials"
 import Graduates from "./home/graduates/graduates"
 import Partners from "./home/partners/partners"
+import { MetaTranslations } from "./meta/meta"
 
 export function DashboardHome() {
 
@@ -24,6 +25,9 @@ export function DashboardHome() {
 
       {/* Partners Management */}
       <Partners />
+
+      {/* Meta for home page */}
+       <MetaTranslations slug="home" />
     </div>
   )
 }
