@@ -9,7 +9,7 @@ import { Save } from "lucide-react"
 import { Form } from "@/components/ui/form"
 import { useAddSectionAboutMutation, useUploadFileMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
-import Side from '@/components/about/section-sides'
+import Side from "@/components/about/section-sides"
 import { validateImage } from "@/validations/upload.validation"
 export default function AddSection({ onComplete, edit, refetch }) {
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
@@ -17,8 +17,8 @@ export default function AddSection({ onComplete, edit, refetch }) {
     const [addSection, { isLoading }] = useAddSectionAboutMutation()
     const [uploadImage, { isLoading: upLoading }] = useUploadFileMutation()
     const [imageStates, setImageStates] = useState({
-        left: { preview: null, id: null, error: null },
-        right: { preview: null, id: null, error: null },
+        left: { preview: null, id: null, error: null, selectedFile: null },
+        right: { preview: null, id: null, error: null, selectedFile: null },
     })
 
     const form = useForm({
@@ -107,7 +107,7 @@ export default function AddSection({ onComplete, edit, refetch }) {
         }
     }
 
-    const handleImageChange = (side) => async (e) => {
+    const handleImageChange = (side) => (e) => {
         const files = e.target.files
 
         if (!files || files.length === 0) {
@@ -119,11 +119,27 @@ export default function AddSection({ onComplete, edit, refetch }) {
         }
 
         const file = files[0]
+        const validitonFile = validateImage(file)
+        if (validitonFile == false) return
+        setImageStates((prev) => ({
+            ...prev,
+            [side]: {
+                ...prev[side],
+                preview: URL.createObjectURL(file),
+                selectedFile: file,
+            },
+        }))
+
+        if (form.getValues(`${side}ImageAlt`) === undefined) {
+            form.setValue(`${side}ImageAlt`, "")
+        }
+    }
+
+    const handleUploadWithAltText = async (file, altText, side) => {
         try {
-            const validitonFile = validateImage(file)
-            if (validitonFile == false) return
             const formData = new FormData()
             formData.append("file", file)
+            formData.append("alt", altText)
             const response = await uploadImage(formData).unwrap()
             setImageStates((prev) => ({
                 ...prev,
@@ -135,6 +151,7 @@ export default function AddSection({ onComplete, edit, refetch }) {
             }))
 
             setValue(`${side}_side.url`, response.url)
+            toast.success("Şəkil uğurla əlavə edildi")
         } catch (error) {
             toast.error("Şəkil yükləyərkən xəta baş vedi", error.message)
         }
@@ -162,6 +179,7 @@ export default function AddSection({ onComplete, edit, refetch }) {
                                     imageStates={imageStates}
                                     setImageStates={setImageStates}
                                     handleImageChange={handleImageChange}
+                                    handleUploadWithAltText={(file, altText) => handleUploadWithAltText(file, altText, "left")}
                                     apiKey={apiKey}
                                     upLoading={upLoading}
                                     edit={edit}
@@ -175,6 +193,7 @@ export default function AddSection({ onComplete, edit, refetch }) {
                                     imageStates={imageStates}
                                     setImageStates={setImageStates}
                                     handleImageChange={handleImageChange}
+                                    handleUploadWithAltText={(file, altText) => handleUploadWithAltText(file, altText, "right")}
                                     apiKey={apiKey}
                                     upLoading={upLoading}
                                     edit={edit}

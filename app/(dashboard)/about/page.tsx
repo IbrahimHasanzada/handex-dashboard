@@ -145,7 +145,7 @@ export default function AboutPage() {
                       :
                       <div className="relative h-64 sm:h-80 rounded-lg overflow-hidden">
                         <Image
-                          src={item.left_side.url ? item.left_side.url : `/placeholder.svg?height=400&width=600`}
+                          src={item.right_side.url ? item.right_side.url : `/placeholder.svg?height=400&width=600`}
                           alt="Data analysis presentation"
                           fill
                           className="object-cover"

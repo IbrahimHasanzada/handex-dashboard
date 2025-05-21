@@ -6,10 +6,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useEffect } from "react"
 import { ImageUploadFormItem } from "../image-upload-form-item"
-import { FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
-import { Editor } from '@tinymce/tinymce-react';
+import { FormControl, FormField, FormItem, FormMessage, FormLabel } from "@/components/ui/form"
+import { Editor } from "@tinymce/tinymce-react"
 import { editorConfig } from "@/utils/editor-config"
-export default function Side({ form, control, side, contentType, imageStates, setImageStates, handleImageChange, upLoading, edit, data }) {
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Loader2 } from "lucide-react"
+
+import { toast } from "sonner"
+export default function Side({
+    form,
+    control,
+    side,
+    contentType,
+    imageStates,
+    setImageStates,
+    handleImageChange,
+    handleUploadWithAltText,
+    upLoading,
+    edit,
+    data,
+}) {
     const sideName = `${side}_side`
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
     const placeholders = {
@@ -57,7 +74,7 @@ export default function Side({ form, control, side, contentType, imageStates, se
                 </div>
 
                 {contentType === "text" ? (
-                    edit ?
+                    edit ? (
                         <div className="space-y-4">
                             <FormField
                                 control={control}
@@ -83,9 +100,9 @@ export default function Side({ form, control, side, contentType, imageStates, se
                                                     // İnisilializasiya gözləmə vaxtını artırın
                                                     init_instance_callback: (editor) => {
                                                         setTimeout(() => {
-                                                            editor.execCommand('mceAutoResize');
-                                                            editor.focus();
-                                                        }, 500);
+                                                            editor.execCommand("mceAutoResize")
+                                                            editor.focus()
+                                                        }, 500)
                                                     },
                                                     // Alət panelinin yuxarıda görünməsini məcbur edin
                                                     fixed_toolbar_container: "#tinymce-toolbar-container",
@@ -97,7 +114,7 @@ export default function Side({ form, control, side, contentType, imageStates, se
                                 )}
                             />
                         </div>
-                        :
+                    ) : (
                         <div className="space-y-4">
                             <Label>Translations</Label>
                             <Tabs defaultValue="az" className="w-full">
@@ -186,24 +203,52 @@ export default function Side({ form, control, side, contentType, imageStates, se
                                 </TabsContent>
                             </Tabs>
                         </div>
+                    )
                 ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                         <Label>Image</Label>
-                        <ImageUploadFormItem
-                            form={form}
-                            name={`${sideName}.url`}
-                            imageState={imageStates[side] || { preview: null, id: null, error: null }}
-                            setImageState={(newState) => {
-                                setImageStates((prev) => ({
-                                    ...prev,
-                                    [side]: newState,
-                                }))
-                            }}
-                            handleImageChange={handleImageChange(side)}
-                            isUploading={upLoading}
-                            imageInputId={`${side}-image-upload`}
-                            label="Şəkil yüklə"
-                        />
+                        <div className="space-y-2">
+                            <ImageUploadFormItem
+                                form={form}
+                                name={`${sideName}.url`}
+                                imageState={imageStates[side] || { preview: null, id: null, error: null }}
+                                setImageState={(newState) => {
+                                    setImageStates((prev) => ({
+                                        ...prev,
+                                        [side]: newState,
+                                    }))
+                                }}
+                                handleImageChange={handleImageChange(side)}
+                                isUploading={upLoading}
+                                imageInputId={`${side}-image-upload`}
+                                label="Şəkil yüklə"
+                                altFieldName={`${side}ImageAlt`}
+                            />
+
+                            {imageStates[side]?.selectedFile && (
+                                <div className="mt-4">
+
+                                    <Button
+                                        type="button"
+                                        className="mt-4 w-full"
+                                        disabled={upLoading || !form.getValues(`${side}ImageAlt`)}
+                                        onClick={() => {
+                                            handleUploadWithAltText(imageStates[side]?.selectedFile, form.getValues(`${side}ImageAlt`), side)
+
+                                        }}
+                                    >
+                                        {upLoading ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Yüklənir...
+                                            </>
+                                        ) : (
+                                            "Şəkili Yüklə"
+                                        )}
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>

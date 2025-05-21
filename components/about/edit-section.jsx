@@ -15,8 +15,8 @@ export default function EditSection({ onComplete, edit, data, refetch }) {
     const [editSection, { isLoading }] = useEditSectionsMutation()
     const [uploadImage, { isLoading: upLoading }] = useUploadFileMutation()
     const [imageStates, setImageStates] = useState({
-        left: { preview: null, id: null, error: null },
-        right: { preview: null, id: null, error: null },
+        left: { preview: null, id: null, error: null, selectedFile: null },
+        right: { preview: null, id: null, error: null, selectedFile: null },
     })
     const form = useForm({
         defaultValues: {
@@ -96,7 +96,7 @@ export default function EditSection({ onComplete, edit, data, refetch }) {
             toast.error("Bölmə əlavə edilərkən xəta baş verdi", error.message)
         }
     }
-    
+
 
     const handleImageChange = (side) => async (e) => {
         const files = e.target.files

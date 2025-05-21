@@ -395,6 +395,7 @@ export const {
     useDeleteSectionsMutation,
     useAddMetaMutation,
     useGetMetaQuery,
-    useDeleteMetaMutation
+    useDeleteMetaMutation,
+    useEditSectionsMutation
 
 } = handexApi
