@@ -347,6 +347,25 @@ export const handexApi = createApi({
                 method: 'DELETE',
             }),
         }),
+        getRedirects: builder.query({
+            query: () => `/redirect`,
+        }),
+        addRedirect: builder.mutation({
+            query: (params) => ({
+                url: `/redirect`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+        }),
+        deleteRedirect: builder.mutation({
+            query: (id) => ({
+                url: `/redirect/${id}`,
+                method: 'DELETE',
+            }),
+        }),
 
     }),
 })
@@ -396,6 +415,9 @@ export const {
     useAddMetaMutation,
     useGetMetaQuery,
     useDeleteMetaMutation,
-    useEditSectionsMutation
+    useEditSectionsMutation,
+    useGetRedirectsQuery,
+    useAddRedirectMutation,
+    useDeleteRedirectMutation
 
 } = handexApi
