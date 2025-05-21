@@ -45,6 +45,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
     selectedFile: null,
     isUploading: false,
   })
+
   const [uploadImage, { isLoading: upLoading, isSuccess: upSucces }] = useUploadFileMutation()
   const [addBlogs, { isLoading: newsLoading, isSuccess: newsSucces }] = useAddBlogsMutation()
   const [updateBlogs, { isLoading: blogsUpLoading, isSuccess: blogsUpSucces }] = useUpdateBlogsMutation()
@@ -77,7 +78,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
     meta_az: "",
     meta_en: "",
     meta_ru: "",
-    metaName: "description", // Default meta name
+    metaName: "description",
     slug: "",
   }
 
@@ -87,12 +88,11 @@ export function BlogsForm({ slug }: { slug?: string }) {
       form.setValue(`content_${selectedLanguage}` as "content_az" | "content_en" | "content_ru", blogs.description)
       form.setValue(
         `meta_${selectedLanguage}` as "meta_az" | "meta_en" | "meta_ru",
-        blogs.meta[0].translations[1].value ? blogs.meta[0].translations[1].value : "",
+        blogs.meta[0].value ? blogs.meta[0].value : "",
       )
 
-      // If we have meta data, set the meta name from the first translation
-      if (blogs.meta && blogs.meta[0] && blogs.meta[0].translations && blogs.meta[0].translations.length > 0) {
-        form.setValue("metaName", blogs.meta[0].translations[0].name || "description")
+      if (blogs.meta && blogs.meta[0] && blogs.meta[0].length > 0) {
+        form.setValue("metaName", blogs.meta[0].name || "description")
       }
 
       if (blogs.image?.id) {

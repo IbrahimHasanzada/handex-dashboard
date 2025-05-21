@@ -77,7 +77,7 @@ export function ProjectsForm({ slug }: { slug?: string }) {
     meta_az: "",
     meta_en: "",
     meta_ru: "",
-    metaName: "description", // Default meta name
+    metaName: "description",
     slug: "",
   }
 
@@ -87,17 +87,17 @@ export function ProjectsForm({ slug }: { slug?: string }) {
       form.setValue(`content_${selectedLanguage}` as "content_az" | "content_en" | "content_ru", projects.description)
       form.setValue(
         `meta_${selectedLanguage}` as "meta_az" | "meta_en" | "meta_ru",
-        projects.meta[0].translations[1].value ? projects.meta[0].translations[1].value : "",
+        projects.meta[0].value ? projects.meta[0].value : "",
       )
 
       // If we have meta data, set the meta name from the first translation
       if (
         projects.meta &&
         projects.meta[0] &&
-        projects.meta[0].translations &&
-        projects.meta[0].translations.length > 0
+        projects.meta[0].name &&
+        projects.meta[0].length > 0
       ) {
-        form.setValue("metaName", projects.meta[0].translations[0].name || "description")
+        form.setValue("metaName", projects.meta[0].name || "description")
       }
 
       if (projects.image?.id) {

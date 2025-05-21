@@ -1,12 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -14,6 +13,7 @@ import { Loader2, Plus, Trash } from "lucide-react"
 import { useDeleteMetaMutation, useGetMetaQuery } from "@/store/handexApi"
 import { TranslationsDialog } from "./add-meta"
 import { toast } from "react-toastify"
+import { showDeleteConfirmation } from "@/utils/sweet-alert"
 
 // Define the schema for the form
 const formSchema = z.object({
@@ -32,6 +32,7 @@ type Translation = {
 export function MetaTranslations({ slug }: { slug: string }) {
     const [queryParams, setQueryParams] = useState<{ language: string; slug: string } | null>(null)
     const [isOpenMetaModal, setIsOpenMetaModal] = useState(false)
+    const [showData, setShowData] = useState<boolean>(false)
     const [deleteMeta, { isLoading: delLoading }] = useDeleteMetaMutation()
     const {
         data,
@@ -39,7 +40,10 @@ export function MetaTranslations({ slug }: { slug: string }) {
         isLoading,
         refetch,
         isFetching,
-    } = useGetMetaQuery(queryParams || { language: "skip", slug: "skip" }, { skip: queryParams === null })
+    } = useGetMetaQuery(queryParams || { language: "skip", slug: "skip" }, {
+        skip: queryParams === null,
+        refetchOnMountOrArgChange: true,
+    })
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -48,20 +52,42 @@ export function MetaTranslations({ slug }: { slug: string }) {
             lang: "az",
         },
     })
+    console.log(data)
+    useEffect(() => {
+        if (!isOpenMetaModal && queryParams) {
+            refetch()
+        }
+    }, [isOpenMetaModal, refetch, queryParams])
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         setQueryParams({
             language: values.lang,
             slug: values.field,
         })
+        setShowData(true)
     }
+
     const handleDeleteMeta = async (id: number) => {
         try {
-            await deleteMeta(id).unwrap()
-            toast.success('Meta uğurla silindi')
-            refetch()
+            showDeleteConfirmation(deleteMeta, id, refetch,
+                {
+                    title: "Metanı silmək istəyirsinizmi?",
+                    text: "Bu əməliyyat geri qaytarıla bilməz!",
+                    successText: "Meta uğurla silindi.",
+                },
+            )
+            setShowData(false)
         } catch (error) {
-            toast.error('Metanı silərkən xəta baş verdi')
+            toast.error("Metanı silərkən xəta baş verdi")
+        }
+    }
+
+    const handleModalClose = (open: boolean) => {
+        setIsOpenMetaModal(open)
+        if (!open && queryParams) {
+            setTimeout(() => {
+                refetch()
+            }, 300)
         }
     }
 
@@ -74,7 +100,9 @@ export function MetaTranslations({ slug }: { slug: string }) {
                         <CardDescription>Fetch meta translations for a specific field and language</CardDescription>
                     </div>
                     <div className="flex justify-end">
-                        <Button onClick={() => setIsOpenMetaModal(true)}><Plus /> Meta əlavə et</Button>
+                        <Button onClick={() => setIsOpenMetaModal(true)}>
+                            <Plus /> Meta əlavə et
+                        </Button>
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -121,7 +149,7 @@ export function MetaTranslations({ slug }: { slug: string }) {
                 </div>
             )}
 
-            {data?.length > 0 && (
+            {showData && data?.length > 0 && (
                 <Card>
                     <CardHeader>
                         <CardTitle>Meta nəticə</CardTitle>
@@ -135,6 +163,7 @@ export function MetaTranslations({ slug }: { slug: string }) {
                                 <TableRow>
                                     <TableHead>Name</TableHead>
                                     <TableHead>Description</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -142,7 +171,17 @@ export function MetaTranslations({ slug }: { slug: string }) {
                                     <TableRow key={item.id}>
                                         <TableCell className="font-medium">{item.name}</TableCell>
                                         <TableCell>{item.value}</TableCell>
-                                        <TableCell className="flex justify-end"> <Button onClick={() => handleDeleteMeta(item.id)}><Trash /></Button></TableCell>
+                                        <TableCell className="text-right">
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => handleDeleteMeta(item.id)}
+                                                disabled={delLoading}
+                                            >
+                                                {delLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                <Trash className="h-4 w-4" />
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -151,7 +190,7 @@ export function MetaTranslations({ slug }: { slug: string }) {
                 </Card>
             )}
 
-            <TranslationsDialog slug={slug} open={isOpenMetaModal} onOpenChange={setIsOpenMetaModal} />
+            <TranslationsDialog slug={slug} open={isOpenMetaModal} onOpenChange={handleModalClose} />
         </div>
     )
 }

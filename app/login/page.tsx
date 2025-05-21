@@ -13,6 +13,8 @@ import { LoginFormValues, loginSchema } from "@/validations/login/login.validati
 import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
 import Cookies from 'js-cookie';
+import { useDispatch } from "react-redux"
+import { setCredentials } from "@/store/authSlices"
 
 
 
@@ -21,6 +23,7 @@ export default function LoginPage() {
     const [login, { isLoading, isError, data, isSuccess }] = useLoginMutation()
     const [showPassword, setShowPassword] = useState(false)
     const router = useRouter()
+    const dispatch = useDispatch()
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -36,11 +39,13 @@ export default function LoginPage() {
                 password: values.password,
             }).unwrap();
 
-            Cookies.set('token', response.token, {
-                expires: 1,
-            });
+            dispatch(setCredentials(response.token))
+            // Cookies.set('token', response.token, {
+            //     expires: 1,
+            // });
             toast.success('Daxil olundu');
             router.push('/');
+
         } catch (error) {
             toast.error('Uğursuz cəhd');
         }

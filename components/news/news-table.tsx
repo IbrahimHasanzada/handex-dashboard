@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image"
-import { MoreHorizontal, Eye, Edit, Trash2, ArrowUpDown, Plus, Loader2, Package } from "lucide-react"
+import { MoreHorizontal, Eye, Edit, Trash2, ArrowUpDown, Plus, Loader2, Package, ChevronRight, ChevronLeft } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,7 +22,8 @@ import { Tabs, TabsList, TabsTrigger } from "../ui/tabs"
 
 export function ArticlesTable() {
     const [currentLanguage, setCurrentLanguage] = useState<string>("az")
-    const { data: news, refetch, isLoading: newsLoading } = useGetNewsQuery(currentLanguage, { skip: !currentLanguage });
+    const [currentPage, setCurrentPage] = useState<number>(0)
+    const { data: news, refetch, isLoading: newsLoading } = useGetNewsQuery({ lang: currentLanguage, page: currentPage }, { skip: !currentLanguage });
     const [deleteNews, { isLoading: delLoading }] = useDeleteNewsMutation()
     const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0)
     useEffect(() => {
@@ -43,7 +44,6 @@ export function ArticlesTable() {
             toast.error('Xəbər silərkən xəta baş verdi!')
         }
     }
-
     return (
         <div className="rounded-md border">
             <div className="flex md:items-center justify-between  p-4">
@@ -153,6 +153,27 @@ export function ArticlesTable() {
                         </TableBody>
                     </Table >
             }
+            <div className="flex justify-between w-full p-3">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(currentPage === 0 ? currentPage : currentPage - 1)}
+                    disabled={currentPage === 0}
+                >
+                    <ChevronLeft className="h-4 w-4 mr-1" /> Əvvəlki
+                </Button>
+                <div className="text-sm">
+                    Səhifə {currentPage + 1} / {news?.totalPages}
+                </div>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage + 1 === news?.totalPages}
+                >
+                    Növbəti <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+            </div>
         </div >
     )
 }

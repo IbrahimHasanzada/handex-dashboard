@@ -87,17 +87,17 @@ export function ServiceForm({ slug }: { slug?: string }) {
       form.setValue(`content_${selectedLanguage}` as "content_az" | "content_en" | "content_ru", services.description)
       form.setValue(
         `meta_${selectedLanguage}` as "meta_az" | "meta_en" | "meta_ru",
-        services.meta[0].translations[1].value ? services.meta[0].translations[1].value : "",
+        services.meta[0].value ? services.meta[0].value : "",
       )
 
       // If we have meta data, set the meta name from the first translation
       if (
         services.meta &&
         services.meta[0] &&
-        services.meta[0].translations &&
-        services.meta[0].translations.length > 0
+        services.meta[0].name &&
+        services.meta[0].length > 0
       ) {
-        form.setValue("metaName", services.meta[0].translations[0].name || "description")
+        form.setValue("metaName", services.meta[0].name || "description")
       }
 
       if (services.image?.id) {

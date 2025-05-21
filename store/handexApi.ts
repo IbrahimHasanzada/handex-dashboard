@@ -1,12 +1,21 @@
 "use client"
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import Cookies from 'js-cookie'
-
-let token = Cookies.get('token')
 export const handexApi = createApi({
     reducerPath: 'handexApi',
-    baseQuery: fetchBaseQuery({ baseUrl: 'https://api.drafts.az/api' }),
-    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects'],
+    baseQuery: fetchBaseQuery({
+        baseUrl: 'https://api.drafts.az/api',
+        prepareHeaders: (headers, { getState, endpoint, type, url }: any) => {
+            if (type === 'query' || endpoint === '/auth/login') {
+                return headers
+            }
+            const token = getState().auth.token
+            if (token) {
+                headers.set('authorization', `Bearer ${token}`)
+            }
+            return headers
+        }
+    }),
+    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (params) => ({
@@ -27,7 +36,6 @@ export const handexApi = createApi({
                 url: '/general/update',
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -41,7 +49,6 @@ export const handexApi = createApi({
                 url: `/content/${id}`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: JSON.stringify(params)
@@ -52,7 +59,6 @@ export const handexApi = createApi({
                 url: '/content',
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: JSON.stringify(params)
@@ -63,7 +69,6 @@ export const handexApi = createApi({
                 url: `/content/${id}`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: JSON.stringify(params)
@@ -74,7 +79,6 @@ export const handexApi = createApi({
                 url: `/content/${id}`,
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
             }),
@@ -88,9 +92,6 @@ export const handexApi = createApi({
             query: (id) => ({
                 url: `/customers/${id}`,
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
             }),
         }),
         addCustomers: builder.mutation({
@@ -98,7 +99,6 @@ export const handexApi = createApi({
                 url: `/customers`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -109,7 +109,6 @@ export const handexApi = createApi({
                 url: `/customers/${id}`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -119,9 +118,6 @@ export const handexApi = createApi({
             query: (file) => ({
                 url: '/upload/single',
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
                 body: file
             })
         }),
@@ -134,7 +130,6 @@ export const handexApi = createApi({
                 url: `/profiles`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -145,7 +140,6 @@ export const handexApi = createApi({
                 url: `/profiles/${id}`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -155,13 +149,10 @@ export const handexApi = createApi({
             query: (id) => ({
                 url: `/profiles/${id}`,
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
             })
         }),
         getNews: builder.query({
-            query: (lang) => `/news?lang=${lang}`,
+            query: ({ lang, page }) => `/news?lang=${lang}&page=${page}`,
             providesTags: ['News']
         }),
         addNews: builder.mutation({
@@ -169,7 +160,6 @@ export const handexApi = createApi({
                 url: `/news`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -179,9 +169,6 @@ export const handexApi = createApi({
             query: (id) => ({
                 url: `/news/${id}`,
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
             }),
         }),
         getNewsBySlug: builder.query({
@@ -193,14 +180,13 @@ export const handexApi = createApi({
                 url: `/news/${id}`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
             }),
         }),
         getBlogs: builder.query({
-            query: (lang) => `/blogs?lang=${lang}`,
+            query: ({ lang, page }) => `/blogs?lang=${lang}&page=${page}`,
             providesTags: ['Blog']
         }),
         addBlogs: builder.mutation({
@@ -208,7 +194,6 @@ export const handexApi = createApi({
                 url: `/blogs`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -218,9 +203,6 @@ export const handexApi = createApi({
             query: (id) => ({
                 url: `/blog/${id}`,
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
             }),
         }),
         getBlogsBySlug: builder.query({
@@ -232,14 +214,13 @@ export const handexApi = createApi({
                 url: `/blogs/${id}`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
             }),
         }),
         getService: builder.query({
-            query: (lang) => `/service?lang=${lang}`,
+            query: ({ lang, page }) => `/service?lang=${lang}&page=${page}`,
             providesTags: ['Service']
         }),
         addService: builder.mutation({
@@ -247,7 +228,6 @@ export const handexApi = createApi({
                 url: `/service`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -257,9 +237,6 @@ export const handexApi = createApi({
             query: (id) => ({
                 url: `/service/${id}`,
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
             }),
         }),
         getServiceBySlug: builder.query({
@@ -271,14 +248,13 @@ export const handexApi = createApi({
                 url: `/service/${id}`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
             }),
         }),
         getProjects: builder.query({
-            query: (lang) => `/project?lang=${lang}`,
+            query: ({ lang, page }) => `/project?lang=${lang}&page=${page}`,
             providesTags: ['Projects']
         }),
         addProjects: builder.mutation({
@@ -286,7 +262,6 @@ export const handexApi = createApi({
                 url: `/project`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -296,9 +271,6 @@ export const handexApi = createApi({
             query: (id) => ({
                 url: `/project/${id}`,
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
             }),
         }),
         getProjectsBySlug: builder.query({
@@ -310,7 +282,6 @@ export const handexApi = createApi({
                 url: `/project/${id}`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -321,7 +292,6 @@ export const handexApi = createApi({
                 url: `/section`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -335,7 +305,6 @@ export const handexApi = createApi({
                 url: `/about/update`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -346,7 +315,6 @@ export const handexApi = createApi({
                 url: `/section/${id}`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -356,9 +324,6 @@ export const handexApi = createApi({
             query: (id) => ({
                 url: `/section/${id}`,
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
             }),
         }),
         addMeta: builder.mutation({
@@ -366,7 +331,6 @@ export const handexApi = createApi({
                 url: `/meta`,
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-type': 'application/json'
                 },
                 body: params
@@ -374,14 +338,13 @@ export const handexApi = createApi({
         }),
         getMeta: builder.query({
             query: ({ language, slug }) => `/meta/${slug}?lang=${language}`,
+            providesTags: ['Meta']
+
         }),
         deleteMeta: builder.mutation({
             query: (id) => ({
                 url: `/meta/${id}`,
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
             }),
         }),
 

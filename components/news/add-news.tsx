@@ -76,7 +76,7 @@ export function NewsForm({ slug }: { slug?: string }) {
         meta_az: "",
         meta_en: "",
         meta_ru: "",
-        metaName: "description", 
+        metaName: "description",
         slug: "",
     }
 
@@ -84,11 +84,11 @@ export function NewsForm({ slug }: { slug?: string }) {
         if (slug && news) {
             form.setValue(`title_${selectedLanguage}` as "title_az" | "title_en" | "title_ru", news.title)
             form.setValue(`content_${selectedLanguage}` as "content_az" | "content_en" | "content_ru", news.description)
-            form.setValue(`meta_${selectedLanguage}` as "meta_az" | "meta_en" | "meta_ru", news.meta ? news.meta : "")
+            form.setValue(`meta_${selectedLanguage}` as "meta_az" | "meta_en" | "meta_ru", news.meta ? news.meta[0].value : "")
 
             // If we have meta data, set the meta name from the first translation
-            if (news.meta && news.meta[0] && news.meta[0].translations && news.meta[0].translations.length > 0) {
-                form.setValue("metaName", news.meta[0].translations[0].name || "description")
+            if (news.meta && news.meta[0] && news.meta[0].value && news.meta[0].value > 0) {
+                form.setValue("metaName", news.meta[0].name || "description")
             }
 
             if (news.image?.id) {
