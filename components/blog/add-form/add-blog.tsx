@@ -15,7 +15,7 @@ import {
   useUploadFileMutation,
 } from "@/store/handexApi"
 import { toast } from "react-toastify"
-import { formSchemaNews } from "@/validations/home/news.validation"
+import { editFormSchemaNews, formSchemaNews } from "@/validations/home/news.validation"
 import { validateImage } from "@/validations/upload.validation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
@@ -92,10 +92,19 @@ export function BlogsForm({ slug }: { slug?: string }) {
     }>,
   }
 
-  const form = useForm<z.infer<typeof formSchemaNews>>({
-    defaultValues,
-    resolver: zodResolver(formSchemaNews),
-  })
+  let form: any
+
+  if (blogs) {
+    form = useForm<z.infer<typeof editFormSchemaNews>>({
+      defaultValues,
+      resolver: zodResolver(editFormSchemaNews),
+    })
+  } else {
+    form = useForm<z.infer<typeof formSchemaNews>>({
+      defaultValues,
+      resolver: zodResolver(formSchemaNews),
+    })
+  }
 
   // Handle language change
   const handleLanguageChange = (lang: string) => {

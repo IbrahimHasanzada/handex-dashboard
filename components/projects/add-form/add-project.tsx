@@ -89,15 +89,16 @@ export function ProjectsForm({ slug }: { slug?: string }) {
     }
 
     let form: any
-    if (slug) {
-        form = useForm<z.infer<typeof formSchemaNews>>({
-            defaultValues,
-            resolver: zodResolver(formSchemaNews),
-        })
-    } else {
+    if (projetcs) {
         form = useForm<z.infer<typeof editFormSchemaNews>>({
             defaultValues,
             resolver: zodResolver(editFormSchemaNews),
+        })
+
+    } else {
+        form = useForm<z.infer<typeof formSchemaNews>>({
+            defaultValues,
+            resolver: zodResolver(formSchemaNews),
         })
     }
 
