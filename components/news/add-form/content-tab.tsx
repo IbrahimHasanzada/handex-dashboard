@@ -58,7 +58,7 @@ export function ContentTab({ form, apiKey, selectedLanguage, setSelectedLanguage
                                         onEditorChange={(content) => {
                                             field.onChange(content)
                                         }}
-                                        apiKey='lpj9w7ofu1mtsnuh57fb0ctg0t1b3pgx7e38qy2thctn4rmd'
+                                        apiKey={apiKey}
                                         init={{
                                             ...editorConfig,
                                             language: lang,
