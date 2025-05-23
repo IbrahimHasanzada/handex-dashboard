@@ -6,7 +6,6 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ImageIcon, Loader2, Upload } from 'lucide-react'
-import { useRef } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import type { imageState } from "@/types/home/graduates.dto"
 

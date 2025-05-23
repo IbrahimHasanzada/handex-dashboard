@@ -114,6 +114,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
   // Load data when blogs is fetched
   useEffect(() => {
     if (slug && blogs) {
+      form.setValue("imageAlt", blogs.image.alt)
       // Set title and content for the current language
       form.setValue(`title_${selectedLanguage}` as "title_az" | "title_en" | "title_ru", blogs.title || "")
       form.setValue(
@@ -227,7 +228,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
   }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleRemoveImage()
+
     const file = e.target.files?.[0]
     if (file) {
       const validationImage = validateImage(file, setImageState, imageState)
@@ -299,6 +300,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
     if (fileInputRef.current) {
       fileInputRef.current?.click()
     }
+    handleRemoveImage()
   }
 
   return newsByIdLoading ? (

@@ -137,7 +137,6 @@ export function MediaTab({
                                                     placeholder="Şəkil haqqında təsvir yazın"
                                                     {...field}
                                                     value={field.value || ""}
-                                                    disabled
                                                 />
                                             </FormControl>
                                             <FormDescription>

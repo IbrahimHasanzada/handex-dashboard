@@ -115,6 +115,7 @@ export function ProjectsForm({ slug }: { slug?: string }) {
 
     useEffect(() => {
         if (slug && projetcs) {
+            form.setValue("imageAlt", projetcs.image.alt)
             form.setValue(`title_${selectedLanguage}` as "title_az" | "title_en" | "title_ru", projetcs.title || "")
             form.setValue(`content_${selectedLanguage}` as "content_az" | "content_en" | "content_ru", projetcs.description || "")
 
@@ -215,7 +216,6 @@ export function ProjectsForm({ slug }: { slug?: string }) {
     }
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        handleRemoveImage()
         const file = e.target.files?.[0]
         if (file) {
             const validationImage = validateImage(file, setImageState, imageState)
@@ -229,6 +229,7 @@ export function ProjectsForm({ slug }: { slug?: string }) {
             })
             setFormEdited(true)
         }
+
     }
 
     const uploadSelectedImage = async () => {
@@ -279,6 +280,7 @@ export function ProjectsForm({ slug }: { slug?: string }) {
         if (fileInputRef.current) {
             fileInputRef.current?.click()
         }
+        handleRemoveImage()
     }
 
     const addNewMetaField = () => {

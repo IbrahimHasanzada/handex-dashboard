@@ -115,6 +115,7 @@ export function NewsForm({ slug }: { slug?: string }) {
 
     useEffect(() => {
         if (slug && news) {
+            form.setValue("imageAlt", news.image.alt)
             form.setValue(`title_${selectedLanguage}` as "title_az" | "title_en" | "title_ru", news.title || "")
             form.setValue(`content_${selectedLanguage}` as "content_az" | "content_en" | "content_ru", news.description || "")
 
@@ -215,7 +216,6 @@ export function NewsForm({ slug }: { slug?: string }) {
     }
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        handleRemoveImage()
         const file = e.target.files?.[0]
         if (file) {
             const validationImage = validateImage(file, setImageState, imageState)
@@ -279,6 +279,7 @@ export function NewsForm({ slug }: { slug?: string }) {
         if (fileInputRef.current) {
             fileInputRef.current?.click()
         }
+        handleRemoveImage()
     }
 
     const addNewMetaField = () => {
