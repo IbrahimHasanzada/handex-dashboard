@@ -5,7 +5,6 @@ const initialState = {
     token: Cookies.get('token') || null,
     isAuthenticated: !!Cookies.get('token'),
 }
-
 const authSlice = createSlice({
     name: 'auth',
     initialState,
