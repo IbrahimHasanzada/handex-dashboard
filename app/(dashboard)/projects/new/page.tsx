@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
+import { ProjectsForm } from "@/components/projects/add-form/add-project"
 import { ProjectsHeader } from "@/components/projects/projects-header"
-import { ProjectsForm } from "@/components/projects/add-projects"
 
 export default function ProjectsPage() {
     return (

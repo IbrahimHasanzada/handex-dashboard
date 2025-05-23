@@ -164,12 +164,14 @@ export const handexApi = createApi({
                 },
                 body: params
             }),
+            invalidatesTags: ['News']
         }),
         deleteNews: builder.mutation({
             query: (id) => ({
                 url: `/news/${id}`,
                 method: 'DELETE',
             }),
+            invalidatesTags: ['News']
         }),
         getNewsBySlug: builder.query({
             query: ({ slug, language }) => `/news/${slug}?lang=${language}`,
@@ -184,6 +186,7 @@ export const handexApi = createApi({
                 },
                 body: params
             }),
+            invalidatesTags: ['News']
         }),
         getBlogs: builder.query({
             query: ({ lang, page }) => `/blogs?lang=${lang}&page=${page}`,
@@ -198,12 +201,14 @@ export const handexApi = createApi({
                 },
                 body: params
             }),
+            invalidatesTags: ['Blog']
         }),
         deleteBlogs: builder.mutation({
             query: (id) => ({
-                url: `/blog/${id}`,
+                url: `/blogs/${id}`,
                 method: 'DELETE',
             }),
+            invalidatesTags: ['Blog']
         }),
         getBlogsBySlug: builder.query({
             query: ({ slug, language }) => `/blogs/${slug}?lang=${language}`,
@@ -218,6 +223,7 @@ export const handexApi = createApi({
                 },
                 body: params
             }),
+            invalidatesTags: ['Blog']
         }),
         getService: builder.query({
             query: ({ lang, page }) => `/service?lang=${lang}&page=${page}`,
@@ -232,12 +238,14 @@ export const handexApi = createApi({
                 },
                 body: params
             }),
+            invalidatesTags: ['Service']
         }),
         deleteService: builder.mutation({
             query: (id) => ({
                 url: `/service/${id}`,
                 method: 'DELETE',
             }),
+            invalidatesTags: ['Service']
         }),
         getServiceBySlug: builder.query({
             query: ({ slug, language }) => `/service/${slug}?lang=${language}`,
@@ -252,6 +260,7 @@ export const handexApi = createApi({
                 },
                 body: params
             }),
+            invalidatesTags: ['Service']
         }),
         getProjects: builder.query({
             query: ({ lang, page }) => `/project?lang=${lang}&page=${page}`,
@@ -266,12 +275,14 @@ export const handexApi = createApi({
                 },
                 body: params
             }),
+            invalidatesTags: ['Projects']
         }),
         deleteProjects: builder.mutation({
             query: (id) => ({
                 url: `/project/${id}`,
                 method: 'DELETE',
             }),
+            invalidatesTags: ['Projects']
         }),
         getProjectsBySlug: builder.query({
             query: ({ slug, language }) => `/project/${slug}?lang=${language}`,
@@ -286,6 +297,7 @@ export const handexApi = createApi({
                 },
                 body: params
             }),
+            invalidatesTags: ['Projects']
         }),
         addSectionAbout: builder.mutation({
             query: (params) => ({

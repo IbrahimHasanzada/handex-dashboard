@@ -102,3 +102,30 @@ body {
 .tox-tinymce {
   all: unset;
 }
+
+
+@layer base {
+  h1 {
+    @apply text-4xl font-bold my-4;
+  }
+
+  h2 {
+    @apply text-3xl font-semibold my-3;
+  }
+
+  h3 {
+    @apply text-2xl font-semibold my-2;
+  }
+
+  h4 {
+    @apply text-xl font-medium my-2;
+  }
+
+  h5 {
+    @apply text-lg font-medium my-1;
+  }
+
+  h6 {
+    @apply text-base font-normal my-1;
+  }
+}

@@ -1,5 +1,5 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
-import { NewsForm } from "@/components/news/add-news"
+import { NewsForm } from "@/components/news/add-form/add-news"
 import { NewsHeader } from "@/components/news/news-header"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"

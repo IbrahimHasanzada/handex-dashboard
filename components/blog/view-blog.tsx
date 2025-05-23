@@ -18,20 +18,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 
 export function ViewBlogs({ slug, onEdit, onDelete }: ViewArticleProps) {
     const [currentLanguage, setCurrentLanguage] = useState<string>("az")
-    const { data: blogs, isLoading: blogsLoading, isError, error, refetch: refetchBlogsById } = useGetBlogsBySlugQuery({ slug: slug, language: currentLanguage }, { pollingInterval: 0, refetchOnMountOrArgChange: true, skip: !slug })
+    const { data: blogs, isLoading: blogsLoading, isError, error, refetch: refetchBlogsById } = useGetBlogsBySlugQuery({ slug: slug && slug, language: currentLanguage && currentLanguage }, { pollingInterval: 0, refetchOnMountOrArgChange: true, skip: !slug })
     const { refetch: refetchBlogs } = useGetBlogsQuery('')
     const [deleteBlog, { isSuccess, isLoading }] = useDeleteBlogsMutation()
     const router = useRouter()
     const handleDelete = () => {
         try {
-            showDeleteConfirmation(deleteBlog, blogs.id, async () => {
-                await refetchBlogs()
-                router.push('/blogs')
+            showDeleteConfirmation(deleteBlog, blogs.id, () => {
+                router.push('/blog')
             }, {
                 title: "Bloqu silmək istəyirsinizmi?",
                 text: "Bu əməliyyat geri qaytarıla bilməz!",
                 successText: "Bloq uğurla silindi.",
             })
+
         } catch (error) {
             toast.error('Bloqu silərkən xəta baş verdi!')
         }

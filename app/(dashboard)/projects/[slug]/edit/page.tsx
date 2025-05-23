@@ -1,5 +1,5 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
-import { ProjectsForm } from "@/components/projects/add-projects"
+import { ProjectsForm } from "@/components/projects/add-form/add-project"
 import { ProjectsHeader } from "@/components/projects/projects-header"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"

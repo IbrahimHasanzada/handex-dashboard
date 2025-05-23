@@ -62,7 +62,7 @@ export const showDeleteConfirmation = async (
                 })
 
                 if (refetchFunction) {
-                    await refetchFunction()
+                    refetchFunction()
                 }
 
                 return true

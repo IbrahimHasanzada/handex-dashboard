@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
+import { NewsForm } from "@/components/news/add-form/add-news"
 import { NewsHeader } from "@/components/news/news-header"
-import { NewsForm } from "@/components/news/add-news"
 
 export default function NewArticlePage() {
     return (

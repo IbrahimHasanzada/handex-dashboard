@@ -1,4 +1,4 @@
-import { BlogsForm } from "@/components/blog/add-blog"
+import { BlogsForm } from "@/components/blog/add-form/add-blog"
 import { BlogsHeader } from "@/components/blog/blog-header"
 import { DashboardLayout } from "@/components/dashboard-layout"
 

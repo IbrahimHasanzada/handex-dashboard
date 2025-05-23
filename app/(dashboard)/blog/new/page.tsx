@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { BlogsHeader } from "@/components/blog/blog-header"
-import { BlogsForm } from "@/components/blog/add-blog"
+import { BlogsForm } from "@/components/blog/add-form/add-blog"
 
 export default function NewArticlePage() {
     return (
