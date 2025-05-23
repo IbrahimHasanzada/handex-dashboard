@@ -42,9 +42,6 @@ export function BlogsForm({ slug }: { slug?: string }) {
   const [selectedTab, setSelectedTab] = useState("content")
   const [metaFields, setMetaFields] = useState<number[]>([0])
   const router = useRouter()
-
-  // Only fetch when language changes and we haven't visited this language before
-  // or if we haven't edited the form
   const shouldFetch = slug && (!visitedLanguages.has(selectedLanguage) || !formEdited)
 
   const [uploadImage, { isLoading: upLoading }] = useUploadFileMutation()
