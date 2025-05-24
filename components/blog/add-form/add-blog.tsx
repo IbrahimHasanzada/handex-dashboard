@@ -192,6 +192,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
   }, [blogs, slug, selectedLanguage, form])
 
   async function onSubmit(values: z.infer<typeof formSchemaNews>) {
+
     try {
       const mainMetaTranslations = [
         { name: values.metaName, value: values.meta_az, lang: "az" },

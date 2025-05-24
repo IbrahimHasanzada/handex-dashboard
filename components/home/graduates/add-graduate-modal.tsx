@@ -112,7 +112,7 @@ export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGra
             submitButtonText="Əlavə et"
             loadingText="Əlavə edilir..."
             imageInputId="image-upload-add"
-            uploadImage={handleUploadWithAlt} // Pass the upload function to the modal
+            uploadImage={handleUploadWithAlt}
         />
     )
 }
