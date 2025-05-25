@@ -1,5 +1,7 @@
 "use client"
+import Cookies from 'js-cookie'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+let tokenForConsultation = Cookies.get('token')
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({
@@ -15,7 +17,7 @@ export const handexApi = createApi({
             return headers
         }
     }),
-    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta'],
+    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (params) => ({
@@ -378,7 +380,38 @@ export const handexApi = createApi({
                 method: 'DELETE',
             }),
         }),
-
+        getConsultation: builder.query({
+            query: () => ({
+                url: '/consultation',
+                headers: {
+                    'authorization': `Bearer ${tokenForConsultation}`
+                },
+            }),
+            providesTags: ['Consultation']
+        }),
+        deleteConsultation: builder.mutation({
+            query: (id) => ({
+                url: `/consultation/${id}`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: ['Consultation']
+        }),
+        getContact: builder.query({
+            query: () => ({
+                url: '/contact',
+                headers: {
+                    'authorization': `Bearer ${tokenForConsultation}`
+                },
+            }),
+            providesTags: ['Contact']
+        }),
+        deleteContact: builder.mutation({
+            query: (id) => ({
+                url: `/contact/${id}`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: ['Contact']
+        })
     }),
 })
 
@@ -430,6 +463,10 @@ export const {
     useEditSectionsMutation,
     useGetRedirectsQuery,
     useAddRedirectMutation,
-    useDeleteRedirectMutation
+    useDeleteRedirectMutation,
+    useGetConsultationQuery,
+    useDeleteConsultationMutation,
+    useGetContactQuery,
+    useDeleteContactMutation
 
 } = handexApi

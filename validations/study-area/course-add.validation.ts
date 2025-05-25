@@ -1,11 +1,28 @@
 import { z } from "zod"
 
 const translationSchema = z.object({
-    table: z.string().optional(),
-    course_detail: z.string().optional(),
-    description: z.string().optional(),
-    name: z.string().optional(),
-    value: z.string().optional(),
+    table: z.string().min(1, "Cədvəl tələb olunur").optional(),
+    course_detail: z.string().min(1, "Kurs təfərrüatı tələb olunur").optional(),
+    description: z.string().min(1, "Təsvir tələb olunur").optional(),
+    name: z.string().min(1, "Ad tələb olunur").optional(),
+    value: z.string().min(1, "Dəyər tələb olunur").optional(),
+    lang: z.enum(["az", "en", "ru"]),
+})
+
+const courseTranslationSchema = z.object({
+    table: z.string().min(1, "Cədvəl tələb olunur"),
+    course_detail: z.string().min(1, "Kurs təfərrüatı tələb olunur"),
+    lang: z.enum(["az", "en", "ru"]),
+})
+
+const programTranslationSchema = z.object({
+    description: z.string().min(1, "Təsvir tələb olunur"),
+    lang: z.enum(["az", "en", "ru"]),
+})
+
+const metaTranslationSchema = z.object({
+    name: z.string().min(1, "Ad tələb olunur"),
+    value: z.string().min(1, "Dəyər tələb olunur"),
     lang: z.enum(["az", "en", "ru"]),
 })
 
@@ -17,22 +34,45 @@ const faqSchema = z.object({
 
 const programSchema = z.object({
     name: z.string().min(1, "Proqram adı tələb olunur"),
-    translations: z.array(translationSchema).min(1, "Ən azı bir tərcümə tələb olunur"),
-    studyArea: z.number().min(0, "Tədris sahəsi tələb olunur"),
+    translations: z
+        .array(programTranslationSchema)
+        .length(3, "Hər 3 dil üçün tərcümə tələb olunur")
+        .refine((translations) => {
+            const languages = translations.map((t) => t.lang)
+            return languages.includes("az") && languages.includes("en") && languages.includes("ru")
+        }, "Azərbaycan, İngilis və Rus dillərində tərcümələr tələb olunur"),
 })
 
 const metaSchema = z.object({
-    translations: z.array(translationSchema).min(1, "Meta məlumatları tələb olunur"),
+    translations: z
+        .array(metaTranslationSchema)
+        .length(3, "Hər 3 dil üçün meta tərcümə tələb olunur")
+        .refine((translations) => {
+            const languages = translations.map((t) => t.lang)
+            return languages.includes("az") && languages.includes("en") && languages.includes("ru")
+        }, "Azərbaycan, İngilis və Rus dillərində meta tərcümələr tələb olunur"),
 })
 
 export const courseSchema = z.object({
     name: z.string().min(1, "Kurs adı tələb olunur"),
-    date: z.array(z.string()).min(1, "Ən azı bir tarix tələb olunur"),
+    date: z.array(z.string().min(1, "Tarix tələb olunur")).min(1, "Ən azı bir tarix tələb olunur"),
     slug: z.string().min(1, "Slug tələb olunur"),
     color: z.string().regex(/^#[0-9A-F]{6}$/i, "Düzgün hex rəng formatı tələb olunur"),
-    image: z.number().min(0, "Şəkil tələb olunur"),
-    translations: z.array(translationSchema).min(1, "Ən azı bir tərcümə tələb olunur"),
-    faq: z.array(faqSchema).min(1, "Ən azı bir FAQ tələb olunur"),
+    image: z.number().min(1, "Şəkil tələb olunur"),
+    translations: z
+        .array(courseTranslationSchema)
+        .length(3, "Hər 3 dil üçün tərcümə tələb olunur")
+        .refine((translations) => {
+            const languages = translations.map((t) => t.lang)
+            return languages.includes("az") && languages.includes("en") && languages.includes("ru")
+        }, "Azərbaycan, İngilis və Rus dillərində tərcümələr tələb olunur"),
+    faq: z
+        .array(faqSchema)
+        .length(3, "Hər 3 dil üçün FAQ tələb olunur")
+        .refine((faqs) => {
+            const languages = faqs.map((f) => f.lang)
+            return languages.includes("az") && languages.includes("en") && languages.includes("ru")
+        }, "Azərbaycan, İngilis və Rus dillərində FAQ-lar tələb olunur"),
     program: z.array(programSchema).min(1, "Ən azı bir proqram tələb olunur"),
     meta: z.array(metaSchema).optional(),
 })

@@ -24,7 +24,10 @@ import {
   LogOut,
   Settings,
   BarChart3,
-  WaypointsIcon
+  WaypointsIcon,
+  UsersRound,
+  Contact
+
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -46,6 +49,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     { name: "Layihələr", href: "/projects", icon: FolderKanban },
     { name: "Statistika", href: "/statistics", icon: BarChart3 },
     { name: "Redirect", href: "/redirect", icon: WaypointsIcon },
+    { name: "Konsultasiya", href: "/consultation", icon: UsersRound },
+    { name: "Əlaqə", href: "/contact", icon: Contact },
   ]
 
   const handleLogOut = () => {

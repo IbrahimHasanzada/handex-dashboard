@@ -10,7 +10,7 @@ export interface imageState {
     preview: string | null
     id: number | null
     error: string | null
-    selectedFile: File | string | null
+    selectedFile: string | File | null
 
 }
 

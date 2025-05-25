@@ -140,7 +140,7 @@ export default function AdminFeaturesPage() {
                             <CardTitle className="mt-4">{feature.title}</CardTitle>
                         </CardHeader>
                         <div className="px-6 pb-6">
-                            <p className="text-sm text-muted-foreground line-clamp-2">
+                            <p className="text-sm text-muted-foreground break-all">
                                 {feature.desc}
                             </p>
                         </div>

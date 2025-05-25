@@ -8,33 +8,29 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { validateImage } from "@/validations/upload.validation"
+import { useUploadFileMutation } from "@/store/handexApi"
+import { toast } from "react-toastify"
+import { imageState } from "@/types/home/graduates.dto"
 
 interface ImageUploadProps {
     onImageUpload: (imageId: number) => void
+    setImageState: any,
+    imageState: any
+    altText: string
+    setAltText: any
 }
 
-export function ImageUpload({ onImageUpload }: ImageUploadProps) {
-    const [imageState, setImageState] = useState<{
-        preview: string | null
-        id: number | null
-        error: string | null
-        selectedFile: File | null
-    }>({
-        preview: null,
-        id: null,
-        error: null,
-        selectedFile: null,
-    })
-    const [altText, setAltText] = useState("")
-    const [fileLoading, setFileLoading] = useState(false)
+export function ImageUpload({ onImageUpload, setImageState, imageState, setAltText, altText }: ImageUploadProps) {
 
+
+    const [uploadImage, { isLoading }] = useUploadFileMutation()
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
 
         let validationImage = validateImage(file, setImageState, imageState)
         if (validationImage == false) return
-        
+
         setImageState({
             preview: URL.createObjectURL(file),
             id: null,
@@ -46,35 +42,25 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
     const handleUploadWithAlt = async (file: File, altText: string) => {
         if (!file || !altText.trim()) return
 
-        setFileLoading(true)
         try {
             const formData = new FormData()
             formData.append("file", file)
             formData.append("alt", altText.trim())
 
-            const response = await fetch("/api/upload", {
-                method: "POST",
-                body: formData,
-            })
-
-            if (!response.ok) throw new Error("Upload failed")
-
-            const result = await response.json()
-
-            onImageUpload(result.id)
-            setImageState({
-                preview: result.url,
-                id: result.id,
-                error: null,
-                selectedFile: null,
-            })
-
-            console.log("Image uploaded successfully:", result)
-        } catch (error) {
-            console.error("Upload error:", error)
-            setImageState((prev) => ({ ...prev, error: "Şəkil yükləmə xətası" }))
-        } finally {
-            setFileLoading(false)
+            const result: any = await uploadImage(formData)
+            if (result) {
+                onImageUpload(result.data.id)
+                setImageState({
+                    preview: result.data.url,
+                    id: result.data.id,
+                    error: null,
+                    selectedFile: null,
+                })
+            }
+            toast.success("Şəkil uğurla yükləndi")
+        } catch (error: any) {
+            toast.error("Upload error:", error)
+            setImageState((prev: imageState) => ({ ...prev, error: "Şəkil yükləmə xətası" }))
         }
     }
 
@@ -127,9 +113,9 @@ export function ImageUpload({ onImageUpload }: ImageUploadProps) {
                         type="button"
                         variant="default"
                         onClick={() => handleUploadWithAlt(imageState.selectedFile!, altText)}
-                        disabled={fileLoading}
+                        disabled={isLoading}
                     >
-                        {fileLoading ? "Yüklənir..." : "Şəkli Yüklə"}
+                        {isLoading ? "Yüklənir..." : "Şəkli Yüklə"}
                     </Button>
                 )}
                 {imageState?.error && <p className="text-sm text-red-500">{imageState.error}</p>}
