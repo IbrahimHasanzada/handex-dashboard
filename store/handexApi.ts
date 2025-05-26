@@ -17,7 +17,7 @@ export const handexApi = createApi({
             return headers
         }
     }),
-    tagTypes: ['Statistics', 'HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact'],
+    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (params) => ({
@@ -31,7 +31,7 @@ export const handexApi = createApi({
         }),
         getGeneral: builder.query({
             query: () => '/general',
-            providesTags: ['Statistics']
+            providesTags: ['General']
         }),
         general: builder.mutation({
             query: (params) => ({
@@ -42,6 +42,7 @@ export const handexApi = createApi({
                 },
                 body: params
             }),
+            invalidatesTags: ['General']
         }),
         getHero: builder.query({
             query: ({ slug, lang }) => `/content/${slug}?lang=${lang}`,

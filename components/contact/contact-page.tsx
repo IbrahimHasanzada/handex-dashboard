@@ -88,7 +88,7 @@ export default function ContactPage() {
     }
 
     return (
-        <div className="container p-6 ">
+        <div className="p-6 ">
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Əlaqə Mesajları</h1>
                 <p className="text-gray-600">Bütün əlaqə forması təqdimatlarını idarə edin</p>
