@@ -1,0 +1,15 @@
+export const ServiceDefaultValues = {
+    title_az: "",
+    title_en: "",
+    title_ru: "",
+    content_az: "",
+    content_en: "",
+    content_ru: "",
+    featuredImage: -1,
+    imageAlt: "",
+    meta_az: "",
+    meta_en: "",
+    meta_ru: "",
+    metaName: "description", 
+    slug: "",
+}

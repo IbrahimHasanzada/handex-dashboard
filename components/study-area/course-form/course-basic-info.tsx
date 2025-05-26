@@ -22,28 +22,17 @@ interface CourseBasicInfoProps {
 }
 
 export function CourseBasicInfo({ form, generateSlug, setImageState, imageState, altText, setAltText }: CourseBasicInfoProps) {
-    const {
-        fields: dateFields,
-        append: appendDate,
-        remove: removeDate,
-    } = useFieldArray<any>({
-        control: form.control,
-        name: "date",
-    })
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
         form.setValue("name", value)
-        // Auto-generate slug when name changes
         if (value) {
             form.setValue("slug", generateSlug(value))
         }
     }
 
     const handleImageUpload = (imageId: number) => {
-        console.log("Setting image ID:", imageId)
         form.setValue("image", imageId, { shouldValidate: true })
-        // Trigger validation
         form.trigger("image")
     }
 
@@ -89,28 +78,6 @@ export function CourseBasicInfo({ form, generateSlug, setImageState, imageState,
                         )}
                         <p className="text-xs text-muted-foreground">Current image value: {form.watch("image") || "Not set"}</p>
                     </div>
-                </div>
-
-                <div className="space-y-2">
-                    <Label>Tarixlər</Label>
-                    {dateFields.map((field, index) => (
-                        <div key={field.id} className="flex gap-2">
-                            <Input type="date" {...form.register(`date.${index}`)} placeholder="YYYY-MM-DD" />
-                            {dateFields.length > 1 && (
-                                <Button type="button" variant="outline" size="icon" onClick={() => removeDate(index)}>
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            )}
-                        </div>
-                    ))}
-                    <Button type="button" variant="outline" onClick={() => appendDate("")}>
-                        <Plus className="mr-2 h-4 w-4" /> Tarix Əlavə Et
-                    </Button>
-                    {form.formState.errors.date && (
-                        <p className="text-sm text-red-500">
-                            {Array.isArray(form.formState.errors.date) ? "Tarix xətası var" : form.formState.errors.date.message}
-                        </p>
-                    )}
                 </div>
             </CardContent>
         </Card>

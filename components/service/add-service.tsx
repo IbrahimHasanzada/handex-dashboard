@@ -26,6 +26,7 @@ import type { imageState } from "@/types/home/graduates.dto"
 import { validateImage } from "@/validations/upload.validation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
+import { ServiceDefaultValues } from "./defaultValues"
 
 export function ServiceForm({ slug }: { slug?: string }) {
   const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
@@ -65,21 +66,7 @@ export function ServiceForm({ slug }: { slug?: string }) {
       skip: languagesSkip.includes(selectedLanguage) || !slug,
     },
   )
-  const defaultValues = {
-    title_az: "",
-    title_en: "",
-    title_ru: "",
-    content_az: "",
-    content_en: "",
-    content_ru: "",
-    featuredImage: -1,
-    imageAlt: "",
-    meta_az: "",
-    meta_en: "",
-    meta_ru: "",
-    metaName: "description", // Default meta name
-    slug: "",
-  }
+
 
   useEffect(() => {
     if (slug && services) {
@@ -109,7 +96,7 @@ export function ServiceForm({ slug }: { slug?: string }) {
   }, [services, slug])
 
   const form = useForm<z.infer<typeof formSchemaNews>>({
-    defaultValues,
+    defaultValues: ServiceDefaultValues,
     resolver: zodResolver(formSchemaNews),
   })
 

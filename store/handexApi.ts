@@ -17,7 +17,7 @@ export const handexApi = createApi({
             return headers
         }
     }),
-    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact'],
+    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact', 'Study-area'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (params) => ({
@@ -412,7 +412,33 @@ export const handexApi = createApi({
                 method: 'DELETE'
             }),
             invalidatesTags: ['Contact']
-        })
+        }),
+        getStudyAreaBySlug: builder.query({
+            query: ({ slug, lang }) => `/study-area/one?slug=${slug}&lang=${lang}`,
+            providesTags: ['Study-area']
+        }),
+        getStudyArea: builder.query({
+            query: (lang) => `/study-area?lang=${lang}`,
+            providesTags: ['Study-area']
+        }),
+        addStudyArea: builder.mutation({
+            query: (params) => ({
+                url: `/study-area`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+            invalidatesTags: ['Study-area']
+        }),
+        deleteStudyArea: builder.mutation({
+            query: (id) => ({
+                url: `/study-area/${id}`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: ['Study-area']
+        }),
     }),
 })
 
@@ -468,6 +494,10 @@ export const {
     useGetConsultationQuery,
     useDeleteConsultationMutation,
     useGetContactQuery,
-    useDeleteContactMutation
+    useDeleteContactMutation,
+    useAddStudyAreaMutation,
+    useGetStudyAreaBySlugQuery,
+    useGetStudyAreaQuery,
+    useDeleteStudyAreaMutation
 
 } = handexApi

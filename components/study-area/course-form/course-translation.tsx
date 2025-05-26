@@ -1,11 +1,10 @@
 "use client"
 
 import type { UseFormReturn } from "react-hook-form"
-import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { CourseFormData } from "@/validations/study-area/course-add.validation"
+import type { CourseFormData } from "@/validations/study-area/course-add.validation"
 
 interface CourseTranslationsProps {
     form: UseFormReturn<CourseFormData>
@@ -25,16 +24,19 @@ export function CourseTranslations({ form }: CourseTranslationsProps) {
                         </h4>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Cədvəl</Label>
-                                <Input {...form.register(`translations.${langIndex}.table`)} placeholder="5 ay, həftədə 3 dəfə" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Kurs Təfərrüatı</Label>
+                                <Label>Kurs Təfərrüatı *</Label>
                                 <Textarea
                                     {...form.register(`translations.${langIndex}.course_detail`)}
                                     placeholder="Kurs haqqında ətraflı məlumat"
+                                    rows={4}
                                 />
+                                {form.formState.errors.translations?.[langIndex]?.course_detail && (
+                                    <p className="text-sm text-red-500">
+                                        {form.formState.errors.translations[langIndex]?.course_detail?.message}
+                                    </p>
+                                )}
                             </div>
+                            <input type="hidden" {...form.register(`translations.${langIndex}.lang`)} value={lang} />
                         </div>
                     </div>
                 ))}

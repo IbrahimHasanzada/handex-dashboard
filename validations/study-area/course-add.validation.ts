@@ -1,7 +1,6 @@
 import { z } from "zod"
 
 const translationSchema = z.object({
-    table: z.string().min(1, "Cədvəl tələb olunur").optional(),
     course_detail: z.string().min(1, "Kurs təfərrüatı tələb olunur").optional(),
     description: z.string().min(1, "Təsvir tələb olunur").optional(),
     name: z.string().min(1, "Ad tələb olunur").optional(),
@@ -10,7 +9,6 @@ const translationSchema = z.object({
 })
 
 const courseTranslationSchema = z.object({
-    table: z.string().min(1, "Cədvəl tələb olunur"),
     course_detail: z.string().min(1, "Kurs təfərrüatı tələb olunur"),
     lang: z.enum(["az", "en", "ru"]),
 })
@@ -53,9 +51,36 @@ const metaSchema = z.object({
         }, "Azərbaycan, İngilis və Rus dillərində meta tərcümələr tələb olunur"),
 })
 
+const groupTextTranslationSchema = z.object({
+    name: z.string().min(1, "Qrup adı tələb olunur"),
+    lang: z.enum(["az", "en", "ru"]),
+})
+
+const groupTableTranslationSchema = z.object({
+    name: z.string().min(1, "Cədvəl məlumatı tələb olunur"),
+    lang: z.enum(["az", "en", "ru"]),
+})
+
+const groupSchema = z.object({
+    text: z
+        .array(groupTextTranslationSchema)
+        .length(3, "Hər 3 dil üçün qrup adı tərcüməsi tələb olunur")
+        .refine((translations) => {
+            const languages = translations.map((t) => t.lang)
+            return languages.includes("az") && languages.includes("en") && languages.includes("ru")
+        }, "Azərbaycan, İngilis və Rus dillərində qrup adı tərcümələri tələb olunur"),
+    table: z
+        .array(groupTableTranslationSchema)
+        .length(3, "Hər 3 dil üçün cədvəl tərcüməsi tələb olunur")
+        .refine((translations) => {
+            const languages = translations.map((t) => t.lang)
+            return languages.includes("az") && languages.includes("en") && languages.includes("ru")
+        }, "Azərbaycan, İngilis və Rus dillərində cədvəl tərcümələri tələb olunur"),
+    startDate: z.string().min(1, "Başlama tarixi tələb olunur"),
+})
+
 export const courseSchema = z.object({
     name: z.string().min(1, "Kurs adı tələb olunur"),
-    date: z.array(z.string().min(1, "Tarix tələb olunur")).min(1, "Ən azı bir tarix tələb olunur"),
     slug: z.string().min(1, "Slug tələb olunur"),
     color: z.string().regex(/^#[0-9A-F]{6}$/i, "Düzgün hex rəng formatı tələb olunur"),
     image: z.number().min(1, "Şəkil tələb olunur"),
@@ -75,6 +100,20 @@ export const courseSchema = z.object({
         }, "Azərbaycan, İngilis və Rus dillərində FAQ-lar tələb olunur"),
     program: z.array(programSchema).min(1, "Ən azı bir proqram tələb olunur"),
     meta: z.array(metaSchema).optional(),
+    group: z.array(groupSchema).optional(),
 })
 
 export type CourseFormData = z.infer<typeof courseSchema>
+
+export {
+    translationSchema,
+    courseTranslationSchema,
+    programTranslationSchema,
+    metaTranslationSchema,
+    faqSchema,
+    programSchema,
+    metaSchema,
+    groupTextTranslationSchema,
+    groupTableTranslationSchema,
+    groupSchema,
+}

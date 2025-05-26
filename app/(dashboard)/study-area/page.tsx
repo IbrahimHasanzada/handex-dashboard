@@ -1,14 +1,9 @@
 "use client"
 
-import { useState } from "react"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { CourseOverview } from "@/components/study-area/course-overiew"
 import { CourseList } from "@/components/study-area/course-list"
 import { DashboardLayout } from "@/components/dashboard-layout"
 
 export default function page() {
-  const [activeTab, setActiveTab] = useState("overview")
-
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-6 p-6">
@@ -19,20 +14,8 @@ export default function page() {
           </div>
         </div>
 
-        <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="overview">Ümumi Baxış</TabsTrigger>
-            <TabsTrigger value="courses">Kurslar</TabsTrigger>
-          </TabsList>
+        <CourseList />
 
-          <TabsContent value="overview">
-            <CourseOverview />
-          </TabsContent>
-
-          <TabsContent value="courses">
-            <CourseList />
-          </TabsContent>
-        </Tabs>
       </div>
     </DashboardLayout>
   )

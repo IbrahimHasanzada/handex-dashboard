@@ -19,15 +19,21 @@ import { CourseBasicInfo } from "./course-form/course-basic-info"
 import { CourseFAQ } from "./course-form/course-faq"
 import { CourseProgram } from "./course-form/course-program"
 import { CourseMeta } from "./course-form/course-meta"
+import { CourseGroups } from "./course-form/course-groups"
 import { type CourseFormData, courseSchema } from "@/validations/study-area/course-add.validation"
+import type { JSX } from "react/jsx-runtime"
 import { CourseTranslations } from "./course-form/course-translation"
-import type { JSX } from "react/jsx-runtime" // Import JSX to fix the undeclared variable error
+import { renderFormErrors } from "@/utils/course-error-render"
+import { courseDefaultValues } from "./course-form/defaultValues"
+import { useAddStudyAreaMutation } from "@/store/handexApi"
+import { toast } from "react-toastify"
 
 interface CourseFormDialogProps {
     onSubmit: (data: CourseFormData) => void
 }
 
 export function CourseFormDialog({ onSubmit }: CourseFormDialogProps) {
+    const [addStudyArea] = useAddStudyAreaMutation()
     const [open, setOpen] = useState(false)
     const [altText, setAltText] = useState("")
     const [imageState, setImageState] = useState<{
@@ -44,59 +50,25 @@ export function CourseFormDialog({ onSubmit }: CourseFormDialogProps) {
 
     const form = useForm<CourseFormData>({
         resolver: zodResolver(courseSchema),
-        defaultValues: {
-            name: "",
-            date: [""],
-            slug: "",
-            color: "#DE465D",
-            image: 1, // Changed from 0 to 1 as default
-            translations: [
-                { table: "", course_detail: "", lang: "az" },
-                { table: "", course_detail: "", lang: "en" },
-                { table: "", course_detail: "", lang: "ru" },
-            ],
-            faq: [
-                { title: "", description: "", lang: "az" },
-                { title: "", description: "", lang: "en" },
-                { title: "", description: "", lang: "ru" },
-            ],
-            program: [
-                {
-                    name: "",
-                    translations: [
-                        { description: "", lang: "az" },
-                        { description: "", lang: "en" },
-                        { description: "", lang: "ru" },
-                    ],
-                },
-            ],
-            meta: [],
-        },
+        defaultValues: courseDefaultValues
     })
 
-    const handleSubmit = (data: CourseFormData) => {
-        console.log("Form submitted with data:", data)
-        onSubmit(data)
-        setOpen(false)
-        form.reset()
-        setImageState({
-            preview: null,
-            id: null,
-            error: null,
-            selectedFile: null,
-        })
-    }
-
-    const handleFormSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        console.log("Form submit triggered")
-        console.log("Form is valid:", form.formState.isValid)
-        console.log("Form errors:", form.formState.errors)
-        console.log("Current form values:", form.getValues())
-
-        form.handleSubmit(handleSubmit, (errors) => {
-            console.log("Validation errors:", errors)
-        })(e)
+    const handleSubmit = async (data: CourseFormData) => {
+        try {
+            await addStudyArea(data).unwrap()
+            toast.success("Tədris sahəsi uğurla əlavə olundu")
+            onSubmit(data)
+            setOpen(false)
+            form.reset()
+            setImageState({
+                preview: null,
+                id: null,
+                error: null,
+                selectedFile: null,
+            })
+        } catch (error: any) {
+            toast.error(error.data)
+        }
     }
 
     const generateSlug = (name: string) => {
@@ -107,83 +79,9 @@ export function CourseFormDialog({ onSubmit }: CourseFormDialogProps) {
             .trim()
     }
 
-    // Force validation check
-    const checkValidation = () => {
-        form.trigger()
-    }
+    const checkValidation = () => { form.trigger() }
 
-    // Helper function to render form errors in a readable format
-    const renderFormErrors = (errors: any, parentPath = ""): JSX.Element[] => {
-        const errorElements: JSX.Element[] = []
 
-        const getFieldDisplayName = (path: string): string => {
-            const pathMap: Record<string, string> = {
-                name: "Kurs Adı",
-                slug: "Slug",
-                color: "Rəng",
-                image: "Şəkil",
-                date: "Tarixlər",
-                translations: "Tərcümələr",
-                table: "Cədvəl",
-                course_detail: "Kurs Təfərrüatı",
-                faq: "FAQ",
-                title: "Başlıq",
-                description: "Təsvir",
-                program: "Proqram",
-                studyArea: "Təhsil Sahəsi",
-                meta: "Meta Məlumatları",
-                value: "Dəyər",
-                lang: "Dil",
-            }
-
-            // Handle array indices
-            const parts = path.split(".")
-            const displayParts = parts.map((part, index) => {
-                if (!isNaN(Number(part))) {
-                    const prevPart = parts[index - 1]
-                    if (prevPart === "program") return `Proqram ${Number(part) + 1}`
-                    if (prevPart === "faq") return `FAQ ${Number(part) + 1}`
-                    if (prevPart === "meta") return `Meta ${Number(part) + 1}`
-                    if (prevPart === "translations") {
-                        const langMap = ["Azərbaycan", "English", "Русский"]
-                        return langMap[Number(part)] || `Tərcümə ${Number(part) + 1}`
-                    }
-                    return `${Number(part) + 1}`
-                }
-                return pathMap[part] || part
-            })
-
-            return displayParts.join(" → ")
-        }
-
-        Object.keys(errors).forEach((key) => {
-            const currentPath = parentPath ? `${parentPath}.${key}` : key
-            const error = errors[key]
-
-            if (error && typeof error === "object") {
-                if (error.message) {
-                    // This is a leaf error with a message
-                    errorElements.push(
-                        <div key={currentPath} className="text-red-600 bg-red-50 p-2 rounded">
-                            <strong>{getFieldDisplayName(currentPath)}:</strong> {error.message}
-                        </div>,
-                    )
-                } else if (Array.isArray(error)) {
-                    // Handle array errors
-                    error.forEach((item, index) => {
-                        if (item && typeof item === "object") {
-                            errorElements.push(...renderFormErrors(item, `${currentPath}.${index}`))
-                        }
-                    })
-                } else {
-                    // Nested object, recurse
-                    errorElements.push(...renderFormErrors(error, currentPath))
-                }
-            }
-        })
-
-        return errorElements
-    }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -198,11 +96,12 @@ export function CourseFormDialog({ onSubmit }: CourseFormDialogProps) {
                     <DialogDescription>Yeni kurs yaradın və bütün lazımi məlumatları doldurun</DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleFormSubmit} className="space-y-6">
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                     <Tabs defaultValue="basic" className="w-full">
-                        <TabsList className="grid w-full grid-cols-5">
+                        <TabsList className="grid w-full grid-cols-6">
                             <TabsTrigger value="basic">Əsas</TabsTrigger>
                             <TabsTrigger value="translations">Tərcümələr</TabsTrigger>
+                            <TabsTrigger value="groups">Qruplar</TabsTrigger>
                             <TabsTrigger value="faq">FAQ</TabsTrigger>
                             <TabsTrigger value="program">Proqram</TabsTrigger>
                             <TabsTrigger value="meta">Meta</TabsTrigger>
@@ -221,6 +120,10 @@ export function CourseFormDialog({ onSubmit }: CourseFormDialogProps) {
 
                         <TabsContent value="translations" className="space-y-4">
                             <CourseTranslations form={form} />
+                        </TabsContent>
+
+                        <TabsContent value="groups" className="space-y-4">
+                            <CourseGroups form={form} />
                         </TabsContent>
 
                         <TabsContent value="faq" className="space-y-4">

@@ -56,7 +56,6 @@ export function TranslationsDialog({ open, onOpenChange, slug }: TranslationsDia
     const [activeTab, setActiveTab] = useState("az")
     const [addMeta, { isLoading }] = useAddMetaMutation()
 
-    // Initialize form with the new structure
     const form = useForm<TranslationFormValues>({
         resolver: zodResolver(translationSchema),
         defaultValues: {
@@ -69,10 +68,8 @@ export function TranslationsDialog({ open, onOpenChange, slug }: TranslationsDia
         },
     })
 
-    // Handle form submission
     async function onSubmit(data: TranslationFormValues) {
         try {
-            // Transform the data to match the API's expected format
             const transformedData = {
                 slug: data.slug,
                 translations: data.values.map((item) => ({
@@ -81,11 +78,10 @@ export function TranslationsDialog({ open, onOpenChange, slug }: TranslationsDia
                     lang: item.lang,
                 })),
             }
-            console.log(transformedData)
             await addMeta(transformedData).unwrap()
             toast.success("Meta uğurla əlavə edildi")
-            form.reset() // Reset form after successful submission
-            onOpenChange(false) // Close dialog
+            form.reset()
+            onOpenChange(false)
         } catch (error) {
             console.error("Error submitting form:", error)
             toast.error("Meta əlavə edərkən xəta baş verdi!")
@@ -103,7 +99,6 @@ export function TranslationsDialog({ open, onOpenChange, slug }: TranslationsDia
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
-                        {/* Name field - shared across all languages */}
                         <FormField
                             control={form.control}
                             name="name"
