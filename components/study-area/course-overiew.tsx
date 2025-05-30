@@ -4,81 +4,64 @@ import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Edit, Users, Award, Loader2 } from "lucide-react"
-import { CourseOverviewProps } from "@/types/study-area/overview"
+import { Plus, Edit, Award, Loader2, Box, ArrowLeft } from "lucide-react"
+import type { CourseOverviewProps } from "@/types/study-area/overview"
 import { useGetStudyAreaBySlugQuery } from "@/store/handexApi"
 import { useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs"
-
-
-
-
-
-const benefits = [
-    {
-        id: 1,
-        title: "Peşəkar Müəllimlər",
-        description: "Sahəsində təcrübəli və peşəkar müəllimlərdən dərs alın",
-        icon: "/placeholder.svg?height=40&width=40",
-    },
-    {
-        id: 2,
-        title: "Praktiki Təcrübə",
-        description: "Real layihələr üzərində işləyərək təcrübə qazanın",
-        icon: "/placeholder.svg?height=40&width=40",
-    },
-    {
-        id: 3,
-        title: "Karyera Dəstəyi",
-        description: "Məzun olduqdan sonra iş tapmaqda dəstək alın",
-        icon: "/placeholder.svg?height=40&width=40",
-    },
-]
+import Link from "next/link"
+import { FAQList } from "./faq/faq-list"
+import { GroupList } from "./group/group-list"
 
 export function CourseOverview({ slug }: CourseOverviewProps) {
-    const onEdit = () => {
+    const onEdit = () => { }
 
-    }
+    const onEditProgram = (id: number) => { }
 
-    const onEditProgram = (id: number) => {
+    const onAddProgram = () => { }
 
-    }
+    const onAddFAQ = () => { }
 
-    const onAddProgram = () => {
-
-    }
-
-    const onAddFAQ = () => {
-
-    }
-
-    const onEditFAQ = (id: number) => {
-
-    }
-
+    const onEditFAQ = (id: number) => { }
 
     const [selectedLanguage, setSelectedLanguage] = useState("az")
-    const { data, isLoading } = useGetStudyAreaBySlugQuery({ slug: slug, lang: selectedLanguage }, { skip: !slug })
+    const { data, isLoading, isError, refetch } = useGetStudyAreaBySlugQuery(
+        { slug: slug, lang: selectedLanguage },
+        { skip: !slug },
+    )
+    console.log(data)
     return (
         <div className="space-y-6 p-10">
-            <Tabs defaultValue={selectedLanguage} onValueChange={(value) => setSelectedLanguage(value)}>
-                <TabsList>
-                    <TabsTrigger value="az">Azərbaycanca</TabsTrigger>
-                    <TabsTrigger value="en">English</TabsTrigger>
-                    <TabsTrigger value="ru">Русский</TabsTrigger>
-                </TabsList>
-            </Tabs>
-            {isLoading ?
+            <div className="flex justify-between">
+                <Button variant="outline" size="sm" asChild>
+                    <Link href="/study-area">
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Tədris sahələrinə qayıt
+                    </Link>
+                </Button>
+                <Tabs defaultValue={selectedLanguage} onValueChange={(value) => setSelectedLanguage(value)}>
+                    <TabsList>
+                        <TabsTrigger value="az">Azərbaycanca</TabsTrigger>
+                        <TabsTrigger value="en">English</TabsTrigger>
+                        <TabsTrigger value="ru">Русский</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+            </div>
+            {isLoading ? (
                 <div className="flex items-center justify-center">
                     <Loader2 className="w-10 h-10 animate-spin" />
                 </div>
-                :
+            ) : isError ? (
+                <div>
+                    <div className="flex w-full justify-center items-center">Məlumatları yükləyərkən xəta baş verdi</div>
+                </div>
+            ) : data ? (
                 <div>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
                                 <CardTitle className="flex items-center gap-2">
-                                    {data.name}
+                                    {data && data.name}
                                     <Badge variant="secondary" style={{ backgroundColor: `${data.color}20`, color: data.color }}>
                                         {data.slug}
                                     </Badge>
@@ -113,7 +96,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                                 <div className="relative w-full max-w-[300px] aspect-video bg-gray-100 rounded-lg overflow-hidden">
                                     <Image
                                         src={data.image.url || "/placeholder.svg"}
-                                        alt={data.image ? data.image.alt : 'tədris sahəsi şəkil alt tagı'}
+                                        alt={data.image ? data.image.alt : "tədris sahəsi şəkil alt tagı"}
                                         fill
                                         className="object-cover"
                                     />
@@ -172,86 +155,31 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                         </CardContent>
                     </Card>
 
+                    {/* Groups Section */}
+                    <GroupList
+                        studyArea={data.id}
+                        groups={data.groups}
+                        selectedLanguage={selectedLanguage}
+                        courseColor={data.color}
+                        onRefresh={refetch}
+                    />
+
                     {/* FAQ Section */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div>
-                                <CardTitle>Tez-tez Verilən Suallar</CardTitle>
-                                <CardDescription>Kurs haqqında FAQ-ları idarə edin</CardDescription>
+                    <div className="space-y-4">
+                        <FAQList areaStudy={data.id} faqs={data.faq} selectedLanguage={selectedLanguage} onRefresh={refetch} />
+                        {data.faq.length === 0 && (
+                            <div className="text-center py-8 text-muted-foreground">
+                                <p>Hələ FAQ əlavə edilməyib</p>
+                                <p className="text-sm">İlk sualınızı əlavə etmək üçün yuxarıdakı düyməni basın</p>
                             </div>
-                            <Button onClick={onAddFAQ}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Yeni Sual
-                            </Button>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {data.faq.map((faq: any) => (
-                                    <div key={faq.id} className="border rounded-lg p-4">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-1">
-                                                <div className="font-medium mb-2">{faq.title}</div>
-                                                <div className="text-sm text-muted-foreground">{faq.description}</div>
-                                                <div className="text-xs text-muted-foreground mt-2">
-                                                    Yaradılıb: {new Date(faq.createdAt).toLocaleDateString("az-AZ")}
-                                                </div>
-                                            </div>
-                                            <Button size="icon" variant="ghost" onClick={() => onEditFAQ?.(faq.id)}>
-                                                <Edit className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ))}
-                                {data.faq.length === 0 && (
-                                    <div className="text-center py-8 text-muted-foreground">
-                                        <p>Hələ FAQ əlavə edilməyib</p>
-                                        <p className="text-sm">İlk sualınızı əlavə etmək üçün yuxarıdakı düyməni basın</p>
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-                    {/* Benefits Section */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Users className="h-5 w-5" />
-                                    Niyə Handex?
-                                </CardTitle>
-                                <CardDescription>Məktəbin üstünlüklərini idarə edin</CardDescription>
-                            </div>
-                            <Button>
-                                <Plus className="mr-2 h-4 w-4" /> Yeni Üstünlük
-                            </Button>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {benefits.map((benefit) => (
-                                    <div key={benefit.id} className="border rounded-lg p-6 flex flex-col items-center text-center">
-                                        <div className="relative">
-                                            <Image
-                                                src={benefit.icon || "/placeholder.svg"}
-                                                alt={benefit.title ||  'tədris sahəsi şəkil alt tagı'}
-                                                width={40}
-                                                height={40}
-                                                className="mb-4"
-                                            />
-                                            <div className="absolute -bottom-2 -right-2 flex gap-1">
-                                                <Button size="icon" variant="secondary" className="h-6 w-6">
-                                                    <Edit className="h-3 w-3" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                        <h3 className="text-lg font-medium mb-2">{benefit.title}</h3>
-                                        <p className="text-sm text-muted-foreground">{benefit.description}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
+                        )}
+                    </div>
                 </div>
-            }
+            ) : (
+                <div className="flex w-full justify-center items-center">
+                    <Box>Heç bir məlumat tapılmadı</Box>
+                </div>
+            )}
         </div>
     )
 }

@@ -5,7 +5,7 @@ let tokenForConsultation = Cookies.get('token')
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'https://api.drafts.az/api',
+        baseUrl: 'http://localhost:3000/api',
         prepareHeaders: (headers, { getState, endpoint, type, url }: any) => {
             if (type === 'query' || endpoint === '/auth/login') {
                 return headers
@@ -17,7 +17,7 @@ export const handexApi = createApi({
             return headers
         }
     }),
-    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact', 'Study-area'],
+    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact', 'Study-area', 'FAQ'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (params) => ({
@@ -414,7 +414,7 @@ export const handexApi = createApi({
             invalidatesTags: ['Contact']
         }),
         getStudyAreaBySlug: builder.query({
-            query: ({ slug, lang }) => `/study-area/one?slug=${slug}&lang=${lang}`,
+            query: ({ slug, lang }) => `/study-area/${slug}?lang=${lang}`,
             providesTags: ['Study-area']
         }),
         getStudyArea: builder.query({
@@ -438,6 +438,64 @@ export const handexApi = createApi({
                 method: 'DELETE'
             }),
             invalidatesTags: ['Study-area']
+        }),
+        addFaq: builder.mutation({
+            query: (params) => ({
+                url: `/faq`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+            invalidatesTags: ['FAQ']
+        }),
+        updateFaq: builder.mutation({
+            query: ({ params, id }) => ({
+                url: `/faq/${id}`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+            invalidatesTags: ['FAQ']
+        }),
+        deleteFaq: builder.mutation({
+            query: (id) => ({
+                url: `/faq/${id}`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: ['FAQ']
+        }),
+        addGroup: builder.mutation({
+            query: (params) => ({
+                url: `/group`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+            invalidatesTags: ['FAQ']
+        }),
+        updateGroup: builder.mutation({
+            query: ({ params, id }) => ({
+                url: `/group/${id}`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+            invalidatesTags: ['FAQ']
+        }),
+        deleteGroup: builder.mutation({
+            query: (id) => ({
+                url: `/group/${id}`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: ['FAQ']
         }),
     }),
 })
@@ -498,6 +556,12 @@ export const {
     useAddStudyAreaMutation,
     useGetStudyAreaBySlugQuery,
     useGetStudyAreaQuery,
-    useDeleteStudyAreaMutation
+    useDeleteStudyAreaMutation,
+    useAddFaqMutation,
+    useUpdateFaqMutation,
+    useDeleteFaqMutation,
+    useAddGroupMutation,
+    useUpdateGroupMutation,
+    useDeleteGroupMutation
 
 } = handexApi

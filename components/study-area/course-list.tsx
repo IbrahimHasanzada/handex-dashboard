@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import Image from "next/image"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,6 +16,7 @@ import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
 import { StudyAreaData } from "@/types/study-area/overview"
+import Image from "next/image"
 
 
 
