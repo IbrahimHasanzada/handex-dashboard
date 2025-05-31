@@ -4,7 +4,6 @@ import type React from "react"
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CardFooter } from "../ui/card"
 import { ArrowLeft, ImageIcon, Loader2, Save, Upload } from "lucide-react"
@@ -27,6 +26,7 @@ import { validateImage } from "@/validations/upload.validation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
 import { ServiceDefaultValues } from "./defaultValues"
+import { Input } from "../ui/input"
 
 export function ServiceForm({ slug }: { slug?: string }) {
   const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
@@ -239,7 +239,7 @@ export function ServiceForm({ slug }: { slug?: string }) {
                             <FormItem>
                               <FormLabel>{lang === "az" ? "Başlıq" : lang === "en" ? "Title" : "Заголовок"}</FormLabel>
                               <FormControl>
-                                <Input placeholder={placeholdersNews[lang].title} {...field} />
+                                <Input placeholder={placeholdersNews[lang].title as any} {...field as any} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -443,7 +443,7 @@ export function ServiceForm({ slug }: { slug?: string }) {
                             <FormItem>
                               <FormLabel>Meta Məzmunu</FormLabel>
                               <FormControl>
-                                <Textarea placeholder={placeholdersNews[lang].meta} {...field} />
+                                <Textarea placeholder={placeholdersNews[lang].meta} {...field as any} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { CourseFormData } from "@/validations/study-area/course-add.validation"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction } from "react"
 import { ImageUpload } from "./image-upload"
 import type { imageState } from "@/types/home/graduates.dto"
 
