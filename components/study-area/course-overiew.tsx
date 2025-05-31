@@ -15,10 +15,12 @@ import { GroupList } from "./group/group-list"
 import { ProgramForm } from "./program/program-form"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
+import { EditHero } from "./edit-hero"
 
 export function CourseOverview({ slug }: CourseOverviewProps) {
     const [selectedLanguage, setSelectedLanguage] = useState("az")
     const [isProgramFormOpen, setIsProgramFormOpen] = useState(false)
+    const [isStudyAreaEditOpen, setIsStudyAreaEditOpen] = useState(false)
     const [editingProgram, setEditingProgram] = useState<{
         id: number
         name: string
@@ -32,9 +34,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
     )
     const [deleteProgram] = useDeleteProgramMutation()
 
-    const onEdit = () => {
-        // Handle course edit
-    }
+    const onEdit = () => setIsStudyAreaEditOpen(true)
 
     const onEditProgram = (id: number) => {
         const program = data?.program.find((p: any) => p.id === id)
@@ -59,10 +59,9 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
         setEditingProgram(null)
     }
 
-    const handleProgramSuccess = () => {
-        refetch()
-    }
-
+    const handleStudyAreaEditClose = () => setIsStudyAreaEditOpen(false)
+    const handleProgramSuccess = () => refetch()
+    const handleStudyAreaSuccess = () => refetch()
     const handleDeleteProgram = (id: number) => {
         try {
             showDeleteConfirmation(deleteProgram, id, refetch, {
@@ -128,6 +127,10 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                                             <div className="font-semibold">{data.name}</div>
                                         </div>
                                         <div className="space-y-2">
+                                            <div className="font-medium text-sm text-muted-foreground">Slug</div>
+                                            <div className="text-sm font-mono bg-muted px-2 py-1 rounded">{data.slug}</div>
+                                        </div>
+                                        <div className="space-y-2">
                                             <div className="font-medium text-sm text-muted-foreground">Kurs Təfərrüatı</div>
                                             <div className="text-sm leading-relaxed">{data.course_detail}</div>
                                         </div>
@@ -147,11 +150,6 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                                         fill
                                         className="object-cover"
                                     />
-                                    <div className="absolute bottom-2 right-2">
-                                        <Button size="sm" variant="secondary">
-                                            Şəkli Dəyişdir
-                                        </Button>
-                                    </div>
                                 </div>
                             </div>
                         </CardContent>
@@ -241,6 +239,24 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                 selectedLanguage={selectedLanguage}
                 onSuccess={handleProgramSuccess}
             />
+
+            {/* Study Area Edit Form Modal */}
+            {data && (
+                <EditHero
+                    isOpen={isStudyAreaEditOpen}
+                    onClose={handleStudyAreaEditClose}
+                    studyAreaId={data.id}
+                    initialData={{
+                        name: data.name,
+                        slug: data.slug,
+                        color: data.color,
+                        image: data.image,
+                        course_detail: data.course_detail,
+                    }}
+                    selectedLanguage={selectedLanguage}
+                    onSuccess={handleStudyAreaSuccess}
+                />
+            )}
         </div>
     )
 }
