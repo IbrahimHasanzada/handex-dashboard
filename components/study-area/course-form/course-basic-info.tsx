@@ -72,7 +72,13 @@ export function CourseBasicInfo({ form, generateSlug, setImageState, imageState,
                         )}
                     </div>
                     <div className="space-y-2">
-                        <ImageUpload altText={altText} setAltText={setAltText} setImageState={setImageState} imageState={imageState} onImageUpload={handleImageUpload} />
+                        <ImageUpload
+                            altText={altText}
+                            setAltText={setAltText}
+                            setImageState={setImageState}
+                            imageState={imageState}
+                            onImageUpload={handleImageUpload}
+                        />
                         {form.formState.errors.image && (
                             <p className="text-sm text-red-500">{form.formState.errors.image.message}</p>
                         )}

@@ -4,32 +4,78 @@ import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Edit, Award, Loader2, Box, ArrowLeft } from "lucide-react"
+import { Plus, Edit, Award, Loader2, Box, ArrowLeft, Trash } from "lucide-react"
 import type { CourseOverviewProps } from "@/types/study-area/overview"
-import { useGetStudyAreaBySlugQuery } from "@/store/handexApi"
+import { useDeleteProgramMutation, useGetStudyAreaBySlugQuery } from "@/store/handexApi"
 import { useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs"
 import Link from "next/link"
 import { FAQList } from "./faq/faq-list"
 import { GroupList } from "./group/group-list"
+import { ProgramForm } from "./program/program-form"
+import { showDeleteConfirmation } from "@/utils/sweet-alert"
+import { toast } from "react-toastify"
 
 export function CourseOverview({ slug }: CourseOverviewProps) {
-    const onEdit = () => { }
-
-    const onEditProgram = (id: number) => { }
-
-    const onAddProgram = () => { }
-
-    const onAddFAQ = () => { }
-
-    const onEditFAQ = (id: number) => { }
-
     const [selectedLanguage, setSelectedLanguage] = useState("az")
+    const [isProgramFormOpen, setIsProgramFormOpen] = useState(false)
+    const [editingProgram, setEditingProgram] = useState<{
+        id: number
+        name: string
+        image: { id: number; url: string; alt: string | null }
+        description: string
+    } | null>(null)
+
     const { data, isLoading, isError, refetch } = useGetStudyAreaBySlugQuery(
         { slug: slug, lang: selectedLanguage },
         { skip: !slug },
     )
-    console.log(data)
+    const [deleteProgram] = useDeleteProgramMutation()
+
+    const onEdit = () => {
+        // Handle course edit
+    }
+
+    const onEditProgram = (id: number) => {
+        const program = data?.program.find((p: any) => p.id === id)
+        if (program) {
+            setEditingProgram({
+                id: program.id,
+                name: program.name,
+                image: program.image || { id: 0, url: "", alt: null },
+                description: program.description,
+            })
+            setIsProgramFormOpen(true)
+        }
+    }
+
+    const onAddProgram = () => {
+        setEditingProgram(null)
+        setIsProgramFormOpen(true)
+    }
+
+    const handleProgramFormClose = () => {
+        setIsProgramFormOpen(false)
+        setEditingProgram(null)
+    }
+
+    const handleProgramSuccess = () => {
+        refetch()
+    }
+
+    const handleDeleteProgram = (id: number) => {
+        try {
+            showDeleteConfirmation(deleteProgram, id, refetch, {
+                title: "Proqramı silmək istəyirsinizmi?",
+                text: "Bu əməliyyat geri qaytarıla bilməz!",
+                successText: "Proqram uğurla silindi.",
+            })
+        } catch (error) {
+            console.error("Error:", error)
+            toast.error("Proqram silərkən xəta baş verdi")
+        }
+    }
+
     return (
         <div className="space-y-6 p-10">
             <div className="flex justify-between">
@@ -47,6 +93,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                     </TabsList>
                 </Tabs>
             </div>
+
             {isLoading ? (
                 <div className="flex items-center justify-center">
                     <Loader2 className="w-10 h-10 animate-spin" />
@@ -136,8 +183,11 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                                             <div className="flex items-center justify-between">
                                                 <div className="font-medium">{program.name}</div>
                                                 <div className="flex gap-1">
-                                                    <Button size="icon" variant="ghost" onClick={() => onEditProgram?.(program.id)}>
+                                                    <Button size="icon" variant="ghost" onClick={() => onEditProgram(program.id)}>
                                                         <Edit className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button size="icon" variant="ghost" onClick={() => handleDeleteProgram(program.id)}>
+                                                        <Trash className="h-4 w-4" />
                                                     </Button>
                                                 </div>
                                             </div>
@@ -180,6 +230,17 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                     <Box>Heç bir məlumat tapılmadı</Box>
                 </div>
             )}
+
+            {/* Program Form Modal */}
+            <ProgramForm
+                isOpen={isProgramFormOpen}
+                onClose={handleProgramFormClose}
+                studyAreaId={data?.id}
+                programId={editingProgram?.id}
+                initialData={editingProgram}
+                selectedLanguage={selectedLanguage}
+                onSuccess={handleProgramSuccess}
+            />
         </div>
     )
 }

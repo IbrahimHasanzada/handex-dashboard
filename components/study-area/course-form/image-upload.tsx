@@ -92,7 +92,10 @@ export function ImageUpload({ onImageUpload, setImageState, imageState, setAltTe
                                 type="button"
                                 variant="outline"
                                 className="text-destructive"
-                                onClick={() => setImageState({ preview: null, id: null, error: null, selectedFile: null })}
+                                onClick={() => {
+                                    setAltText("")
+                                    setImageState({ preview: null, id: null, error: null, selectedFile: null })
+                                }}
                             >
                                 Şəkli sil
                             </Button>

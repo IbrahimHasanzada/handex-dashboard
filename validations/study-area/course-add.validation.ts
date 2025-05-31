@@ -32,6 +32,7 @@ const faqSchema = z.object({
 
 const programSchema = z.object({
     name: z.string().min(1, "Proqram adı tələb olunur"),
+    image: z.number().min(1, "Şəkil tələb olunur"),
     translations: z
         .array(programTranslationSchema)
         .length(3, "Hər 3 dil üçün tərcümə tələb olunur")

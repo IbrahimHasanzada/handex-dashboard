@@ -17,6 +17,7 @@ export const courseDefaultValues: CourseFormData = {
     ],
     program: [
         {
+            image: 0,
             name: "",
             translations: [
                 { description: "", lang: "az" },

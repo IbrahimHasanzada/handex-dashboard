@@ -8,12 +8,19 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { CourseFormData } from "@/validations/study-area/course-add.validation"
+import { Dispatch, SetStateAction, useState } from "react"
+import { ImageUpload } from "./image-upload"
+import type { imageState } from "@/types/home/graduates.dto"
 
 interface CourseProgramProps {
     form: UseFormReturn<CourseFormData>
+    setProgramImageStates: Dispatch<SetStateAction<Record<number, imageState>>>
+    programImageStates: Record<number, imageState>
+    programAltTexts: Record<number, string>
+    setProgramAltTexts: Dispatch<SetStateAction<Record<number, string>>>
 }
 
-export function CourseProgram({ form }: CourseProgramProps) {
+export function CourseProgram({ form, setProgramImageStates, programImageStates, setProgramAltTexts, programAltTexts }: CourseProgramProps) {
     const {
         fields: programFields,
         append: appendProgram,
@@ -22,6 +29,64 @@ export function CourseProgram({ form }: CourseProgramProps) {
         control: form.control,
         name: "program",
     })
+
+
+
+
+    const handleProgramImageUpload = (index: number, imageId: number) => form.setValue(`program.${index}.image` as any, imageId)
+
+    const setProgramImageState = (index: number) => (newState: any) => {
+        setProgramImageStates(
+            (prev) => ({
+                ...prev,
+                [index]: typeof newState === "function"
+                    ? newState(prev[index] || {})
+                    : newState,
+            })
+        )
+    }
+
+    const setProgramAltText = (index: number) => (altText: string) => {
+        setProgramAltTexts(
+            (prev) => ({
+                ...prev,
+                [index]: altText,
+            }))
+    }
+
+    const handleRemoveProgram = (index: number) => {
+        removeProgram(index)
+
+        setProgramImageStates((prev) => {
+            const newStates = { ...prev }
+            delete newStates[index]
+            const reindexed: Record<number, imageState> = {}
+            Object.keys(newStates).forEach((key) => {
+                const keyNum = Number.parseInt(key)
+                if (keyNum > index) {
+                    reindexed[keyNum - 1] = newStates[keyNum]
+                } else {
+                    reindexed[keyNum] = newStates[keyNum]
+                }
+            })
+            return reindexed
+        })
+
+        setProgramAltTexts((prev) => {
+            const newTexts = { ...prev }
+            delete newTexts[index]
+            const reindexed: Record<number, string> = {}
+            Object.keys(newTexts).forEach((key) => {
+                const keyNum = Number.parseInt(key)
+                if (keyNum > index) {
+                    reindexed[keyNum - 1] = newTexts[keyNum]
+                } else {
+                    reindexed[keyNum] = newTexts[keyNum]
+                }
+            })
+            return reindexed
+        })
+    }
 
     return (
         <Card>
@@ -34,7 +99,7 @@ export function CourseProgram({ form }: CourseProgramProps) {
                         <div className="flex justify-between items-center mb-4">
                             <h4 className="font-medium">Proqram {index + 1}</h4>
                             {programFields.length > 1 && (
-                                <Button type="button" variant="outline" size="icon" onClick={() => removeProgram(index)}>
+                                <Button type="button" variant="outline" size="icon" onClick={() => handleRemoveProgram(index)}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             )}
@@ -48,7 +113,25 @@ export function CourseProgram({ form }: CourseProgramProps) {
                                         <p className="text-sm text-red-500">{form.formState.errors.program[index]?.name?.message}</p>
                                     )}
                                 </div>
+
+                                {/* Image upload section using ImageUpload component */}
+                                <div className="space-y-2">
+                                    <ImageUpload
+                                        onImageUpload={(imageId) => handleProgramImageUpload(index, imageId)}
+                                        setImageState={setProgramImageState(index)}
+                                        imageState={
+                                            programImageStates[index] || { preview: null, id: null, error: null, selectedFile: null }
+                                        }
+                                        altText={programAltTexts[index] || ""}
+                                        setAltText={setProgramAltText(index)}
+                                    />
+                                    <input type="hidden" {...form.register(`program.${index}.image` as any)} />
+                                    {form.formState.errors.program?.[index]?.image && (
+                                        <p className="text-sm text-red-500">{form.formState.errors.program[index]?.image?.message}</p>
+                                    )}
+                                </div>
                             </div>
+
                             <div className="space-y-4">
                                 <Label>Tərcümələr *</Label>
                                 {["az", "en", "ru"].map((lang, langIndex) => (
@@ -86,16 +169,27 @@ export function CourseProgram({ form }: CourseProgramProps) {
                 <Button
                     type="button"
                     variant="outline"
-                    onClick={() =>
+                    onClick={() => {
+                        const newIndex = programFields.length
                         appendProgram({
                             name: "",
+                            image: 0,
                             translations: [
                                 { description: "", lang: "az" },
                                 { description: "", lang: "en" },
                                 { description: "", lang: "ru" },
-                            ]
+                            ],
                         })
-                    }
+
+                        setProgramImageStates((prev) => ({
+                            ...prev,
+                            [newIndex]: { preview: null, id: null, error: null, selectedFile: null },
+                        }))
+                        setProgramAltTexts((prev) => ({
+                            ...prev,
+                            [newIndex]: "",
+                        }))
+                    }}
                 >
                     <Plus className="mr-2 h-4 w-4" /> Proqram Əlavə Et
                 </Button>

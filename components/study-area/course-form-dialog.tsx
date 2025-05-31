@@ -27,6 +27,7 @@ import { renderFormErrors } from "@/utils/course-error-render"
 import { courseDefaultValues } from "./course-form/defaultValues"
 import { useAddStudyAreaMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
+import { imageState } from "@/types/home/graduates.dto"
 
 interface CourseFormDialogProps {
     onSubmit: (data: CourseFormData) => void
@@ -47,6 +48,8 @@ export function CourseFormDialog({ onSubmit }: CourseFormDialogProps) {
         error: null,
         selectedFile: null,
     })
+    const [programImageStates, setProgramImageStates] = useState<Record<number, imageState>>({})
+    const [programAltTexts, setProgramAltTexts] = useState<Record<number, string>>({})
 
     const form = useForm<CourseFormData>({
         resolver: zodResolver(courseSchema),
@@ -131,7 +134,13 @@ export function CourseFormDialog({ onSubmit }: CourseFormDialogProps) {
                         </TabsContent>
 
                         <TabsContent value="program" className="space-y-4">
-                            <CourseProgram form={form} />
+                            <CourseProgram
+                                programAltTexts={programAltTexts}
+                                setProgramAltTexts={setProgramAltTexts}
+                                setProgramImageStates={setProgramImageStates}
+                                programImageStates={programImageStates}
+                                form={form}
+                            />
                         </TabsContent>
 
                         <TabsContent value="meta" className="space-y-4">

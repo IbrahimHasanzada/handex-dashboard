@@ -32,7 +32,6 @@ export function GroupForm({ studyArea, groupId, existingData, selectedLanguage, 
     const [isLoading, setIsLoading] = useState(false)
     const [addGroup] = useAddGroupMutation()
     const [editGroup] = useUpdateGroupMutation()
-
     const isEditMode = !!groupId
 
     const [formData, setFormData] = useState<GroupFormData>({
@@ -56,7 +55,7 @@ export function GroupForm({ studyArea, groupId, existingData, selectedLanguage, 
                 const item = items.find((i) => i.lang === lang)
                 return item ? item.value : ""
             }
-
+            console.log(existingData)
             if (isEditMode) {
                 setFormData({
                     text: [
@@ -155,8 +154,8 @@ export function GroupForm({ studyArea, groupId, existingData, selectedLanguage, 
                     table: formData.table.filter((t) => t.lang === selectedLanguage),
                 }
             }
-
-            groupId ? await editGroup(dataToSend).unwrap() : await addGroup(dataToSend).unwrap()
+            console.log(dataToSend)
+            groupId ? await editGroup({ params: dataToSend, id: groupId }).unwrap() : await addGroup(dataToSend).unwrap()
 
             toast.success(groupId ? "Qrup uğurla yeniləndi" : "Qrup uğurla əlavə edildi")
             setOpen(false)
@@ -216,6 +215,7 @@ export function GroupForm({ studyArea, groupId, existingData, selectedLanguage, 
                                 <Label htmlFor="startDate">Başlama Tarixi</Label>
                                 <Input
                                     id="startDate"
+                                    type="date"
                                     value={formData.startDate}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, startDate: e.target.value }))}
                                     placeholder="Məsələn: 28May"
