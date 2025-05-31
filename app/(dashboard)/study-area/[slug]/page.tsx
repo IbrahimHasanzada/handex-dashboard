@@ -10,7 +10,7 @@ type PageProps = {
 
 const Page = async ({ params }: PageProps) => {
     const { slug } = await params;
-
+    
     return (
         <DashboardLayout>
             <CourseOverview slug={slug} />
