@@ -264,7 +264,7 @@ export function ServiceForm({ slug }: { slug?: string }) {
                                     ...editorConfig,
                                     language: lang,
                                     placeholder: placeholdersNews[lang].content,
-                                  }}
+                                  } as any}
                                 />
                               </FormControl>
                               <FormMessage />
