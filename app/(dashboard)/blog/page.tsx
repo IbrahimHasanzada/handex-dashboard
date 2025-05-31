@@ -1,3 +1,4 @@
+"use client"
 import { BlogsHeader } from "@/components/blog/blog-header"
 import { BlogsTableFilters } from "@/components/blog/blog-table-filter"
 import { BlogsTable } from "@/components/blog/blogs-table"

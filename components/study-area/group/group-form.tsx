@@ -55,7 +55,6 @@ export function GroupForm({ studyArea, groupId, existingData, selectedLanguage, 
                 const item = items.find((i) => i.lang === lang)
                 return item ? item.value : ""
             }
-            console.log(existingData)
             if (isEditMode) {
                 setFormData({
                     text: [
@@ -154,7 +153,6 @@ export function GroupForm({ studyArea, groupId, existingData, selectedLanguage, 
                     table: formData.table.filter((t) => t.lang === selectedLanguage),
                 }
             }
-            console.log(dataToSend)
             groupId ? await editGroup({ params: dataToSend, id: groupId }).unwrap() : await addGroup(dataToSend).unwrap()
 
             toast.success(groupId ? "Qrup uğurla yeniləndi" : "Qrup uğurla əlavə edildi")

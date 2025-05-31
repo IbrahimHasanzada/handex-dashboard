@@ -1,16 +1,16 @@
+"use client"
 import { DashboardLayout } from '@/components/dashboard-layout'
 import { CourseOverview } from '@/components/study-area/course-overiew'
+import { useParams } from 'next/navigation'
 import React from 'react'
 
 type PageProps = {
-    params: {
-        slug: string
-    }
+    slug: string
 }
 
-const Page = async ({ params }: PageProps) => {
-    const { slug } = await params;
-    
+const Page = () => {
+    const params: PageProps = useParams()
+    const slug = params.slug
     return (
         <DashboardLayout>
             <CourseOverview slug={slug} />
