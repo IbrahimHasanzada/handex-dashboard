@@ -1,3 +1,4 @@
+"use client"
 import { NewsHeaderProps } from "@/types/news/news-header.dto"
 import type React from "react"
 
