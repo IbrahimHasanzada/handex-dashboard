@@ -53,7 +53,7 @@ export function ContentTab({ form, apiKey, selectedLanguage, setSelectedLanguage
                                         }}
                                         apiKey={apiKey}
                                         init={{
-                                            ...editorConfig,
+                                            ...editorConfig as any,
                                             language: lang,
                                             placeholder: placeholdersNews[lang].content,
                                         }}

@@ -38,7 +38,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
   const [selectedLanguage, setSelectedLanguage] = useState<string>("az")
   const [visitedLanguages, setVisitedLanguages] = useState<Set<string>>(new Set(["az"]))
   const [formEdited, setFormEdited] = useState<boolean>(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const fileInputRef = useRef<any>(null)
   const [selectedTab, setSelectedTab] = useState("content")
   const [metaFields, setMetaFields] = useState<number[]>([0])
   const router = useRouter()
@@ -221,7 +221,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
     }
   }
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: any) => {
 
     const file = e.target.files?.[0]
     if (file) {
