@@ -17,7 +17,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: true,  
+    ignoreBuildErrors: true,
   },
   images: {
     unoptimized: true,
@@ -49,3 +49,9 @@ if (userConfig) {
 }
 
 export default nextConfig
+
+// next.config.js
+module.exports = {
+  // TinyMCE kimi böyük kitabxanalar üçün transpile et
+  transpilePackages: ['@tinymce/tinymce-react'],
+};
