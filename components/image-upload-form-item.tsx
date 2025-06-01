@@ -18,9 +18,7 @@ export function ImageUploadFormItem({
     label = "Şəkil yüklə",
     altFieldName = "imageAlt",
 }: ImageUploadFormItemProps & { altFieldName?: string }) {
-    // Make sure the alt field is registered
     useEffect(() => {
-        // Ensure the alt field exists in the form
         if (form.getValues(altFieldName) === undefined) {
             form.setValue(altFieldName, "")
         }

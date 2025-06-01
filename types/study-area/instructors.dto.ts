@@ -1,6 +1,7 @@
-import { UseFormReturn } from "react-hook-form"
+import type React from "react"
+import type { UseFormReturn } from "react-hook-form"
 
-export interface AddGraduateModalProps {
+export interface AddInstructorsModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     refetch: () => void
@@ -11,10 +12,9 @@ export interface imageState {
     id: number | null
     error: string | null
     selectedFile: string | File | null
-
 }
 
-export interface EditGraduateModalProps {
+export interface EditInstructorsModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     refetch: () => void
@@ -22,6 +22,10 @@ export interface EditGraduateModalProps {
         id: number
         name: string
         speciality: string
+        translations?: Array<{
+            description: string
+            lang: string
+        }>
         image?: {
             id: number
             url: string
@@ -29,7 +33,7 @@ export interface EditGraduateModalProps {
     }
 }
 
-export interface GraduateFormModalProps {
+export interface InstructorsFormModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     title: string

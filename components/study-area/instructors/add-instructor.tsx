@@ -4,14 +4,14 @@ import type React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAddProfilesMutation, useUploadFileMutation } from "@/store/handexApi"
-import type { AddGraduateModalProps, imageState } from "@/types/home/graduates.dto"
 import type { z } from "zod"
 import { validateImage } from "@/validations/upload.validation"
-import { formSchema } from "@/validations/home/graduate.validation"
-import GraduateFormModal from "./graduate-form-modal"
 import { toast } from "react-toastify"
+import InstructorsFormModal from "./instructors-form-modal"
+import type { AddInstructorsModalProps, imageState } from "@/types/study-area/instructors.dto"
+import { formSchemaInstructors } from "@/validations/study-area/instructors.validation"
 
-export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGraduateModalProps) {
+export default function AddInstructorsModal({ open, onOpenChange, refetch }: AddInstructorsModalProps) {
     const [addProfile, { isLoading }] = useAddProfilesMutation()
     const [uploadImage, { isLoading: isUploading }] = useUploadFileMutation()
     const [imageState, setImageState] = useState<imageState>({
@@ -21,14 +21,28 @@ export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGra
         selectedFile: null,
     })
 
-    const form = useForm<z.infer<typeof formSchema> & { imageAlt: string }>({
+    const form = useForm<
+        z.infer<typeof formSchemaInstructors> & {
+            imageAlt: string
+            translations: {
+                az: string
+                en: string
+                ru: string
+            }
+        }
+    >({
         defaultValues: {
             name: "",
             speciality: "",
             image: -1,
             imageAlt: "",
+            translations: {
+                az: "",
+                en: "",
+                ru: "",
+            },
         },
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(formSchemaInstructors),
     })
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +64,7 @@ export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGra
         try {
             const formData = new FormData()
             formData.append("file", file)
-            formData.append("alt", altText) 
+            formData.append("alt", altText)
 
             const response = await uploadImage(formData).unwrap()
 
@@ -70,13 +84,29 @@ export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGra
         }
     }
 
-    const onSubmit = async (data: z.infer<typeof formSchema> & { imageAlt: string }) => {
+    const onSubmit = async (
+        data: z.infer<typeof formSchemaInstructors> & {
+            imageAlt: string
+            translations: {
+                az: string
+                en: string
+                ru: string
+            }
+        },
+    ) => {
         try {
+            const translations = [
+                { description: data.translations.az, lang: "az" },
+                { description: data.translations.en, lang: "en" },
+                { description: data.translations.ru, lang: "ru" },
+            ]
+
             const jsonData = {
                 name: data.name,
                 speciality: data.speciality,
-                model: "student",
+                model: "instructor", 
                 image: data.image,
+                translations: translations,
             }
 
             await addProfile(jsonData).unwrap()
@@ -84,19 +114,19 @@ export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGra
             form.reset()
             setImageState({ preview: null, id: null, error: null, selectedFile: null })
             refetch()
-            toast.success("Məzun uğurla əlavə edildi!")
+            toast.success("Müəllim uğurla əlavə edildi!")
             onOpenChange(false)
         } catch (error) {
-            toast.error("Məzun əlavə edərkən xəta baş verdi")
+            toast.error("Müəllim əlavə edərkən xəta baş verdi")
         }
     }
 
     return (
-        <GraduateFormModal
+        <InstructorsFormModal
             open={open}
             onOpenChange={onOpenChange}
-            title="Yeni Məzun Əlavə Et"
-            description="Məzun məlumatlarını daxil edin və yadda saxlayın."
+            title="Yeni Müəllim Əlavə Et"
+            description="Müəllim məlumatlarını daxil edin və yadda saxlayın."
             form={form}
             imageState={imageState}
             setImageState={setImageState}

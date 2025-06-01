@@ -2,6 +2,7 @@
 
 import { CourseList } from "@/components/study-area/course-list"
 import { DashboardLayout } from "@/components/dashboard-layout"
+import Instructors from "@/components/study-area/instructors/instructors"
 
 export default function page() {
   return (
@@ -14,8 +15,13 @@ export default function page() {
           </div>
         </div>
 
+        <div>
+          <Instructors />
+        </div>
 
-        <CourseList />
+        <div>
+          <CourseList />
+        </div>
 
       </div>
     </DashboardLayout>

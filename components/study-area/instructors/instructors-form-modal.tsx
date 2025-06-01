@@ -8,17 +8,18 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import type React from "react"
-
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import type { GraduateFormModalProps } from "@/types/home/graduates.dto"
 import { Upload, Loader2, ImageIcon } from "lucide-react"
 import { toast } from "react-toastify"
 import Image from "next/image"
 import { useRef } from "react"
+import type { InstructorsFormModalProps } from "@/types/study-area/instructors.dto"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
 
-export default function GraduateFormModal({
+export default function InstructorsFormModal({
     open,
     onOpenChange,
     title,
@@ -34,13 +35,12 @@ export default function GraduateFormModal({
     loadingText,
     imageInputId = "image-upload",
     uploadImage,
-}: GraduateFormModalProps & { uploadImage?: (file: File, alt: string) => Promise<any> }) {
+}: InstructorsFormModalProps & { uploadImage?: (file: File, alt: string) => Promise<any> }) {
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
-
 
         setImageState({
             ...imageState,
@@ -101,7 +101,7 @@ export default function GraduateFormModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>{description}</DialogDescription>
@@ -209,7 +209,7 @@ export default function GraduateFormModal({
                                 <FormItem>
                                     <FormLabel>Ad Soyad</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Məzunun adı və soyadı" {...field} />
+                                        <Input placeholder="Müəllimin adı və soyadı" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -223,12 +223,78 @@ export default function GraduateFormModal({
                                 <FormItem>
                                     <FormLabel>İxtisas</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Məzunun ixtisası" {...field} />
+                                        <Input placeholder="Müəllimin ixtisası" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+
+                        {/* Translations with tabs */}
+                        <div className="space-y-2">
+                            <FormLabel>Təsvir (3 dildə)</FormLabel>
+                            <Tabs defaultValue="az" className="w-full">
+                                <TabsList className="grid w-full grid-cols-3">
+                                    <TabsTrigger value="az">Azərbaycanca</TabsTrigger>
+                                    <TabsTrigger value="en">English</TabsTrigger>
+                                    <TabsTrigger value="ru">Русский</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="az">
+                                    <FormField
+                                        control={form.control}
+                                        name="translations.az"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Textarea
+                                                        placeholder="Müəllim haqqında məlumat (Azərbaycanca)"
+                                                        className="min-h-[120px]"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="en">
+                                    <FormField
+                                        control={form.control}
+                                        name="translations.en"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Textarea
+                                                        placeholder="Information about the instructor (English)"
+                                                        className="min-h-[120px]"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="ru">
+                                    <FormField
+                                        control={form.control}
+                                        name="translations.ru"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Textarea
+                                                        placeholder="Информация о преподавателе (Русский)"
+                                                        className="min-h-[120px]"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TabsContent>
+                            </Tabs>
+                        </div>
 
                         <DialogFooter>
                             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

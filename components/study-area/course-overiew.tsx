@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Edit, Award, Loader2, Box, ArrowLeft, Trash } from "lucide-react"
 import type { CourseOverviewProps } from "@/types/study-area/overview"
-import { useDeleteProgramMutation, useGetStudyAreaBySlugQuery } from "@/store/handexApi"
+import { useDeleteProgramMutation, useGetStudyAreaBySlugQuery, useUpdateStudyAreaMutation } from "@/store/handexApi"
 import { useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs"
 import Link from "next/link"
@@ -16,6 +16,7 @@ import { ProgramForm } from "./program/program-form"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { EditHero } from "./edit-hero"
+import { MetaIntegration } from "./meta/meta-integration"
 
 export function CourseOverview({ slug }: CourseOverviewProps) {
     const [selectedLanguage, setSelectedLanguage] = useState("az")
@@ -33,6 +34,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
         { skip: !slug },
     )
     const [deleteProgram] = useDeleteProgramMutation()
+    const [updateStudyArea] = useUpdateStudyAreaMutation()
 
     const onEdit = () => setIsStudyAreaEditOpen(true)
 
@@ -72,6 +74,34 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
         } catch (error) {
             console.error("Error:", error)
             toast.error("Proqram silərkən xəta baş verdi")
+        }
+    }
+
+    const handleCreateMeta = async (metaData: any) => {
+        try {
+            await updateStudyArea({ id: data.id, params: { meta: [metaData] } }).unwrap()
+            console.log("Creating meta:", metaData, data.id)
+        } catch (error) {
+            throw new Error("Meta yaradılarkən xəta baş verdi")
+        }
+    }
+
+    const handleUpdateMeta = async (id: number, metaData: any) => {
+        try {
+            // await updateStudyArea({ id, ...metaData })
+            console.log("Updating meta:", id, metaData)
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+        } catch (error) {
+            throw new Error("Meta yenilənərkən xəta baş verdi")
+        }
+    }
+
+    const handleDeleteMeta = async (id: number) => {
+        try {
+            console.log("Deleting meta:", id)
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+        } catch (error) {
+            throw new Error("Meta silinərkən xəta baş verdi")
         }
     }
 
@@ -145,7 +175,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                                 </div>
                                 <div className="relative w-full max-w-[300px] aspect-video bg-gray-100 rounded-lg overflow-hidden">
                                     <Image
-                                        src={data.image.url || "/placeholder.svg"}
+                                        src={data.image?.url || "/placeholder.svg"}
                                         alt={data.image ? data.image.alt : "tədris sahəsi şəkil alt tagı"}
                                         fill
                                         className="object-cover"
@@ -239,6 +269,18 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                 selectedLanguage={selectedLanguage}
                 onSuccess={handleProgramSuccess}
             />
+
+            {/* Meta Management Section */}
+            <MetaIntegration
+                studyAreaId={data?.id}
+                selectedLanguage={selectedLanguage}
+                onRefresh={refetch}
+                metaItems={data?.meta || []}
+                onCreateMeta={handleCreateMeta}
+                onUpdateMeta={handleUpdateMeta}
+                onDeleteMeta={handleDeleteMeta}
+            />
+
 
             {/* Study Area Edit Form Modal */}
             {data && (
