@@ -7,13 +7,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useEffect } from "react"
 import { ImageUploadFormItem } from "../image-upload-form-item"
 import { FormControl, FormField, FormItem, FormMessage, FormLabel } from "@/components/ui/form"
-import { Editor } from "@tinymce/tinymce-react"
+const TinyMCE = dynamic(
+    () => import('@tinymce/tinymce-react').then((mod) => mod.Editor),
+    {
+        ssr: false, 
+        loading: () => <p>Editor yüklənir...</p>
+    }
+);
 import { editorConfig } from "@/utils/editor-config"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 
 import { toast } from "sonner"
+import dynamic from "next/dynamic"
 export default function Side({
     form,
     control,
@@ -82,7 +89,7 @@ export default function Side({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormControl>
-                                            <Editor
+                                            <TinyMCE
                                                 value={field.value}
                                                 onEditorChange={(content) => {
                                                     field.onChange(content)
@@ -131,7 +138,7 @@ export default function Side({
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
-                                                    <Editor
+                                                    <TinyMCE
                                                         value={field.value}
                                                         onEditorChange={(content) => {
                                                             field.onChange(content)
@@ -157,7 +164,7 @@ export default function Side({
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
-                                                    <Editor
+                                                    <TinyMCE
                                                         value={field.value}
                                                         onEditorChange={(content) => {
                                                             field.onChange(content)
@@ -183,7 +190,7 @@ export default function Side({
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
-                                                    <Editor
+                                                    <TinyMCE
                                                         value={field.value}
                                                         onEditorChange={(content) => {
                                                             field.onChange(content)
