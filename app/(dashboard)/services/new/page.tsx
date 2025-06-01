@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
+import { ServiceForm } from "@/components/service/add-form/add-service"
 import { ServiceHeader } from "@/components/service/service-header"
-import { ServiceForm } from "@/components/service/add-service"
 
 export default function ServicesPage() {
     return (

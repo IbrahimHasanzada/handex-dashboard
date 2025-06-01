@@ -1,6 +1,11 @@
 import type React from "react"
 import type { UseFormReturn } from "react-hook-form"
 
+export type InstructorsProps = {
+    selectedLanguage: any
+    setSelectedLanguage: any
+}
+
 export interface AddInstructorsModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
@@ -18,14 +23,13 @@ export interface EditInstructorsModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     refetch: () => void
+    selectedLanguage?: string
     graduate: {
         id: number
         name: string
         speciality: string
-        translations?: Array<{
-            description: string
-            lang: string
-        }>
+        description: string
+        lang: string
         image?: {
             id: number
             url: string
@@ -48,4 +52,6 @@ export interface InstructorsFormModalProps {
     submitButtonText: string
     loadingText: string
     imageInputId?: string
+    isEditMode?: boolean
+    selectedLanguage?: string
 }

@@ -21,7 +21,7 @@ export default function ViewServicesPage() {
     return (
         <DashboardLayout>
             <div className="p-6">
-                <ServiceHeader heading="View Service" text="View and manage service details." />
+                <ServiceHeader heading="Xidmətə baxın" text="Xidmət detallarına baxın və idarə edin." />
                 <ViewService slug={slug} onEdit={handleEdit} onDelete={handleDelete} />
             </div>
         </DashboardLayout>

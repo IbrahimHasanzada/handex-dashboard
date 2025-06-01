@@ -21,7 +21,7 @@ export default function ViewBlogsPage() {
     return (
         <DashboardLayout>
             <div className="p-6">
-                <NewsHeader heading="View Article" text="View and manage article details." />
+                <NewsHeader heading="Bloqa baxın" text="Bloq detallarına baxın və idarə edin." />
                 <ViewBlogs slug={slug} onEdit={handleEdit} onDelete={handleDelete} />
             </div>
         </DashboardLayout>

@@ -9,10 +9,12 @@ import { toast } from "react-toastify"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import AddInstructorsModal from "./add-instructor"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import EditInstructorsModal from "./edit.instructors"
+import { InstructorsProps } from "@/types/study-area/instructors.dto"
 
-const Instructors = () => {
-    const { data: instructorsData, isLoading, isError, refetch } = useGetProfilesQuery("instructor")
+const Instructors = ({ selectedLanguage, setSelectedLanguage }: InstructorsProps) => {
+    const { data: instructorsData, isLoading, isError, refetch } = useGetProfilesQuery({ model: "instructor", lang: selectedLanguage })
     const [deleteInstructor, { isSuccess }] = useDeleteProfilesMutation()
     const [currentPage, setCurrentPage] = useState(1)
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
@@ -49,9 +51,11 @@ const Instructors = () => {
                         <CardTitle>Müəllimlər</CardTitle>
                         <CardDescription>Müəllimləri idarə edin</CardDescription>
                     </div>
-                    <Button onClick={() => setIsAddModalOpen(true)}>
-                        <Plus className="mr-2 h-4 w-4" /> Yeni Müəllim Əlavə Et
-                    </Button>
+                    <div className="flex items-center gap-4">
+                        <Button onClick={() => setIsAddModalOpen(true)}>
+                            <Plus className="mr-2 h-4 w-4" /> Yeni Müəllim Əlavə Et
+                        </Button>
+                    </div>
                 </CardHeader>
                 {isLoading ? (
                     <div className="w-full h-full flex !justify-center items-center">
@@ -98,7 +102,11 @@ const Instructors = () => {
                                         {/* Display translation badges */}
                                         <div className="flex gap-1 mt-2">
                                             {instructor.translations?.map((translation: any) => (
-                                                <Badge key={translation.lang} variant="outline" className="text-xs">
+                                                <Badge
+                                                    key={translation.lang}
+                                                    variant={translation.lang === selectedLanguage ? "default" : "outline"}
+                                                    className="text-xs"
+                                                >
                                                     {translation.lang.toUpperCase()}
                                                 </Badge>
                                             ))}
@@ -144,6 +152,7 @@ const Instructors = () => {
                     onOpenChange={setIsEditModalOpen}
                     refetch={refetch}
                     graduate={selectedInstructor}
+                    selectedLanguage={selectedLanguage}
                 />
             )}
         </>

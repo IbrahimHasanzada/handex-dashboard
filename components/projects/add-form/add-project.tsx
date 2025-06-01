@@ -50,8 +50,6 @@ export function ProjectsForm({ slug }: { slug?: string }) {
     const [addprojetcs, { isLoading: projetcsLoading }] = useAddProjectsMutation()
     const [updateprojetcs, { isLoading: projetcsUpLoading }] = useUpdateProjectsMutation()
 
-    // Only fetch when language changes and we haven't visited this language before
-    // or if we haven't edited the form
     const shouldFetch = slug && (!visitedLanguages.has(selectedLanguage) || !formEdited)
 
     const { data: projetcs, isLoading: projetcsByIdLoading } = useGetProjectsBySlugQuery(

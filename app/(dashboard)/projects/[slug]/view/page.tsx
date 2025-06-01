@@ -21,7 +21,7 @@ export default function ViewProjetcsPage() {
     return (
         <DashboardLayout>
             <div className="p-6">
-                <ProjectsHeader heading="View Service" text="View and manage service details." />
+                <ProjectsHeader heading="Layihəyə Baxın" text="Layihə detallarına baxın və idarə edin." />
                 <ViewProjects slug={slug} onEdit={handleEdit} onDelete={handleDelete} />
             </div>
         </DashboardLayout>

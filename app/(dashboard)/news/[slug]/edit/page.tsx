@@ -9,7 +9,7 @@ export default function EditNewsPage({ params }: { params: { slug: string } }) {
     return (
         <DashboardLayout>
             <div className="p-6">
-                <NewsHeader heading="Edit Article" text="Make changes to your article." />
+                <NewsHeader heading="Xəbəri redaktə edin" text="Xəbərdə dəyişikliklər edin." />
                 <div className="my-5">
                     <Button variant="outline" size="sm" asChild>
                         <Link href="/news">

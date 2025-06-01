@@ -9,7 +9,7 @@ export default function EditProjectsPage({ params }: { params: { slug: string } 
     return (
         <DashboardLayout>
             <div className="p-6">
-                <ProjectsHeader heading="Xidməti redaktə edin" text="Xidmətdə dəyişikliklər edin." />
+                <ProjectsHeader heading="Layihələri redaktə edin" text="Layihədə dəyişikliklər edin." />
                 <div className="my-5">
                     <Button variant="outline" size="sm" asChild>
                         <Link href="/projects">

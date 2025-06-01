@@ -103,13 +103,11 @@ export function BlogsForm({ slug }: { slug?: string }) {
     })
   }
 
-  // Handle language change
   const handleLanguageChange = (lang: string) => {
     setSelectedLanguage(lang)
     setVisitedLanguages((prev) => new Set([...prev, lang]))
   }
 
-  // Watch for form changes to detect edits
   useEffect(() => {
     const subscription = form.watch(() => {
       setFormEdited(true)
@@ -117,31 +115,25 @@ export function BlogsForm({ slug }: { slug?: string }) {
     return () => subscription.unsubscribe()
   }, [form])
 
-  // Load data when blogs is fetched
   useEffect(() => {
     if (slug && blogs) {
       form.setValue("imageAlt", blogs.image.alt)
-      // Set title and content for the current language
       form.setValue(`title_${selectedLanguage}` as "title_az" | "title_en" | "title_ru", blogs.title || "")
       form.setValue(
         `content_${selectedLanguage}` as "content_az" | "content_en" | "content_ru",
         blogs.description || "",
       )
 
-      // Handle meta data
       if (blogs.meta && blogs.meta.length > 0) {
-        // Set the first meta tag values
         if (blogs.meta[0]) {
           form.setValue(`meta_${selectedLanguage}` as "meta_az" | "meta_en" | "meta_ru", blogs.meta[0].value || "")
           form.setValue("metaName", blogs.meta[0].name || "description")
         }
 
-        // Handle additional meta tags (if any)
         if (blogs.meta.length > 1) {
           const existingAdditionalMeta = form.getValues("additionalMeta") || []
 
           const updatedAdditionalMeta = blogs.meta.slice(1).map((meta: any, index: number) => {
-            // Get existing meta tag or create new one
             const existingMeta = existingAdditionalMeta[index] || {
               metaName: "",
               meta_az: "",
@@ -149,7 +141,6 @@ export function BlogsForm({ slug }: { slug?: string }) {
               meta_ru: "",
             }
 
-            // Update only the current language field
             const updatedMeta = { ...existingMeta }
             updatedMeta.metaName = meta.name || ""
 
@@ -166,12 +157,10 @@ export function BlogsForm({ slug }: { slug?: string }) {
 
           form.setValue("additionalMeta", updatedAdditionalMeta)
 
-          // Update metaFields state to match the number of meta tags
           setMetaFields([0, ...Array.from({ length: updatedAdditionalMeta.length }, (_, i) => i + 1)])
         }
       }
 
-      // Set image data (only if not already set)
       if (blogs.image?.id && !imageState.id) {
         form.setValue("featuredImage", blogs.image.id)
         setImageState((prev) => ({
@@ -181,15 +170,13 @@ export function BlogsForm({ slug }: { slug?: string }) {
         }))
       }
 
-      // Set slug (only if not already set)
       if (!form.getValues("slug")) {
         form.setValue("slug", blogs.slug)
       }
 
-      // Reset the formEdited flag since we just loaded fresh data
       setFormEdited(false)
     }
-  }, [blogs, slug, selectedLanguage, form])
+  }, [blogs, slug, form])
 
   async function onSubmit(values: z.infer<typeof formSchemaNews>) {
 

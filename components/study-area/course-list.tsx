@@ -17,21 +17,21 @@ import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
 import { StudyAreaData } from "@/types/study-area/overview"
 import Image from "next/image"
+import { InstructorsProps } from "@/types/study-area/instructors.dto"
 
 
 
 type Language = "az" | "en" | "ru"
 
-const languageLabels: Record<Language, string> = {
+const languageLabels: any = {
     az: "Azərbaycanca",
     en: "English",
     ru: "Русский",
 }
 
-export function CourseList() {
+export function CourseList({ selectedLanguage, setSelectedLanguage }: InstructorsProps) {
     const [searchTerm, setSearchTerm] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
-    const [selectedLanguage, setSelectedLanguage] = useState<Language>("az")
     const router = useRouter()
     const itemsPerPage = 5
 
@@ -76,10 +76,10 @@ export function CourseList() {
     }
 
 
-    const handleLanguageChange = (language: Language) => {
-        setSelectedLanguage(language)
-        setSearchTerm("")
-    }
+    // const handleLanguageChange = (language: Language) => {
+    //     setSelectedLanguage(language)
+    //     setSearchTerm("")
+    // }
 
     if (error) {
         return (
@@ -98,19 +98,6 @@ export function CourseList() {
                         <Globe className="h-5 w-5" />
                         <CardTitle className="text-lg">Dil Seçimi</CardTitle>
                     </div>
-                    <Tabs value={selectedLanguage} onValueChange={(value) => handleLanguageChange(value as Language)}>
-                        <TabsList className="grid w-full grid-cols-3 max-w-md">
-                            <TabsTrigger value="az" className="flex items-center gap-2">
-                                Azərbaycanca
-                            </TabsTrigger>
-                            <TabsTrigger value="en" className="flex items-center gap-2">
-                                English
-                            </TabsTrigger>
-                            <TabsTrigger value="ru" className="flex items-center gap-2">
-                                Русский
-                            </TabsTrigger>
-                        </TabsList>
-                    </Tabs>
                 </CardHeader>
             </Card>
 
@@ -196,20 +183,6 @@ export function CourseList() {
                                             </div>
 
                                             <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{course.course_detail}</p>
-
-                                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                                <div className="flex items-center gap-1">
-                                                    <BookOpen className="h-3 w-3" />
-                                                    <span>{course.program.length} proqram</span>
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <HelpCircle className="h-3 w-3" />
-                                                    <span>{course.faq.length} FAQ</span>
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <span>ID: {course.id}</span>
-                                                </div>
-                                            </div>
                                         </div>
 
                                         {/* Actions */}

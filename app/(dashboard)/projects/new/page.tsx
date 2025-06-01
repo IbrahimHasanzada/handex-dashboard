@@ -6,7 +6,7 @@ export default function ProjectsPage() {
     return (
         <DashboardLayout>
             <div className="p-6">
-                <ProjectsHeader heading="Yeni xidmət" text="Yeni xidmət yaradın." />
+                <ProjectsHeader heading="Yeni layihə" text="Yeni layihə yaradın." />
                 <ProjectsForm />
             </div>
         </DashboardLayout>

@@ -125,7 +125,7 @@ export const handexApi = createApi({
             })
         }),
         getProfiles: builder.query({
-            query: (model) => `/profiles?model=${model}`,
+            query: ({ model, lang }) => `/profiles?model=${model}&lang=${lang}`,
             providesTags: ['Graduates']
         }),
         addProfiles: builder.mutation({

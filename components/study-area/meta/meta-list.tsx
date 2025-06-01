@@ -9,25 +9,14 @@ import { MetaForm } from "./meta-form"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 
-interface MetaTranslation {
-    id?: number
-    name: string
-    value: string
-    lang: string
-}
-
-interface MetaItem {
-    id?: number
-    translations: MetaTranslation[]
-}
 
 interface MetaListProps {
-    metaItems: MetaItem[]
+    metaItems: any
     selectedLanguage: string
     onRefresh: () => void
     onDeleteMeta?: (id: number) => Promise<void>
-    onCreateMeta?: (data: MetaItem) => Promise<void>
-    onUpdateMeta?: (id: number, data: MetaItem) => Promise<void>
+    onCreateMeta?: (data: any) => Promise<void>
+    onUpdateMeta?: (id: number, data: any) => Promise<void>
 }
 
 export function MetaList({
@@ -39,21 +28,25 @@ export function MetaList({
     onUpdateMeta,
 }: MetaListProps) {
     const [isMetaFormOpen, setIsMetaFormOpen] = useState(false)
-    const [editingMeta, setEditingMeta] = useState<MetaItem | null>(null)
+    const [editingMeta, setEditingMeta] = useState<any>(null)
+    const [isEditMode, setIsEditMode] = useState(false)
 
     const onAddMeta = () => {
         setEditingMeta(null)
+        setIsEditMode(false)
         setIsMetaFormOpen(true)
     }
 
-    const onEditMeta = (meta: MetaItem) => {
+    const onEditMeta = (meta: any) => {
         setEditingMeta(meta)
+        setIsEditMode(true)
         setIsMetaFormOpen(true)
     }
 
     const handleMetaFormClose = () => {
         setIsMetaFormOpen(false)
         setEditingMeta(null)
+        setIsEditMode(false)
     }
 
     const handleMetaSuccess = () => {
@@ -76,32 +69,19 @@ export function MetaList({
         }
     }
 
-    const handleSubmitMeta = async (data: MetaItem) => {
-        if (editingMeta && editingMeta.id && onUpdateMeta) {
+    const handleSubmitMeta = async (data: any) => {
+        if (isEditMode && editingMeta && editingMeta.id && onUpdateMeta) {
             await onUpdateMeta(editingMeta.id, data)
         } else if (onCreateMeta) {
             await onCreateMeta(data)
         }
     }
 
-    const getTranslationForLanguage = (translations: MetaTranslation[], lang: string) => {
-        return translations.find((t) => t.lang === lang) || translations[0]
-    }
 
     const getMetaTypeLabel = (name: string) => {
         const metaTypes: Record<string, string> = {
             title: "Başlıq",
             description: "Təsvir",
-            keywords: "Açar sözlər",
-            author: "Müəllif",
-            robots: "Robotlar",
-            viewport: "Görünüş sahəsi",
-            canonical: "Kanonik URL",
-            "og:title": "OG Başlıq",
-            "og:description": "OG Təsvir",
-            "og:image": "OG Şəkil",
-            "twitter:title": "Twitter Başlıq",
-            "twitter:description": "Twitter Təsvir",
         }
         return metaTypes[name] || name
     }
@@ -124,9 +104,8 @@ export function MetaList({
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                        {metaItems.map((meta, index) => {
-                            const currentTranslation = getTranslationForLanguage(meta.translations, selectedLanguage)
-                            const metaType = meta.translations[0]?.name || "unknown"
+                        {metaItems.map((meta: any, index: number) => {
+                            const metaType = meta?.name || "unknown"
 
                             return (
                                 <div key={meta.id || index} className="flex items-start gap-4 border rounded-lg p-4">
@@ -135,7 +114,7 @@ export function MetaList({
                                             <div className="flex items-center gap-2">
                                                 <div className="font-medium">{getMetaTypeLabel(metaType)}</div>
                                                 <Badge variant="outline" className="font-mono text-xs">
-                                                    {metaType}
+                                                    {meta.value}
                                                 </Badge>
                                             </div>
                                             <div className="flex gap-1">
@@ -148,23 +127,6 @@ export function MetaList({
                                                     </Button>
                                                 )}
                                             </div>
-                                        </div>
-
-                                        <div className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                                            {currentTranslation?.value || "Dəyər yoxdur"}
-                                        </div>
-
-                                        <div className="flex gap-1 flex-wrap">
-                                            {meta.translations.map((translation, idx) => (
-                                                <Badge
-                                                    key={idx}
-                                                    variant={translation.lang === selectedLanguage ? "default" : "secondary"}
-                                                    className="text-xs"
-                                                >
-                                                    {translation.lang.toUpperCase()}
-                                                    {translation.value ? " ✓" : " ✗"}
-                                                </Badge>
-                                            ))}
                                         </div>
                                     </div>
                                 </div>
@@ -188,6 +150,7 @@ export function MetaList({
                 selectedLanguage={selectedLanguage}
                 onSuccess={handleMetaSuccess}
                 onSubmit={handleSubmitMeta}
+                isEditMode={isEditMode}
             />
         </>
     )

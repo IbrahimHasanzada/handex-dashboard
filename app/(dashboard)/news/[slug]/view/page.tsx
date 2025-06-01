@@ -22,7 +22,7 @@ export default function ViewArticlePage() {
     return (
         <DashboardLayout>
             <div className="p-6">
-                <NewsHeader heading="View Article" text="View and manage article details." />
+                <NewsHeader heading="Xəbərə baxın" text="Xəbər təfərrüatlarına baxın və idarə edin." />
                 <ViewNews slug={slug} onEdit={handleEdit} onDelete={handleDelete} />
             </div>
         </DashboardLayout>

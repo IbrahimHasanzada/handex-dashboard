@@ -11,73 +11,107 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
 import { toast } from "react-toastify"
-import { MetaFormProps, MetaItem, MetaTranslation } from "@/types/study-area/meta.dto"
+import { AVAILABLE_LANGUAGES, META_TYPES, MetaFormProps, MetaItem, MetaTranslation } from "@/types/study-area/meta.dto"
 
 
-
-const AVAILABLE_LANGUAGES = [
-    { code: "az", name: "Azərbaycanca" },
-    { code: "en", name: "English" },
-    { code: "ru", name: "Русский" },
-]
-
-const META_TYPES = [
-    { value: "title", label: "Title" },
-    { value: "description", label: "Description" },
-]
-
-export function MetaForm({ isOpen, onClose, initialData, selectedLanguage, onSuccess, onSubmit }: MetaFormProps) {
+export function MetaForm({
+    isOpen,
+    onClose,
+    initialData,
+    selectedLanguage,
+    onSuccess,
+    onSubmit,
+    isEditMode = false,
+}: MetaFormProps) {
     const [isLoading, setIsLoading] = useState(false)
+    const [metaType, setMetaType] = useState("")
     const [translations, setTranslations] = useState<MetaTranslation[]>([])
     const [activeTab, setActiveTab] = useState(selectedLanguage)
+
+    const languageNames: Record<string, string> = {
+        az: "Azərbaycanca",
+        en: "English",
+        ru: "Русский",
+    }
+
+    const placeholders: Record<string, string> = {
+        az: "Meta dəyərini daxil edin (Azərbaycanca)",
+        en: "Enter meta value (English)",
+        ru: "Введите мета значение (Русский)",
+    }
 
     useEffect(() => {
         if (isOpen) {
             if (initialData) {
                 const existingTranslations = initialData.translations || []
-                const completeTranslations = AVAILABLE_LANGUAGES.map((lang) => {
-                    const existing = existingTranslations.find((t) => t.lang === lang.code)
-                    return (
-                        existing || {
+                setMetaType(initialData?.name || "")
+
+                if (isEditMode) {
+                    const selectedTranslation = existingTranslations.find((t: any) => t.lang === selectedLanguage)
+                    setTranslations([
+                        {
+                            name: initialData.name || "",
+                            value: initialData?.value || "",
+                            lang: selectedLanguage,
+                        },
+                    ])
+                } else {
+                    const completeTranslations = AVAILABLE_LANGUAGES.map((lang) => {
+                        const existing = existingTranslations.find((t: any) => t.lang === lang.code)
+                        return (
+                            existing || {
+                                name: existingTranslations[0]?.name || "",
+                                value: "",
+                                lang: lang.code,
+                            }
+                        )
+                    })
+                    setTranslations(completeTranslations)
+                }
+            } else {
+                setMetaType("")
+                if (isEditMode) {
+                    setTranslations([
+                        {
+                            name: "",
+                            value: "",
+                            lang: selectedLanguage,
+                        },
+                    ])
+                } else {
+                    setTranslations(
+                        AVAILABLE_LANGUAGES.map((lang) => ({
                             name: "",
                             value: "",
                             lang: lang.code,
-                        }
+                        })),
                     )
-                })
-                setTranslations(completeTranslations)
-            } else {
-                setTranslations(
-                    AVAILABLE_LANGUAGES.map((lang, index) => ({
-                        id: index + 1,
-                        name: "",
-                        value: "",
-                        lang: lang.code,
-                    })),
-                )
+                }
             }
             setActiveTab(selectedLanguage)
         }
-    }, [isOpen, initialData, selectedLanguage])
+    }, [isOpen, initialData, selectedLanguage, isEditMode])
 
-    const updateTranslation = (lang: string, field: "name" | "value", value: string) => {
-        setTranslations((prev) => prev.map((t) => (t.lang === lang ? { ...t, [field]: value } : t)))
+    const updateTranslation = (lang: string, value: string) => {
+        setTranslations((prev) => prev.map((t) => (t.lang === lang ? { ...t, value } : t)))
+    }
+
+    const updateAllTranslationsName = (name: string) => {
+        setMetaType(name)
+        setTranslations((prev) => prev.map((t) => ({ ...t, name })))
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        const validTranslations = translations.filter((t) => t.name.trim() && t.value.trim())
 
-        if (validTranslations.length === 0) {
-            toast.error("Ən azı bir dil üçün meta adı və dəyəri daxil edin")
+        if (!metaType.trim()) {
+            toast.error("Meta növü seçilməlidir")
             return
         }
 
-        const firstValidTranslation = validTranslations[0]
-        const allSameName = validTranslations.every((t) => t.name === firstValidTranslation.name)
-
-        if (!allSameName) {
-            toast.error("Bütün dillər üçün eyni meta növü seçilməlidir")
+        const hasValue = translations.some((t) => t.value.trim())
+        if (!hasValue) {
+            toast.error(isEditMode ? "Meta dəyəri daxil edin" : "Ən azı bir dil üçün meta dəyəri daxil edin")
             return
         }
 
@@ -86,19 +120,20 @@ export function MetaForm({ isOpen, onClose, initialData, selectedLanguage, onSuc
         try {
             const metaData: MetaItem = {
                 ...(initialData?.id && { id: initialData.id }),
-                translations: translations.map((t, index) => ({
-                    ...(t.id && { id: t.id }),
-                    name: t.name,
-                    value: t.value,
-                    lang: t.lang,
-                })),
+                translations: translations
+                    .filter((t) => t.value.trim())
+                    .map((t) => ({
+                        name: metaType,
+                        value: t.value,
+                        lang: t.lang,
+                    })),
             }
 
             if (onSubmit) {
                 await onSubmit(metaData)
-                toast.success(initialData ? "Meta məlumatı yeniləndi" : "Meta məlumatı əlavə edildi")
-                onSuccess()
             }
+            toast.success(isEditMode ? "Meta məlumatı yeniləndi" : "Meta məlumatı əlavə edildi")
+            onSuccess()
         } catch (error) {
             console.error("Error:", error)
             toast.error("Xəta baş verdi")
@@ -111,8 +146,14 @@ export function MetaForm({ isOpen, onClose, initialData, selectedLanguage, onSuc
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>{initialData ? "Meta Məlumatını Redaktə Et" : "Yeni Meta Məlumatı"}</DialogTitle>
-                    <DialogDescription>Meta məlumatlarını və tərcümələrini idarə edin (3 dil üçün)</DialogDescription>
+                    <DialogTitle>
+                        {isEditMode ? `Meta Məlumatını Redaktə Et (${languageNames[selectedLanguage]})` : "Yeni Meta Məlumatı"}
+                    </DialogTitle>
+                    <DialogDescription>
+                        {isEditMode
+                            ? `Seçilmiş dil (${languageNames[selectedLanguage]}) üçün meta məlumatını yeniləyin`
+                            : "Meta məlumatlarını və tərcümələrini idarə edin (3 dil üçün)"}
+                    </DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -124,18 +165,7 @@ export function MetaForm({ isOpen, onClose, initialData, selectedLanguage, onSuc
                         <CardContent>
                             <div className="space-y-2">
                                 <Label>Meta Növü Seçin</Label>
-                                <Select
-                                    value={translations[0]?.name || ""}
-                                    onValueChange={(value) => {
-                                        // Update all translations to have the same meta type
-                                        setTranslations((prev) =>
-                                            prev.map((t) => ({
-                                                ...t,
-                                                name: value,
-                                            })),
-                                        )
-                                    }}
-                                >
+                                <Select value={metaType} onValueChange={updateAllTranslationsName}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Meta növünü seçin..." />
                                     </SelectTrigger>
@@ -151,77 +181,63 @@ export function MetaForm({ isOpen, onClose, initialData, selectedLanguage, onSuc
                         </CardContent>
                     </Card>
 
-                    {/* Translations for all 3 languages */}
+                    {/* Content Section - different UI for edit vs add mode */}
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg">Tərcümələr (3 Dil)</CardTitle>
+                            <CardTitle className="text-lg">
+                                {isEditMode ? `Məzmun (${languageNames[selectedLanguage]})` : "Tərcümələr (3 Dil)"}
+                            </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <Tabs value={activeTab} onValueChange={setActiveTab}>
-                                <TabsList className="grid w-full grid-cols-3">
-                                    {AVAILABLE_LANGUAGES.map((lang) => (
-                                        <TabsTrigger key={lang.code} value={lang.code}>
-                                            {lang.name}
-                                        </TabsTrigger>
-                                    ))}
-                                </TabsList>
-
-                                {AVAILABLE_LANGUAGES.map((lang) => {
-                                    const translation = translations.find((t) => t.lang === lang.code)
-                                    return (
-                                        <TabsContent key={lang.code} value={lang.code} className="space-y-4">
-                                            <div className="space-y-2">
-                                                <Label>Meta Dəyəri ({lang.name})</Label>
-                                                <Textarea
-                                                    value={translation?.value || ""}
-                                                    onChange={(e) => updateTranslation(lang.code, "value", e.target.value)}
-                                                    placeholder={`Meta dəyərini daxil edin (${lang.name})`}
-                                                    rows={4}
-                                                />
-                                            </div>
-                                            <div className="text-sm text-muted-foreground">
-                                                Meta növü: <span className="font-mono">{translation?.name || "Seçilməyib"}</span>
-                                            </div>
-                                        </TabsContent>
-                                    )
-                                })}
-                            </Tabs>
-                        </CardContent>
-                    </Card>
-
-                    {/* Preview */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-lg">Önizləmə</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-3">
-                                <div className="text-sm">
-                                    <span className="font-medium">Meta Növü:</span>{" "}
-                                    <span className="font-mono bg-muted px-2 py-1 rounded">{translations[0]?.name || "Seçilməyib"}</span>
+                            {isEditMode ? (
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label>Meta Dəyəri ({languageNames[selectedLanguage]})</Label>
+                                        <Textarea
+                                            value={translations[0]?.value || ""}
+                                            onChange={(e) => updateTranslation(selectedLanguage, e.target.value)}
+                                            placeholder={placeholders[selectedLanguage] || "Meta dəyərini daxil edin"}
+                                            rows={4}
+                                        />
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">
+                                        Meta növü: <span className="font-mono">{metaType || "Seçilməyib"}</span>
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
+                            ) : (
+                                // Add mode - show tabs for all 3 languages
+                                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                                    <TabsList className="grid w-full grid-cols-3">
+                                        {AVAILABLE_LANGUAGES.map((lang) => (
+                                            <TabsTrigger key={lang.code} value={lang.code}>
+                                                {lang.name}
+                                            </TabsTrigger>
+                                        ))}
+                                    </TabsList>
+
                                     {AVAILABLE_LANGUAGES.map((lang) => {
                                         const translation = translations.find((t) => t.lang === lang.code)
                                         return (
-                                            <div key={lang.code} className="border rounded p-3">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="text-sm font-medium">{lang.name}:</span>
-                                                    <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
-                                                        {lang.code.toUpperCase()}
-                                                    </span>
+                                            <TabsContent key={lang.code} value={lang.code} className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <Label>Meta Dəyəri ({lang.name})</Label>
+                                                    <Textarea
+                                                        value={translation?.value || ""}
+                                                        onChange={(e) => updateTranslation(lang.code, e.target.value)}
+                                                        placeholder={placeholders[lang.code] || `Meta dəyərini daxil edin (${lang.name})`}
+                                                        rows={4}
+                                                    />
                                                 </div>
                                                 <div className="text-sm text-muted-foreground">
-                                                    {translation?.value || "Dəyər daxil edilməyib"}
+                                                    Meta növü: <span className="font-mono">{metaType || "Seçilməyib"}</span>
                                                 </div>
-                                            </div>
+                                            </TabsContent>
                                         )
                                     })}
-                                </div>
-                            </div>
+                                </Tabs>
+                            )}
                         </CardContent>
                     </Card>
-
                     {/* Actions */}
                     <div className="flex justify-end gap-2">
                         <Button type="button" variant="outline" onClick={onClose}>
@@ -229,7 +245,7 @@ export function MetaForm({ isOpen, onClose, initialData, selectedLanguage, onSuc
                         </Button>
                         <Button type="submit" disabled={isLoading}>
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {initialData ? "Yenilə" : "Əlavə et"}
+                            {isEditMode ? "Yenilə" : "Əlavə et"}
                         </Button>
                     </div>
                 </form>

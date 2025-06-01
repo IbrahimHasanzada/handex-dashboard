@@ -6,7 +6,7 @@ export default async function EditBlogsPage({ params }: { params: { slug: string
     return (
         <DashboardLayout>
             <div className="p-6">
-                <BlogsHeader heading="Edit Article" text="Make changes to your article." />
+                <BlogsHeader heading="Bloqu Redaktə et" text="Bloqda dəyişikliklər edin." />
                 <BlogsForm slug={params.slug} />
             </div>
         </DashboardLayout>

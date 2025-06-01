@@ -18,6 +18,17 @@ import { toast } from "react-toastify"
 import { EditHero } from "./edit-hero"
 import { MetaIntegration } from "./meta/meta-integration"
 
+interface MetaTranslation {
+    name: string
+    value: string
+    lang: string
+}
+
+interface MetaItem {
+    id?: number
+    translations: MetaTranslation[]
+}
+
 export function CourseOverview({ slug }: CourseOverviewProps) {
     const [selectedLanguage, setSelectedLanguage] = useState("az")
     const [isProgramFormOpen, setIsProgramFormOpen] = useState(false)
@@ -34,8 +45,8 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
         { skip: !slug },
     )
     const [deleteProgram] = useDeleteProgramMutation()
-    const [updateStudyArea] = useUpdateStudyAreaMutation()
 
+    const [updateStudyArea] = useUpdateStudyAreaMutation()
     const onEdit = () => setIsStudyAreaEditOpen(true)
 
     const onEditProgram = (id: number) => {
@@ -76,21 +87,53 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
             toast.error("Proqram silərkən xəta baş verdi")
         }
     }
+    console.log(data)
 
-    const handleCreateMeta = async (metaData: any) => {
+    const handleCreateMeta = async (metaData: MetaItem) => {
         try {
-            await updateStudyArea({ id: data.id, params: { meta: [metaData] } }).unwrap()
-            console.log("Creating meta:", metaData, data.id)
+            const filteredTranslations = metaData.translations.filter((t) => t.value.trim())
+
+            if (filteredTranslations.length === 0) {
+                throw new Error("Ən azı bir dil üçün dəyər daxil edin")
+            }
+
+            const apiData = {
+                meta: [
+                    {
+                        translations: filteredTranslations,
+                    },
+                ],
+            }
+
+
+            await updateStudyArea({ params: apiData, id: data.id }).unwrap()
+            toast.success("Meta uğurla əlavə edildi")
+            refetch()
         } catch (error) {
             throw new Error("Meta yaradılarkən xəta baş verdi")
         }
     }
 
-    const handleUpdateMeta = async (id: number, metaData: any) => {
+    const handleUpdateMeta = async (id: number, metaData: MetaItem) => {
         try {
-            // await updateStudyArea({ id, ...metaData })
-            console.log("Updating meta:", id, metaData)
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            const filteredTranslations = metaData.translations.filter((t) => t.value.trim())
+
+            if (filteredTranslations.length === 0) {
+                throw new Error("Ən azı bir dil üçün dəyər daxil edin")
+            }
+
+            const apiData = {
+                id,
+                meta: [
+                    {
+                        translations: filteredTranslations,
+                    },
+                ],
+            }
+
+            // await updateMetaMutation(apiData)
+            console.log("Updating meta:", apiData)
+            await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API call
         } catch (error) {
             throw new Error("Meta yenilənərkən xəta baş verdi")
         }
@@ -98,12 +141,16 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
 
     const handleDeleteMeta = async (id: number) => {
         try {
+            // await deleteMetaMutation(id)
             console.log("Deleting meta:", id)
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API call
         } catch (error) {
             throw new Error("Meta silinərkən xəta baş verdi")
         }
     }
+
+    // Convert API meta format to component format if needed
+    const metaItems: MetaItem[] = data?.meta || []
 
     return (
         <div className="space-y-6 p-10">
@@ -235,16 +282,16 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
 
                     {/* Groups Section */}
                     <GroupList
-                        studyArea={data.id}
-                        groups={data.groups}
+                        studyArea={data?.id}
+                        groups={data?.groups}
                         selectedLanguage={selectedLanguage}
-                        courseColor={data.color}
+                        courseColor={data?.color}
                         onRefresh={refetch}
                     />
 
                     {/* FAQ Section */}
                     <div className="space-y-4">
-                        <FAQList areaStudy={data.id} faqs={data.faq} selectedLanguage={selectedLanguage} onRefresh={refetch} />
+                        <FAQList areaStudy={data?.id} faqs={data?.faq} selectedLanguage={selectedLanguage} onRefresh={refetch} />
                         {data.faq.length === 0 && (
                             <div className="text-center py-8 text-muted-foreground">
                                 <p>Hələ FAQ əlavə edilməyib</p>
@@ -270,12 +317,13 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                 onSuccess={handleProgramSuccess}
             />
 
+
             {/* Meta Management Section */}
             <MetaIntegration
                 studyAreaId={data?.id}
                 selectedLanguage={selectedLanguage}
                 onRefresh={refetch}
-                metaItems={data?.meta || []}
+                metaItems={metaItems}
                 onCreateMeta={handleCreateMeta}
                 onUpdateMeta={handleUpdateMeta}
                 onDeleteMeta={handleDeleteMeta}

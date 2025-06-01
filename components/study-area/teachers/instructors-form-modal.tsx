@@ -35,7 +35,13 @@ export default function InstructorsFormModal({
     loadingText,
     imageInputId = "image-upload",
     uploadImage,
-}: InstructorsFormModalProps & { uploadImage?: (file: File, alt: string) => Promise<any> }) {
+    isEditMode = false,
+    selectedLanguage = "az",
+}: InstructorsFormModalProps & {
+    uploadImage?: (file: File, alt: string) => Promise<any>
+    isEditMode?: boolean
+    selectedLanguage?: string
+}) {
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,6 +103,18 @@ export default function InstructorsFormModal({
             return
         }
         await onSubmit(data)
+    }
+
+    const languageNames: Record<string, string> = {
+        az: "Azərbaycanca",
+        en: "English",
+        ru: "Русский",
+    }
+
+    const placeholders: Record<string, string> = {
+        az: "Müəllim haqqında məlumat (Azərbaycanca)",
+        en: "Information about the instructor (English)",
+        ru: "Информация о преподавателе (Русский)",
     }
 
     return (
@@ -230,24 +248,19 @@ export default function InstructorsFormModal({
                             )}
                         />
 
-                        {/* Translations with tabs */}
+                        {/* Translations - different UI for edit vs add mode */}
                         <div className="space-y-2">
-                            <FormLabel>Təsvir (3 dildə)</FormLabel>
-                            <Tabs defaultValue="az" className="w-full">
-                                <TabsList className="grid w-full grid-cols-3">
-                                    <TabsTrigger value="az">Azərbaycanca</TabsTrigger>
-                                    <TabsTrigger value="en">English</TabsTrigger>
-                                    <TabsTrigger value="ru">Русский</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="az">
+                            {isEditMode ? (
+                                <>
+                                    <FormLabel>Təsvir ({languageNames[selectedLanguage] || selectedLanguage})</FormLabel>
                                     <FormField
                                         control={form.control}
-                                        name="translations.az"
+                                        name={`translations.${selectedLanguage}`}
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
                                                     <Textarea
-                                                        placeholder="Müəllim haqqında məlumat (Azərbaycanca)"
+                                                        placeholder={placeholders[selectedLanguage] || "Təsvir daxil edin"}
                                                         className="min-h-[120px]"
                                                         {...field}
                                                     />
@@ -256,44 +269,73 @@ export default function InstructorsFormModal({
                                             </FormItem>
                                         )}
                                     />
-                                </TabsContent>
-                                <TabsContent value="en">
-                                    <FormField
-                                        control={form.control}
-                                        name="translations.en"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Textarea
-                                                        placeholder="Information about the instructor (English)"
-                                                        className="min-h-[120px]"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TabsContent>
-                                <TabsContent value="ru">
-                                    <FormField
-                                        control={form.control}
-                                        name="translations.ru"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Textarea
-                                                        placeholder="Информация о преподавателе (Русский)"
-                                                        className="min-h-[120px]"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TabsContent>
-                            </Tabs>
+                                </>
+                            ) : (
+                                <>
+                                    <FormLabel>Təsvir (3 dildə)</FormLabel>
+                                    <Tabs defaultValue="az" className="w-full">
+                                        <TabsList className="grid w-full grid-cols-3">
+                                            <TabsTrigger value="az">Azərbaycanca</TabsTrigger>
+                                            <TabsTrigger value="en">English</TabsTrigger>
+                                            <TabsTrigger value="ru">Русский</TabsTrigger>
+                                        </TabsList>
+                                        <TabsContent value="az">
+                                            <FormField
+                                                control={form.control}
+                                                name="translations.az"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder="Müəllim haqqında məlumat (Azərbaycanca)"
+                                                                className="min-h-[120px]"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </TabsContent>
+                                        <TabsContent value="en">
+                                            <FormField
+                                                control={form.control}
+                                                name="translations.en"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder="Information about the instructor (English)"
+                                                                className="min-h-[120px]"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </TabsContent>
+                                        <TabsContent value="ru">
+                                            <FormField
+                                                control={form.control}
+                                                name="translations.ru"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder="Информация о преподавателе (Русский)"
+                                                                className="min-h-[120px]"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </TabsContent>
+                                    </Tabs>
+                                </>
+                            )}
                         </div>
 
                         <DialogFooter>
