@@ -209,7 +209,7 @@ export function NewsForm({ slug }: { slug?: string }) {
             !slug ? await addNews(postValue).unwrap() : await updateNews({ params: postValue, id: news.id }).unwrap()
             slug ? toast.success("Xəbər redaktə edildi") : toast.success("Xəbər uğurla yükləndi")
             setFormEdited(false)
-            router.push('/blog')
+            router.push('/news')
         } catch (error) {
             toast.error("Xəbər yüklənərkən xəta baş verdi")
         }

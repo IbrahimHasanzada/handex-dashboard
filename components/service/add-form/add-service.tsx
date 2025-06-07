@@ -16,7 +16,7 @@ import {
     useUploadFileMutation,
 } from "@/store/handexApi"
 import { toast } from "react-toastify"
-import { formSchemaNews } from "@/validations/home/news.validation"
+import { editFormSchemaNews, formSchemaNews } from "@/validations/home/news.validation"
 import type { imageState } from "@/types/home/graduates.dto"
 import { validateImage } from "@/validations/upload.validation"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -24,6 +24,7 @@ import Link from "next/link"
 import { ContentTab } from "./content-tab"
 import { MediaTab } from "./media-tab"
 import { MetaTab } from "./meta-tab"
+import { useRouter } from "next/navigation"
 
 const ServiceDefaultValues = {
     title_az: "",
@@ -54,6 +55,7 @@ export function ServiceForm({ slug }: { slug?: string }) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [selectedTab, setSelectedTab] = useState("content")
     const [metaFields, setMetaFields] = useState<number[]>([0])
+    const router = useRouter()
     const [imageState, setImageState] = useState<
         imageState & {
             selectedFile: File | null
@@ -83,11 +85,18 @@ export function ServiceForm({ slug }: { slug?: string }) {
         },
     )
 
-    const form = useForm<z.infer<typeof formSchemaNews>>({
-        defaultValues: ServiceDefaultValues,
-        resolver: zodResolver(formSchemaNews),
-    })
+    let form
 
+    if (services) {
+        form = useForm<z.infer<typeof editFormSchemaNews>>({
+            defaultValues: ServiceDefaultValues,
+            resolver: zodResolver(editFormSchemaNews),
+        })
+    } else {
+        form = useForm<z.infer<typeof formSchemaNews>>({
+            resolver: zodResolver(formSchemaNews),
+        })
+    }
     useEffect(() => {
         if (slug && services) {
             form.setValue(`title_${selectedLanguage}` as "title_az" | "title_en" | "title_ru", services.title)
@@ -142,16 +151,16 @@ export function ServiceForm({ slug }: { slug?: string }) {
         try {
             const mainMetaTranslations = [
                 { name: values.metaName, value: values.meta_az, lang: "az" },
-                ...(values.meta_en !== "" ? [{ name: values.metaName, value: values.meta_en, lang: "en" }] : []),
-                ...(values.meta_ru !== "" ? [{ name: values.metaName, value: values.meta_ru, lang: "ru" }] : []),
+                ...(values.meta_en !== undefined ? [{ name: values.metaName, value: values.meta_en, lang: "en" }] : []),
+                ...(values.meta_ru !== undefined ? [{ name: values.metaName, value: values.meta_ru, lang: "ru" }] : []),
             ]
 
             const additionalMetaObjects = (values.additionalMeta || []).map((meta: any) => {
                 return {
                     translations: [
                         { name: meta.metaName, value: meta.meta_az, lang: "az" },
-                        ...(meta.meta_en !== "" ? [{ name: meta.metaName, value: meta.meta_en, lang: "en" }] : []),
-                        ...(meta.meta_ru !== "" ? [{ name: meta.metaName, value: meta.meta_ru, lang: "ru" }] : []),
+                        ...(meta.meta_en !== undefined ? [{ name: meta.metaName, value: meta.meta_en, lang: "en" }] : []),
+                        ...(meta.meta_ru !== undefined ? [{ name: meta.metaName, value: meta.meta_ru, lang: "ru" }] : []),
                     ],
                 }
             })
@@ -160,8 +169,8 @@ export function ServiceForm({ slug }: { slug?: string }) {
                 image: values.featuredImage,
                 translations: [
                     { title: values.title_az, description: values.content_az, lang: "az" },
-                    ...(values.title_en !== "" ? [{ title: values.title_en, description: values.content_en, lang: "en" }] : []),
-                    ...(values.title_ru !== "" ? [{ title: values.title_ru, description: values.content_ru, lang: "ru" }] : []),
+                    ...(values.title_en !== undefined ? [{ title: values.title_en, description: values.content_en, lang: "en" }] : []),
+                    ...(values.title_ru !== undefined ? [{ title: values.title_ru, description: values.content_ru, lang: "ru" }] : []),
                 ],
                 meta: [
                     {
@@ -171,11 +180,13 @@ export function ServiceForm({ slug }: { slug?: string }) {
                 ],
                 slug: values.slug,
             }
+            console.log(postValue, values.title_en, values.title_az)
 
             !slug
                 ? await addService(postValue).unwrap()
                 : await updateService({ params: postValue, id: services.id }).unwrap()
             toast.success(slug ? "Xidmət redaktə edildi" : "Xidmət uğurla yükləndi")
+            router.push('/services')
         } catch (error) {
             toast.error("Xidmət yüklənərkən xəta baş verdi")
         }

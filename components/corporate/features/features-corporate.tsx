@@ -45,7 +45,7 @@ export default function AdminFeaturesPage() {
             await addFeatures({ slug: "corporate-features", ...data }).unwrap()
             fetchFeatures()
             setIsAddDialogOpen(false)
-            toast.success("Xüsusiyyət uğurla əlavə edildi")
+            toast.success("Üstünlük uğurla əlavə edildi")
         } catch (error) {
             toast.error("Məlumatı əlavə edərkən xəta baş verdi")
         }
@@ -56,7 +56,7 @@ export default function AdminFeaturesPage() {
             await updateFeature({ params: data, id }).unwrap()
             fetchFeatures()
             setIsEditDialogOpen(false)
-            toast.success("Xüsusiyyət uğurla yeniləndi")
+            toast.success("Üstünlük uğurla yeniləndi")
         } catch (error) {
             toast.error("Məlumatları daxil edərkən xəta baş verdi")
         }
@@ -67,9 +67,9 @@ export default function AdminFeaturesPage() {
     const handleDeleteFeature = async (id: number) => {
         try {
             showDeleteConfirmation(delFeatures, id, fetchFeatures, {
-                title: "Xüsusiyəti silmək istəyirsinizmi?",
+                title: "Üstünlüyü silmək istəyirsinizmi?",
                 text: "Bu əməliyyat geri qaytarıla bilməz!",
-                successText: "Xüsusiyət uğurla silindi.",
+                successText: "Üstünlük uğurla silindi.",
             })
         } catch (error) {
             toast.error('Məlumatı silərkən xəta baş verdi')
@@ -79,11 +79,12 @@ export default function AdminFeaturesPage() {
         setActiveLanguage(language)
         fetchFeatures()
     }
+    console.log(featuresData)
 
     return (
         <div className="container mx-auto py-8">
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold">Xüsusiyyətləri idarə edin</h1>
+                <h1 className="text-3xl font-bold">Üstünlükləri idarə edin</h1>
                 <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                     <div className="w-full sm:w-auto">
                         <Tabs value={activeLanguage} onValueChange={(value) => handleLanguageChange(value as Language)}>
@@ -96,7 +97,7 @@ export default function AdminFeaturesPage() {
                     </div>
 
                     <Button onClick={() => setIsAddDialogOpen(true)} className="w-full sm:w-auto">
-                        <Plus className="mr-2 h-4 w-4" /> Yeni Xüsusiyyət əlavə edin
+                        <Plus className="mr-2 h-4 w-4" /> Yeni üstünlük əlavə edin
                     </Button>
                 </div>
             </div>
@@ -109,7 +110,7 @@ export default function AdminFeaturesPage() {
                                 <div className="flex items-center">
                                     <div className="relative w-20 h-20 overflow-hidden rounded-md">
                                         <Image
-                                            src={feature.images[0].url || "/placeholder.svg"}
+                                            src={feature?.images.length > 0 && feature?.images?.[0].url || "/placeholder.svg"}
                                             alt={'features'}
                                             fill
                                             className="object-contain"
@@ -149,9 +150,9 @@ export default function AdminFeaturesPage() {
             </div>
 
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                <DialogContent className="sm:max-w-[500px]">
+                <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>Yeni Xüsusiyyət əlavə edin</DialogTitle>
+                        <DialogTitle>Yeni üstünlük əlavə edin</DialogTitle>
                     </DialogHeader>
                     <FeatureForm
                         isFeatLoading={isFeatLoading}
@@ -162,9 +163,9 @@ export default function AdminFeaturesPage() {
             </Dialog>
 
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="sm:max-w-[500px]">
+                <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>Xüsusiyyəti Redaktə et</DialogTitle>
+                        <DialogTitle>Üstünlüyü Redaktə et</DialogTitle>
                     </DialogHeader>
                     {featuresData && (
                         <EditFeatureForm

@@ -228,7 +228,7 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
                                     onChange={(e) => updateTranslation(activeTab, "title", e.target.value)}
                                     placeholder={
                                         activeTab === "az"
-                                            ? "Xüsusiyyət başlığını daxil edin"
+                                            ? "Üstünlük başlığını daxil edin"
                                             : activeTab === "en"
                                                 ? "Enter feature title"
                                                 : "Введите название функции"
@@ -250,7 +250,7 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
                                     onChange={(e) => updateTranslation(activeTab, "desc", e.target.value)}
                                     placeholder={
                                         activeTab === "az"
-                                            ? "Xüsusiyyət təsvirini daxil edin"
+                                            ? "Üstünlük təsvirini daxil edin"
                                             : activeTab === "en"
                                                 ? "Enter feature description"
                                                 : "Введите описание функции"

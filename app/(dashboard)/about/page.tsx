@@ -58,7 +58,7 @@ export default function AboutPage() {
       toast.error("Şəkil silərkən xəta baş verdi", error.data.message)
     }
   }
-  console.log(aboutData?.[0].images)
+  console.log(aboutData)
   return (
     <DashboardLayout>
       <div className="mx-auto p-6">
@@ -85,7 +85,6 @@ export default function AboutPage() {
           </div>
           :
           <div>
-            {/* Top Photo Collage */}
             <div className="mb-12 grid grid-cols-3 lg:grid-cols-4 lg:grid-rows-2 gap-5 relative  h-64 sm:h-80">
               {
                 !aboutData?.[0].images.length ?
@@ -112,49 +111,52 @@ export default function AboutPage() {
                   ))}
             </div>
 
-            {/* Our Mission Section */}
             <div className="mb-12 flex flex-col gap-10 border-b border-dashed border-gray-200 py-8">
-              {aboutData[0].sections.map((item: any, index: number) => (
-                <div key={index}>
-                  <div className="mb-5 flex justify-end gap-5">
-                    <div>
-                      <Button onClick={() => handleEditData(item)}>Redaktə et <Edit /></Button>
+              {aboutData[0].sections ?
+                (aboutData[0].sections.map((item: any, index: number) => (
+                  <div key={index}>
+                    <div className="mb-5 flex justify-end gap-5">
+                      <div>
+                        <Button onClick={() => handleEditData(item)}>Redaktə et <Edit /></Button>
+                      </div>
+                      <div>
+                        <Button onClick={() => handleDeleteSection(item.id)}>Sil <Trash /></Button>
+                      </div>
                     </div>
-                    <div>
-                      <Button onClick={() => handleDeleteSection(item.id)}>Sil <Trash /></Button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                    {item.left_side.type == "text"
-                      ?
-                      <div dangerouslySetInnerHTML={{ __html: item.left_side.translations[0].value }}></div>
-                      :
-                      <div className="relative h-64 sm:h-80 rounded-lg overflow-hidden">
-                        <Image
-                          src={item.left_side.url ? item.left_side.url : `/placeholder.svg?height=400&width=600`}
-                          alt="Data analysis presentation"
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    }
-                    {item.right_side.type == "text"
-                      ?
-                      <div dangerouslySetInnerHTML={{ __html: item.right_side.translations[0].value }}></div>
-                      :
-                      <div className="relative h-64 sm:h-80 rounded-lg overflow-hidden">
-                        <Image
-                          src={item.right_side.url ? item.right_side.url : `/placeholder.svg?height=400&width=600`}
-                          alt="Data analysis presentation"
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    }
+                      {item.left_side.type == "text"
+                        ?
+                        <div dangerouslySetInnerHTML={{ __html: item.left_side.translations[0].value }}></div>
+                        :
+                        <div className="relative h-64 sm:h-80 rounded-lg overflow-hidden">
+                          <Image
+                            src={item.left_side.url ? item.left_side.url : `/placeholder.svg?height=400&width=600`}
+                            alt="Data analysis presentation"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      }
+                      {item.right_side.type == "text"
+                        ?
+                        <div dangerouslySetInnerHTML={{ __html: item.right_side.translations[0].value }}></div>
+                        :
+                        <div className="relative h-64 sm:h-80 rounded-lg overflow-hidden">
+                          <Image
+                            src={item.right_side.url ? item.right_side.url : `/placeholder.svg?height=400&width=600`}
+                            alt="Data analysis presentation"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      }
+                    </div>
                   </div>
-                </div>
-              ))}
+                )))
+                :
+                <p><Box />Bölmə əlavə edilməyib</p>
+              }
             </div>
             <MetaTranslations slug="about" />
           </div>
@@ -171,6 +173,6 @@ export default function AboutPage() {
 
       {/* Add İmage Modal */}
       <AddImageModal open={isImageModalOpen} onOpenChange={setIsImageModalOpen} refetch={refetch} data={imageIds} />
-    </DashboardLayout >
+    </DashboardLayout>
   )
 }

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useUpdateProfilesMutation, useUploadFileMutation } from "@/store/handexApi"
 import type { z } from "zod"
 import { validateImage } from "@/validations/upload.validation"
-import type { EditGraduateModalProps } from "@/types/home/graduates.dto"
+import type { EditGraduateModalProps, imageState } from "@/types/home/graduates.dto"
 import { formSchema } from "@/validations/home/graduate.validation"
 import GraduateFormModal from "./graduate-form-modal"
 import { toast } from "react-toastify"
@@ -14,14 +14,11 @@ import { toast } from "react-toastify"
 export default function EditGraduateModal({ open, onOpenChange, refetch, graduate }: EditGraduateModalProps) {
     const [updateProfile, { isLoading }] = useUpdateProfilesMutation()
     const [uploadImage, { isLoading: isUploading }] = useUploadFileMutation()
-    const [imageState, setImageState] = useState<{
-        preview: string | null
-        id: number | null
-        error: string | null
-    }>({
+    const [imageState, setImageState] = useState<imageState>({
         preview: graduate?.image?.url || null,
         id: graduate?.image?.id || null,
         error: null,
+        selectedFile: null
     })
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -44,6 +41,7 @@ export default function EditGraduateModal({ open, onOpenChange, refetch, graduat
                 preview: graduate.image?.url || null,
                 id: graduate.image?.id || null,
                 error: null,
+                selectedFile: null
             })
         }
     }, [graduate, form])
@@ -55,19 +53,35 @@ export default function EditGraduateModal({ open, onOpenChange, refetch, graduat
         const validationResult = validateImage(file, setImageState, imageState)
         if (validationResult === false) return
 
+        setImageState({
+            preview: URL.createObjectURL(file),
+            id: null,
+            error: null,
+            selectedFile: file,
+        })
+    }
+
+    const handleUploadWithAlt = async (file: File, altText: string) => {
         try {
             const formData = new FormData()
             formData.append("file", file)
+            formData.append("alt", altText)
+
             const response = await uploadImage(formData).unwrap()
 
-            setImageState({
-                preview: response.url || null,
-                id: response.id || null,
-                error: null,
-            })
             form.setValue("image", response.id)
+            setImageState({
+                preview: response.url,
+                id: response.id,
+                error: null,
+                selectedFile: null,
+            })
+
+            return response
         } catch (error) {
+            toast.error("Şəkli yükləyərkən xəta baş verdi")
             setImageState((prev) => ({ ...prev, error: "Şəkil yükləmə xətası baş verdi" }))
+            throw error
         }
     }
 
@@ -89,6 +103,7 @@ export default function EditGraduateModal({ open, onOpenChange, refetch, graduat
         }
     }
 
+
     return (
         <GraduateFormModal
             open={open}
@@ -105,6 +120,7 @@ export default function EditGraduateModal({ open, onOpenChange, refetch, graduat
             submitButtonText="Yadda saxla"
             loadingText="Yenilənir..."
             imageInputId="image-upload-edit"
+            uploadImage={handleUploadWithAlt}
         />
     )
 }

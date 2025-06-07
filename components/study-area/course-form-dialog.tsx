@@ -102,7 +102,7 @@ export function CourseFormDialog({ onSubmit }: CourseFormDialogProps) {
                     <Tabs defaultValue="basic" className="w-full">
                         <TabsList className="grid w-full grid-cols-6">
                             <TabsTrigger value="basic">Əsas</TabsTrigger>
-                            <TabsTrigger value="translations">Tərcümələr</TabsTrigger>
+                            <TabsTrigger value="translations">Description</TabsTrigger>
                             <TabsTrigger value="groups">Qruplar</TabsTrigger>
                             <TabsTrigger value="faq">FAQ</TabsTrigger>
                             <TabsTrigger value="program">Proqram</TabsTrigger>

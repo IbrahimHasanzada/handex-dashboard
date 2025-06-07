@@ -229,7 +229,7 @@ export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData, refetch, c
 
   return (
     <Dialog open={addData} onOpenChange={setAddData}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Yeni Rəy Əlavə Et</DialogTitle>
         </DialogHeader>

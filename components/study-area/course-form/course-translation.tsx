@@ -14,7 +14,7 @@ export function CourseTranslations({ form }: CourseTranslationsProps) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Tərcümələr</CardTitle>
+                <CardTitle>Təsvir</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
                 {["az", "en", "ru"].map((lang, langIndex) => (

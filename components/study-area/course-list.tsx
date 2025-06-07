@@ -92,15 +92,6 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
 
     return (
         <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center gap-2 mb-4">
-                        <Globe className="h-5 w-5" />
-                        <CardTitle className="text-lg">Dil Seçimi</CardTitle>
-                    </div>
-                </CardHeader>
-            </Card>
-
             {/* Course List */}
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
@@ -187,10 +178,6 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
 
                                         {/* Actions */}
                                         <div className="flex items-center gap-2 shrink-0">
-                                            <Button size="sm" variant="outline" onClick={() => handleEdit(course.id)}>
-                                                <Edit className="h-4 w-4 mr-1" />
-                                                Redaktə
-                                            </Button>
                                             <Button size="sm" variant="outline" onClick={() => router.push(`/study-area/${course.slug}`)}>
                                                 <Edit className="h-4 w-4 mr-1" />
                                                 Bax

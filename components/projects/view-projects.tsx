@@ -46,7 +46,7 @@ export function ViewProjects({ slug, onEdit, onDelete }: ViewArticleProps) {
                 <div className="space-y-6">
                     <div className="flex items-start md:items-center gap-5 justify-between flex-col md:flex-row mt-5">
                         <Button variant="outline" size="sm" asChild>
-                            <Link href="/blog">
+                            <Link href="/projects">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
                                 Layihələrə qayıt
                             </Link>

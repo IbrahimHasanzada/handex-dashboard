@@ -59,10 +59,10 @@ export function StatisticsPage() {
   }
 
   const allStatistics = [
-    { icons: Users, dataStat: general?.[0]?.statistics.students, title: "Ümumi Tələbələr" },
-    { icons: BookOpen, dataStat: general?.[0]?.statistics.workers, title: "Tələbələrimizin aldıqları sertifikatların sayı" },
-    { icons: GraduationCap, dataStat: general?.[0]?.statistics.graduates, title: "İş tapan məzunların sayı" },
-    { icons: ContactRound, dataStat: general?.[0]?.statistics.teachers, title: "Müəllimlərin sayı" },
+    { icons: Users, dataStat: general?.[0]?.statistics?.students, title: "Ümumi Tələbələr" },
+    { icons: BookOpen, dataStat: general?.[0]?.statistics?.workers, title: "Tələbələrimizin aldıqları sertifikatların sayı" },
+    { icons: GraduationCap, dataStat: general?.[0]?.statistics?.graduates, title: "İş tapan məzunların sayı" },
+    { icons: ContactRound, dataStat: general?.[0]?.statistics?.teachers, title: "Müəllimlərin sayı" },
   ]
 
   return (
@@ -79,7 +79,7 @@ export function StatisticsPage() {
         {allStatistics.map((item, index: number) => (
           <Card key={index}>
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex gap-2 items-center justify-between">
                 <div className="rounded-lg bg-primary/10 p-2">
                   {<item.icons className="h-6 w-6 text-primary" />}
                 </div>
@@ -116,38 +116,6 @@ export function StatisticsPage() {
             </CardContent>
           </Card>
         ))}
-      </div>
-
-      {/* Detailed Statistics */}
-      <div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Tələbə Statistikası</CardTitle>
-            <CardDescription>Tələbələrin kurs qeydiyyatı və tamamlama nisbəti</CardDescription>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="aspect-[2/1] w-full bg-muted rounded-lg flex items-center justify-center">
-              <BarChart3 className="h-16 w-16 text-muted-foreground/50" />
-              <span className="ml-2 text-muted-foreground">Qrafik burada göstəriləcək</span>
-            </div>
-            <div className="grid grid-cols-2 gap-4 mt-6">
-              <div>
-                <div className="text-sm font-medium">Yeni Qeydiyyatlar</div>
-                <div className="text-2xl font-bold">124</div>
-                <div className="text-xs text-muted-foreground flex items-center">
-                  <ArrowUpRight className="h-3 w-3 mr-1 text-green-500" />
-                </div>
-              </div>
-              <div>
-                <div className="text-sm font-medium">Umumi say</div>
-                <div className="text-2xl font-bold">78%</div>
-                <div className="text-xs text-muted-foreground flex items-center">
-                  <ArrowUpRight className="h-3 w-3 mr-1 text-green-500" />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   )

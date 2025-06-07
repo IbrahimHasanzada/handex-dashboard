@@ -26,7 +26,6 @@ const baseConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
-    missingSuspenseWithCSRBailout: false,
   },
   transpilePackages: ['@tinymce/tinymce-react'],
 };

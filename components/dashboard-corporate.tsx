@@ -1,9 +1,7 @@
 "use client"
-import Testimonials from "./home/testimonials/testimonials"
-import Graduates from "./home/graduates/graduates"
-import Partners from "./home/partners/partners"
 import CorporateHero from "./corporate/corporate-hero"
 import FeaturesSection from "./corporate/features/features-corporate"
+import Partners from "./corporate/partners/partners"
 import { MetaTranslations } from "./meta/meta"
 
 export function DashboardCorporate() {

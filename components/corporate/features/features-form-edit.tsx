@@ -35,6 +35,7 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
         preview: null,
         id: null,
         error: null,
+        selectedFile: null
     })
 
     useEffect(() => {
@@ -53,7 +54,7 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
         defaultValues: {
             images: [],
             translations: [
-                { title: title, desc: desc, lang: lang },
+                { title: title, desc: desc, lang: lang as any },
             ],
         },
     })
@@ -73,7 +74,7 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
                 currentTranslations.push({
                     title: title,
                     desc: desc,
-                    lang,
+                    lang: lang as any,
                 })
             }
 
@@ -99,6 +100,7 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
                     preview: response.data.url,
                     id: response.data.id,
                     error: null,
+                    selectedFile: null
                 })
 
                 form.setValue("images", [response.data.id], { shouldValidate: true })
@@ -114,7 +116,7 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
 
     const onFormSubmit = form.handleSubmit(
         (data) => {
-            onSubmit(data, features.id)
+            onSubmit(data as any, features.id)
         },
         (errors) => {
             toast.error("Zəhmət olmasa bütün sahələri doldurun")
@@ -145,7 +147,7 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
                                     onChange={(e) => setTitle(e.target.value)}
                                     placeholder={
                                         lang === "az"
-                                            ? "Xüsusiyyət başlığını daxil edin"
+                                            ? "Üstünlük başlığını daxil edin"
                                             : lang === "en"
                                                 ? "Enter feature title"
                                                 : "Введите название функции"
@@ -163,7 +165,7 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
                                     onChange={(e) => setDesc(e.target.value)}
                                     placeholder={
                                         lang === "az"
-                                            ? "Xüsusiyyət təsvirini daxil edin"
+                                            ? "Üstünlük təsvirini daxil edin"
                                             : lang === "en"
                                                 ? "Enter feature description"
                                                 : "Введите описание функции"
