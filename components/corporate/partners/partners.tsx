@@ -51,7 +51,7 @@ const Partners = () => {
                                         height={80}
                                         className="object-contain"
                                     />
-                                    <p>{partner.title}</p>
+                                    <p className="mt-2">{partner.title}</p>
                                 </div>
                                 <div className="w-full items-end justify-end flex gap-1">
                                     <AddPartner

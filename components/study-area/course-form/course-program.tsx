@@ -30,9 +30,6 @@ export function CourseProgram({ form, setProgramImageStates, programImageStates,
         name: "program",
     })
 
-
-
-
     const handleProgramImageUpload = (index: number, imageId: number) => form.setValue(`program.${index}.image` as any, imageId)
 
     const setProgramImageState = (index: number) => (newState: any) => {
@@ -54,39 +51,6 @@ export function CourseProgram({ form, setProgramImageStates, programImageStates,
             }))
     }
 
-    const handleRemoveProgram = (index: number) => {
-        removeProgram(index)
-
-        setProgramImageStates((prev) => {
-            const newStates = { ...prev }
-            delete newStates[index]
-            const reindexed: Record<number, imageState> = {}
-            Object.keys(newStates).forEach((key) => {
-                const keyNum = Number.parseInt(key)
-                if (keyNum > index) {
-                    reindexed[keyNum - 1] = newStates[keyNum]
-                } else {
-                    reindexed[keyNum] = newStates[keyNum]
-                }
-            })
-            return reindexed
-        })
-
-        setProgramAltTexts((prev) => {
-            const newTexts = { ...prev }
-            delete newTexts[index]
-            const reindexed: Record<number, string> = {}
-            Object.keys(newTexts).forEach((key) => {
-                const keyNum = Number.parseInt(key)
-                if (keyNum > index) {
-                    reindexed[keyNum - 1] = newTexts[keyNum]
-                } else {
-                    reindexed[keyNum] = newTexts[keyNum]
-                }
-            })
-            return reindexed
-        })
-    }
 
     return (
         <Card>
@@ -96,14 +60,6 @@ export function CourseProgram({ form, setProgramImageStates, programImageStates,
             <CardContent className="space-y-4">
                 {programFields.map((field, index) => (
                     <div key={field.id} className="border rounded-lg p-4">
-                        <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-medium">Proqram {index + 1}</h4>
-                            {programFields.length > 1 && (
-                                <Button type="button" variant="outline" size="icon" onClick={() => handleRemoveProgram(index)}>
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            )}
-                        </div>
                         <div className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -166,33 +122,6 @@ export function CourseProgram({ form, setProgramImageStates, programImageStates,
                         </div>
                     </div>
                 ))}
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                        const newIndex = programFields.length
-                        appendProgram({
-                            name: "",
-                            image: 0,
-                            translations: [
-                                { description: "", lang: "az" },
-                                { description: "", lang: "en" },
-                                { description: "", lang: "ru" },
-                            ],
-                        })
-
-                        setProgramImageStates((prev) => ({
-                            ...prev,
-                            [newIndex]: { preview: null, id: null, error: null, selectedFile: null },
-                        }))
-                        setProgramAltTexts((prev) => ({
-                            ...prev,
-                            [newIndex]: "",
-                        }))
-                    }}
-                >
-                    <Plus className="mr-2 h-4 w-4" /> Proqram Əlavə Et
-                </Button>
             </CardContent>
         </Card>
     )
