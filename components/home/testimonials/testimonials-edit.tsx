@@ -116,7 +116,6 @@ const TestimonialsEditModal = ({
                     },
                 ],
             }
-            console.log(submitData, data.id)
             await updateCustomers({ params: submitData, id: data.id })
             toast.success("Rəy uğurla yeniləndi!")
             await refetch()

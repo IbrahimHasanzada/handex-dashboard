@@ -58,7 +58,6 @@ export default function AboutPage() {
       toast.error("Şəkil silərkən xəta baş verdi", error.data.message)
     }
   }
-  console.log(aboutData)
   return (
     <DashboardLayout>
       <div className="mx-auto p-6">

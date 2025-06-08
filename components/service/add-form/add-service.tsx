@@ -180,7 +180,6 @@ export function ServiceForm({ slug }: { slug?: string }) {
                 ],
                 slug: values.slug,
             }
-            console.log(postValue, values.title_en, values.title_az)
 
             !slug
                 ? await addService(postValue).unwrap()

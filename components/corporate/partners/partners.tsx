@@ -15,7 +15,6 @@ const Partners = () => {
     const [updatePartner, { isLoading }] = useDeleteContentMutation()
     const [currentPage, setCurrentPage] = useState(1)
     const compaines = partners && partners
-    console.log(partners)
     const startIndex = (currentPage - 1) * 5
     const endIndex = startIndex + 5
     const displayedGraduates = compaines?.slice(startIndex, endIndex)

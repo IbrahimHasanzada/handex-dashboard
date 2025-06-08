@@ -108,7 +108,6 @@ export default function AddInstructorsModal({ open, onOpenChange, refetch }: Add
                 image: data.image,
                 translations: translations,
             }
-            console.log(jsonData)
 
             await addProfile(jsonData).unwrap()
 

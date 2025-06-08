@@ -28,11 +28,7 @@ import { useAddStudyAreaMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
 import { imageState } from "@/types/home/graduates.dto"
 
-interface CourseFormDialogProps {
-    onSubmit: (data: CourseFormData) => void
-}
-
-export function CourseFormDialog({ onSubmit }: CourseFormDialogProps) {
+export function CourseFormDialog() {
     const [addStudyArea] = useAddStudyAreaMutation()
     const [open, setOpen] = useState(false)
     const [altText, setAltText] = useState("")
@@ -59,7 +55,6 @@ export function CourseFormDialog({ onSubmit }: CourseFormDialogProps) {
         try {
             await addStudyArea(data).unwrap()
             toast.success("Tədris sahəsi uğurla əlavə olundu")
-            onSubmit(data)
             setOpen(false)
             form.reset()
             setImageState({
@@ -69,7 +64,10 @@ export function CourseFormDialog({ onSubmit }: CourseFormDialogProps) {
                 selectedFile: null,
             })
         } catch (error: any) {
-            toast.error(error.data)
+            const errorMessage = Array.isArray(error?.data?.message)
+                ? error.data.message.join(', ')
+                : error.data.message;
+            toast.error(errorMessage)
         }
     }
 

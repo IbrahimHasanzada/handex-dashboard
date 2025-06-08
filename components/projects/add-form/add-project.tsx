@@ -205,7 +205,6 @@ export function ProjectsForm({ slug }: { slug?: string }) {
                 ],
                 slug: values.slug,
             }
-            console.log(postValue)
             !slug ? await addprojetcs(postValue).unwrap() : await updateprojetcs({ params: postValue, id: projetcs.id }).unwrap()
             slug ? toast.success("Layihə redaktə edildi") : toast.success("Layihə uğurla yükləndi")
             setFormEdited(false)

@@ -18,6 +18,8 @@ import { useRouter } from "next/navigation"
 import { StudyAreaData } from "@/types/study-area/overview"
 import Image from "next/image"
 import { InstructorsProps } from "@/types/study-area/instructors.dto"
+import { Label } from "../ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 
 
 
@@ -29,39 +31,27 @@ const languageLabels: any = {
     ru: "Русский",
 }
 
+export const MODEL_TYPES = [
+    { value: "home", label: "Ana səhifə" },
+    { value: "corporate", label: "Korporativ" },
+]
+
 export function CourseList({ selectedLanguage, setSelectedLanguage }: InstructorsProps) {
-    const [searchTerm, setSearchTerm] = useState("")
+    const [modelTypes, setModelTypes] = useState("home")
     const [currentPage, setCurrentPage] = useState(1)
     const router = useRouter()
     const itemsPerPage = 5
 
-    const { data, isLoading, error, refetch } = useGetStudyAreaQuery(selectedLanguage)
+    const { data, isLoading, error, refetch } = useGetStudyAreaQuery({ lang: selectedLanguage, model: modelTypes })
     const [deleteStudyArea] = useDeleteStudyAreaMutation()
     useMemo(() => {
         setCurrentPage(1)
-    }, [selectedLanguage, searchTerm])
+    }, [selectedLanguage])
 
-    const filteredCourses = useMemo(() => {
-        if (!data) return []
-
-        return data.filter(
-            (course: StudyAreaData) =>
-                course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                course.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                course.course_detail.toLowerCase().includes(searchTerm.toLowerCase()),
-        )
-    }, [data, searchTerm])
-    const totalPages = Math.ceil(filteredCourses.length / itemsPerPage)
+    const totalPages = data && Math.ceil(data.length / itemsPerPage)
     const startIndex = (currentPage - 1) * itemsPerPage
-    const paginatedCourses = filteredCourses.slice(startIndex, startIndex + itemsPerPage)
+    const paginatedCourses = data && data.slice(startIndex, startIndex + itemsPerPage)
 
-    const handleCourseSubmit = (data: CourseFormData) => {
-        console.log("Yeni kurs:", data)
-    }
-
-    const handleEdit = (courseId: number) => {
-        console.log("Edit course:", courseId)
-    }
 
     const handleDelete = (courseId: number) => {
         try {
@@ -76,11 +66,6 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
     }
 
 
-    // const handleLanguageChange = (language: Language) => {
-    //     setSelectedLanguage(language)
-    //     setSearchTerm("")
-    // }
-
     if (error) {
         return (
             <Alert variant="destructive">
@@ -88,6 +73,10 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
                 <AlertDescription>Kurslar yüklənərkən xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.</AlertDescription>
             </Alert>
         )
+    }
+
+    const handleChooseModel = (value: any) => {
+        setModelTypes(value)
     }
 
     return (
@@ -103,21 +92,27 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
                         <CardDescription>
                             {isLoading
                                 ? "Yüklənir..."
-                                : `${filteredCourses.length} təhsil sahəsi (${languageLabels[selectedLanguage]})`}
+                                : `${data.length} təhsil sahəsi (${languageLabels[selectedLanguage]})`}
                         </CardDescription>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                type="search"
-                                placeholder={`Təhsil sahəsi axtar... (${selectedLanguage.toUpperCase()})`}
-                                className="w-[250px] pl-8"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
+                    <div className="flex gap-5">
+                        <div className="flex items-center gap-2">
+                            <CourseFormDialog />
                         </div>
-                        <CourseFormDialog onSubmit={handleCourseSubmit} />
+                        <div className="space-y-2">
+                            <Select value={modelTypes} onValueChange={handleChooseModel}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Tədris sahəsinin modelini seçin..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {MODEL_TYPES.map((type: any) => (
+                                        <SelectItem key={type.value} value={type.value}>
+                                            {type.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -199,21 +194,12 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
                             // Empty state
                             <div className="text-center py-12">
                                 <div className="text-muted-foreground">
-                                    {searchTerm ? (
-                                        <>
-                                            <p className="text-lg font-medium">Heç bir nəticə tapılmadı</p>
-                                            <p className="text-sm">
-                                                "{searchTerm}" üçün {languageLabels[selectedLanguage]} dilində heç bir təhsil sahəsi tapılmadı
-                                            </p>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <p className="text-lg font-medium">
-                                                {languageLabels[selectedLanguage]} dilində təhsil sahəsi tapılmadı
-                                            </p>
-                                            <p className="text-sm">Bu dildə hələ təhsil sahəsi əlavə edilməyib</p>
-                                        </>
-                                    )}
+                                    <>
+                                        <p className="text-lg font-medium">
+                                            {languageLabels[selectedLanguage]} dilində təhsil sahəsi tapılmadı
+                                        </p>
+                                        <p className="text-sm">Bu dildə hələ təhsil sahəsi əlavə edilməyib</p>
+                                    </>
                                 </div>
                             </div>
                         )}
@@ -221,7 +207,7 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
                 </CardContent>
 
                 {/* Pagination */}
-                {!isLoading && filteredCourses.length > itemsPerPage && (
+                {!isLoading && data.length > itemsPerPage && (
                     <CardFooter className="flex justify-between items-center">
                         <Button variant="outline" size="sm" onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
                             <ChevronLeft className="h-4 w-4 mr-1" />
@@ -233,8 +219,8 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
                                 Səhifə {currentPage} / {totalPages}
                             </span>
                             <span className="text-muted-foreground">
-                                ({startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredCourses.length)} /{" "}
-                                {filteredCourses.length})
+                                ({startIndex + 1}-{Math.min(startIndex + itemsPerPage, data.length)} /{" "}
+                                {data.length})
                             </span>
                         </div>
 

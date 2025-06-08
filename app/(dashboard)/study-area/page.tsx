@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/dashboard-layout"
 import Instructors from "@/components/study-area/teachers/instructors"
 import { useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import AdminWhyHandexPage from "@/components/study-area/why-handex/why-handex"
 
 type Language = "az" | "en" | "ru"
 export default function page() {
@@ -21,8 +22,6 @@ export default function page() {
         </div>
 
         <div>
-
-
           <Tabs className="mb-5" value={selectedLanguage} onValueChange={(value) => setSelectedLanguage(value as Language)}>
             <TabsList className="grid w-full grid-cols-3 max-w-md">
               <TabsTrigger value="az" className="flex items-center gap-2">
@@ -39,6 +38,8 @@ export default function page() {
           <Instructors
             selectedLanguage={selectedLanguage}
             setSelectedLanguage={setSelectedLanguage} />
+
+          <AdminWhyHandexPage />
         </div>
 
         <div>

@@ -58,7 +58,7 @@ export const handexApi = createApi({
             }),
         }),
         getContent: builder.query({
-            query: ({ slug = "partners", lang }) => `/content/${slug}?lang=${lang}`
+            query: ({ slug, lang }) => `/content/${slug}?lang=${lang}`
         }),
         addContent: builder.mutation({
             query: (params) => ({
@@ -424,7 +424,7 @@ export const handexApi = createApi({
             providesTags: ['Study-area']
         }),
         getStudyArea: builder.query({
-            query: (lang) => `/study-area?lang=${lang}`,
+            query: ({ lang, model }) => `/study-area?model=${model}&lang=${lang}`,
             providesTags: ['Study-area']
         }),
         addStudyArea: builder.mutation({

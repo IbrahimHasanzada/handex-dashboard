@@ -102,6 +102,7 @@ export const courseSchema = z.object({
     program: z.array(programSchema).min(1, "Ən azı bir proqram tələb olunur"),
     meta: z.array(metaSchema).optional(),
     group: z.array(groupSchema).optional(),
+    model: z.string().min(1, "Model tələb olunur")
 })
 
 export type CourseFormData = z.infer<typeof courseSchema>

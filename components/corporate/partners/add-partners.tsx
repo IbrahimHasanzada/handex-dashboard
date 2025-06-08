@@ -23,7 +23,7 @@ import { toast } from "react-toastify"
 import { useAddContentMutation, useUpdateContentMutation, useUploadFileMutation } from "@/store/handexApi"
 
 const formSchema = z.object({
-    imageId: z.number().nullable(),
+    imageId: z.number().min(1, "Şəkil tələb olunur"),
     logoAlt: z.string().optional(),
     companyName: z.string().min(1, "Şirkət adı tələb olunur"),
 })
@@ -58,7 +58,7 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            imageId: null,
+            imageId: 0,
             logoAlt: "",
             companyName: "",
         },
@@ -89,7 +89,7 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
         if (!open) {
             if (!isEditing) {
                 form.reset({
-                    imageId: null,
+                    imageId: 0,
                     logoAlt: "",
                     companyName: "",
                 })
@@ -151,7 +151,7 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
             URL.revokeObjectURL(logoState.preview)
         }
 
-        form.setValue("imageId", null)
+        form.setValue("imageId", 0)
         form.setValue("logoAlt", "")
         setLogoState({
             preview: null,
@@ -161,17 +161,10 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
         })
     }
 
-    // const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    //     console.log("Form submitted with values:", values)
-    //     console.log("Logo state:", logoState)
-
-
-    // }
-
-    // Add form submission handler to prevent default behavior
-
     const handleFormSubmit = form.handleSubmit(
         async (values) => {
+
+            const result = formSchema.safeParse(values);
             // Prevent form submission if logo is selected but not uploaded
             if (logoState.selectedFile && !logoState.id) {
                 toast.error("Zəhmət olmasa əvvəlcə logonu yükləyin")
@@ -181,6 +174,13 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
             if (!values.companyName.trim()) {
                 toast.error("Şirkət adı tələb olunur")
                 return
+            }
+            if (!result.success) {
+                // ZodError varsa, bütün mesajları göstər
+                result.error.issues.forEach((issue: any) => {
+                    toast.error(issue.message);
+                });
+                return;
             }
 
             try {
@@ -207,7 +207,6 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
                 }
 
                 if (isEditing) {
-                    console.log(requestData)
                     await updateContent({
                         id: editPartner.id,
                         params: requestData,
