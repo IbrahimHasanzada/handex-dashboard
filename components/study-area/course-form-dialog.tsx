@@ -162,13 +162,7 @@ export function CourseFormDialog() {
                             <strong>Form Valid:</strong> {form.formState.isValid ? "Yes" : "No"}
                         </p>
                         <p>
-                            <strong>Form Dirty:</strong> {form.formState.isDirty ? "Yes" : "No"}
-                        </p>
-                        <p>
                             <strong>Errors:</strong> {Object.keys(form.formState.errors).length}
-                        </p>
-                        <p>
-                            <strong>Image Value:</strong> {form.watch("image")}
                         </p>
 
                         {Object.keys(form.formState.errors).length > 0 && (
