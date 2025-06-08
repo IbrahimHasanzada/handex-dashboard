@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { ImageIcon, Loader2, Plus, Upload, X } from "lucide-react"
+import { Loader2, Pen, Plus, Upload, X } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,10 +23,9 @@ import { toast } from "react-toastify"
 import { useAddContentMutation, useUpdateContentMutation, useUploadFileMutation } from "@/store/handexApi"
 
 const formSchema = z.object({
-    id: z.number().nullable(),
+    imageId: z.number().nullable(),
     logoAlt: z.string().optional(),
     companyName: z.string().min(1, "Şirkət adı tələb olunur"),
-    contentId: z.number().optional(),
 })
 
 interface AddPartnerProps {
@@ -59,10 +58,9 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            id: null,
+            imageId: null,
             logoAlt: "",
             companyName: "",
-            contentId: undefined,
         },
     })
 
@@ -70,16 +68,15 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
     useEffect(() => {
         if (editPartner && open) {
             form.reset({
-                id: editPartner.id,
+                imageId: editPartner.imageId,
                 logoAlt: editPartner.alt || "",
                 companyName: editPartner.title || "",
-                contentId: editPartner.contentId,
             })
 
             if (editPartner.url) {
                 setLogoState({
                     preview: editPartner.url,
-                    id: editPartner.id,
+                    id: editPartner.imageId,
                     error: null,
                     selectedFile: null,
                 })
@@ -92,10 +89,9 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
         if (!open) {
             if (!isEditing) {
                 form.reset({
-                    id: null,
+                    imageId: null,
                     logoAlt: "",
                     companyName: "",
-                    contentId: undefined,
                 })
                 setLogoState({
                     preview: null,
@@ -139,7 +135,7 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
                 selectedFile: null,
             })
 
-            form.setValue("id", response.id)
+            form.setValue("imageId", response.id)
             toast.success("Logo uğurla yükləndi")
         } catch (error) {
             toast.error("Logo yükləyərkən xəta baş verdi")
@@ -155,7 +151,7 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
             URL.revokeObjectURL(logoState.preview)
         }
 
-        form.setValue("id", null)
+        form.setValue("imageId", null)
         form.setValue("logoAlt", "")
         setLogoState({
             preview: null,
@@ -165,79 +161,79 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
         })
     }
 
-    const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log("Form submitted with values:", values)
-        console.log("Logo state:", logoState)
+    // const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    //     console.log("Form submitted with values:", values)
+    //     console.log("Logo state:", logoState)
 
-        // Prevent form submission if logo is selected but not uploaded
-        if (logoState.selectedFile && !logoState.id) {
-            toast.error("Zəhmət olmasa əvvəlcə logonu yükləyin")
-            return
-        }
 
-        if (!values.companyName.trim()) {
-            toast.error("Şirkət adı tələb olunur")
-            return
-        }
-
-        try {
-            const requestData = {
-                translations: [
-                    {
-                        title: values.companyName,
-                        desc: values.companyName,
-                        lang: "az",
-                    },
-                    {
-                        title: values.companyName,
-                        desc: values.companyName,
-                        lang: "en",
-                    },
-                    {
-                        title: values.companyName,
-                        desc: values.companyName,
-                        lang: "ru",
-                    },
-                ],
-                images: values.id ? [values.id] : [],
-                slug: "partners",
-            }
-
-            if (isEditing && values.contentId) {
-                await updateContent({
-                    id: values.contentId,
-                    ...requestData,
-                }).unwrap()
-                toast.success("Tərəfdaş uğurla yeniləndi")
-            } else {
-                await addContent(requestData).unwrap()
-                toast.success("Tərəfdaş uğurla əlavə edildi")
-            }
-
-            form.reset()
-            setLogoState({
-                preview: null,
-                id: null,
-                error: null,
-                selectedFile: null,
-            })
-            setOpen(false)
-            refetch()
-        } catch (error) {
-            console.error("Submission error:", error)
-            toast.error("Xəta baş verdi")
-        }
-    }
+    // }
 
     // Add form submission handler to prevent default behavior
 
     const handleFormSubmit = form.handleSubmit(
-        (data) => {
-            console.log(data)
-            // Remove imageAlt from data before submitting
-            // onSubmit(submitData)
+        async (values) => {
+            // Prevent form submission if logo is selected but not uploaded
+            if (logoState.selectedFile && !logoState.id) {
+                toast.error("Zəhmət olmasa əvvəlcə logonu yükləyin")
+                return
+            }
+
+            if (!values.companyName.trim()) {
+                toast.error("Şirkət adı tələb olunur")
+                return
+            }
+
+            try {
+                const requestData = {
+                    translations: [
+                        {
+                            title: values.companyName,
+                            desc: values.companyName,
+                            lang: "az",
+                        },
+                        {
+                            title: values.companyName,
+                            desc: values.companyName,
+                            lang: "en",
+                        },
+                        {
+                            title: values.companyName,
+                            desc: values.companyName,
+                            lang: "ru",
+                        },
+                    ],
+                    images: values.imageId ? [values.imageId] : [],
+                    slug: "partners",
+                }
+
+                if (isEditing) {
+                    console.log(requestData)
+                    await updateContent({
+                        id: editPartner.id,
+                        params: requestData,
+                    }).unwrap()
+                    toast.success("Tərəfdaş uğurla yeniləndi")
+                } else {
+                    await addContent(requestData).unwrap()
+                    toast.success("Tərəfdaş uğurla əlavə edildi")
+                }
+
+                form.reset()
+                setLogoState({
+                    preview: null,
+                    id: null,
+                    error: null,
+                    selectedFile: null,
+                })
+                setOpen(false)
+                refetch()
+            } catch (error) {
+                console.error("Submission error:", error)
+                toast.error("Xəta baş verdi")
+            }
         },
         (errors) => {
+            console.log(errors)
             toast.error("Zəhmət olmasa bütün sahələri doldurun")
         },
     )
@@ -246,8 +242,8 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 {isEditing ? (
-                    <Button variant="ghost" size="icon" className="h-7 w-7">
-                        <ImageIcon className="h-4 w-4" />
+                    <Button variant="secondary" size="icon" className="h-7 w-7">
+                        <Pen className="h-4 w-4" />
                     </Button>
                 ) : (
                     <Button>
@@ -268,7 +264,7 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
                     <form onSubmit={handleFormSubmit} className="space-y-6">
                         <FormField
                             control={form.control}
-                            name="id"
+                            name="imageId"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Logo</FormLabel>
@@ -366,7 +362,6 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
                             )}
                         />
 
-                        <input type="hidden" {...form.register("contentId")} />
 
                         <DialogFooter>
                             <Button type="button" variant="outline" onClick={() => setOpen(false)}>

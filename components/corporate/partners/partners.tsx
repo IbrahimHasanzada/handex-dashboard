@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAddContentMutation, useGeneralMutation, useGetGeneralQuery } from "@/store/handexApi"
-import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react"
+import { useDeleteContentMutation, useGetContentQuery } from "@/store/handexApi"
+import { ChevronLeft, ChevronRight, Package, Trash2 } from "lucide-react"
 import Image from "next/image"
 import { toast } from "react-toastify"
 import { useState } from "react"
@@ -11,28 +11,22 @@ import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { AddPartner } from "./add-partners"
 
 const Partners = () => {
-    const { data: partners, refetch: fetchPartners, isFetching } = useGetGeneralQuery("")
-    const [updatePartner, { isLoading }] = useAddContentMutation()
+    const { data: partners, refetch: fetchPartners, isFetching } = useGetContentQuery({ slug: "partners", lang: "az" })
+    const [updatePartner, { isLoading }] = useDeleteContentMutation()
     const [currentPage, setCurrentPage] = useState(1)
-    const compaines = partners && partners[0].company
-
+    const compaines = partners && partners
+    console.log(partners)
     const startIndex = (currentPage - 1) * 5
     const endIndex = startIndex + 5
     const displayedGraduates = compaines?.slice(startIndex, endIndex)
     const pageView = Math.ceil((compaines?.length || 0) / 5) || 1
 
     const handleDeletePartner = async (id: number) => {
-        try {
-            const updatedPartners = compaines.filter((item: any) => item.id !== id).map((elem: any) => elem.id)
-            fetchPartners()
-            showDeleteConfirmation(updatePartner, { company: updatedPartners }, fetchPartners, {
-                title: "Tərəfdaşı silmək istəyirsinizmi?",
-                text: "Bu əməliyyat geri qaytarıla bilməz!",
-                successText: "Tərəfdaş uğurla silindi.",
-            })
-        } catch (error) {
-            toast.error("Tərəfdaş silinərkən xəta baş verdi")
-        }
+        showDeleteConfirmation(updatePartner, id, fetchPartners, {
+            title: "Tərəfdaşı silmək istəyirsinizmi?",
+            text: "Bu əməliyyat geri qaytarıla bilməz!",
+            successText: "Tərəfdaş uğurla silindi.",
+        })
     }
 
     return (
@@ -42,43 +36,51 @@ const Partners = () => {
                     <CardTitle>Tərəfdaşlar</CardTitle>
                     <CardDescription>Tərəfdaş şirkətləri idarə edin</CardDescription>
                 </div>
-                <AddPartner partners={partners?.[0].company} refetch={fetchPartners} />
+                <AddPartner partners={partners} refetch={fetchPartners} />
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    {displayedGraduates?.map((partner: any, index: number) => (
-                        <div key={partner.id} className="border rounded-lg p-4 flex flex-col items-center">
-                            <div className="relative">
-                                <Image
-                                    src={partner.url || "/placeholder.svg"}
-                                    alt={"partner" + index}
-                                    width={80}
-                                    height={80}
-                                    className="object-contain"
-                                />
-                                <div className="absolute -bottom-2 -right-2 flex gap-1">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {partners ?
+                        displayedGraduates?.map((partner: any, index: number) => (
+                            <div key={partner.id} className="p-3 border rounded-lg flex flex-col justify-between h-full items-center">
+                                <div className="relative">
+                                    <Image
+                                        src={partner.images[0].url || "/placeholder.svg"}
+                                        alt={"partner" + index}
+                                        width={80}
+                                        height={80}
+                                        className="object-contain"
+                                    />
+                                    <p>{partner.title}</p>
+                                </div>
+                                <div className="w-full items-end justify-end flex gap-1">
                                     <AddPartner
                                         editPartner={{
                                             id: partner.id,
-                                            url: partner.url,
+                                            imageId: partner.images[0].id,
+                                            url: partner.images[0].url,
                                             title: partner.title || "",
-                                            alt: partner.alt || "",
-                                            contentId: partner.contentId,
+                                            alt: partner.images[0].alt || "",
                                         }}
                                         refetch={fetchPartners}
                                     />
                                     <Button
                                         onClick={() => handleDeletePartner(partner.id)}
                                         size="icon"
-                                        variant="secondary"
                                         className="h-7 w-7"
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </div>
                             </div>
+                        ))
+                        :
+                        <div className="flex flex-col items-center gap-5 justify-center w-full p-5">
+                            <Package className="w-10 h-10 md:w-20 md:h-20" />
+                            <span className="text-xl">Xəbər tapılmadı</span>
                         </div>
-                    ))}
+                    }
+
                 </div>
             </CardContent>
             <CardFooter className="flex justify-between">

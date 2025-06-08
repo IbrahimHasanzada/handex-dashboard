@@ -53,6 +53,7 @@ export default function AdminFeaturesPage() {
 
     const handleUpdateFeature = async (data: Omit<Feature, "id">, id: number) => {
         try {
+            // const { imageAlt, ...data } = data
             await updateFeature({ params: data, id }).unwrap()
             fetchFeatures()
             setIsEditDialogOpen(false)

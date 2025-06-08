@@ -17,6 +17,7 @@ import { type FeatureFormValues, EditFeatureFormSchema, FeatureSchema, type Lang
 import type { imageState } from "@/types/home/graduates.dto"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import type { EditFeatureFormProps } from "@/types/corporate/features.dto"
+import { Loader2, Upload } from "lucide-react"
 
 export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, features, lang, upLoading }: EditFeatureFormProps) {
     const [title, setTitle] = useState("")
@@ -35,7 +36,8 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
         preview: null,
         id: null,
         error: null,
-        selectedFile: null
+        selectedFile: null,
+        alt: null
     })
 
     useEffect(() => {
@@ -44,18 +46,21 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
                 ...prev,
                 id: features.images[0].id,
                 preview: features.images[0].url || null,
+                alt: features.images[0].alt
             }))
         }
     }, [features])
+
     const [uploadImage, { isLoading: isUpLoading }] = useUploadFileMutation()
 
-    const form = useForm<EditFeatureFormSchema>({
+    const form = useForm<EditFeatureFormSchema & { imageAlt: string }>({
         resolver: zodResolver(EditFeatureSchema),
         defaultValues: {
             images: [],
             translations: [
                 { title: title, desc: desc, lang: lang as any },
             ],
+            imageAlt: ""
         },
     })
 
@@ -82,37 +87,51 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
         }
     }, [title, desc, lang, form])
 
-    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Modified image change handler to only store the file without uploading
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
 
         const imageValidation = validateImage(file, setImageState, imageState)
         if (imageValidation === false) return
 
+        // Just store the file and show preview without uploading
+        setImageState({
+            preview: URL.createObjectURL(file),
+            id: null,
+            error: null,
+            selectedFile: file,
+        })
+    }
+
+    // Function to handle image upload with alt text
+    const uploadSelectedImage = async () => {
+        if (!imageState.selectedFile) {
+            toast.error("Zəhmət olmasa əvvəlcə şəkil seçin")
+            return
+        }
+
         try {
             const formData = new FormData()
-            formData.append("file", file)
+            formData.append("file", imageState.selectedFile)
+            formData.append("alt", form.getValues("imageAlt") || "")
 
-            const response = await uploadImage(formData)
+            const response = await uploadImage(formData).unwrap()
 
-            if ("data" in response) {
-                setImageState({
-                    preview: response.data.url,
-                    id: response.data.id,
-                    error: null,
-                    selectedFile: null
-                })
-
-                form.setValue("images", [response.data.id], { shouldValidate: true })
-            }
-        } catch (error) {
-            toast.error("Şəkil yükləyərkən xəta baş vedi")
             setImageState({
-                ...imageState,
-                error: "Şəkil yükləyərkən xəta baş verdi",
+                preview: response.url,
+                id: response.id,
+                error: null,
+                selectedFile: null,
             })
+
+            form.setValue("images", [response.id], { shouldValidate: true })
+            toast.success("Şəkil uğurla yükləndi")
+        } catch (error: any) {
+            toast.error("Şəkil yükləyərkən xəta baş verdi", error.data.message)
         }
     }
+
 
     const onFormSubmit = form.handleSubmit(
         (data) => {
@@ -136,6 +155,19 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
                     imageInputId="feature-image"
                     label="Şəkli Dəyişdir"
                 />
+                <Button type="button" onClick={uploadSelectedImage} disabled={isUpLoading} className="w-full">
+                    {isUpLoading ? (
+                        <div className="flex items-center">
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Yüklənir...
+                        </div>
+                    ) : (
+                        <div className="flex items-center">
+                            <Upload className="mr-2 h-4 w-4" />
+                            Şəkili yüklə
+                        </div>
+                    )}
+                </Button>
 
                 <Tabs value={lang}>
                     <TabsContent value={lang} className="space-y-4 mt-4">

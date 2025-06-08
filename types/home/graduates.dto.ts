@@ -11,6 +11,7 @@ export interface imageState {
     id: number | null
     error: string | null
     selectedFile: string | File | null
+    alt?: any
 
 }
 

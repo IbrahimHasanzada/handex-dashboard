@@ -17,7 +17,7 @@ export const handexApi = createApi({
             return headers
         }
     }),
-    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact', 'Study-area', 'FAQ', 'Program', 'Group'],
+    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact', 'Study-area', 'FAQ', 'Program', 'Group', 'Content'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (params) => ({
@@ -57,6 +57,9 @@ export const handexApi = createApi({
                 body: JSON.stringify(params)
             }),
         }),
+        getContent: builder.query({
+            query: ({ slug = "partners", lang }) => `/content/${slug}?lang=${lang}`
+        }),
         addContent: builder.mutation({
             query: (params) => ({
                 url: '/content',
@@ -66,6 +69,7 @@ export const handexApi = createApi({
                 },
                 body: JSON.stringify(params)
             }),
+            invalidatesTags: ['Content']
         }),
         updateContent: builder.mutation({
             query: ({ params, id }) => ({
@@ -76,6 +80,7 @@ export const handexApi = createApi({
                 },
                 body: JSON.stringify(params)
             }),
+            invalidatesTags: ['Content']
         }),
         deleteContent: builder.mutation({
             query: (id) => ({
@@ -85,6 +90,7 @@ export const handexApi = createApi({
                     'Content-type': 'application/json'
                 },
             }),
+            invalidatesTags: ['Content']
         }),
 
         getCustomers: builder.query({
@@ -545,6 +551,7 @@ export const {
     useGeneralMutation,
     useGetHeroQuery,
     useAddHeroMutation,
+    useGetContentQuery,
     useAddContentMutation,
     useGetCustomersQuery,
     useUploadFileMutation,

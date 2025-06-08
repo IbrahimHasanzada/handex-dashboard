@@ -22,8 +22,8 @@ export function ImageUploadFormItem({
         if (form.getValues(altFieldName) === undefined) {
             form.setValue(altFieldName, "")
         }
-    }, [form, altFieldName])
-
+        form.setValue(altFieldName, imageState.alt)
+    }, [form, altFieldName, imageState])
     const handleRemoveImage = () => {
         if (imageState.preview && !imageState.id) {
             URL.revokeObjectURL(imageState.preview)
@@ -34,6 +34,7 @@ export function ImageUploadFormItem({
             id: null,
             error: null,
             selectedFile: null,
+            alt: null
         })
         form.setValue(name, -1)
     }

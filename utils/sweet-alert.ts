@@ -21,7 +21,7 @@ interface DeleteConfirmationOptions {
  * @returns Promise<boolean> - Whether the deletion was confirmed and successful
  */
 export const showDeleteConfirmation = async (
-    deleteFunction: (id: number | string | object) => Promise<any>,
+    deleteFunction: (id: number | string | object) => any,
     id: number | string | object,
     refetchFunction?: () => Promise<any> | void,
     options?: DeleteConfirmationOptions
@@ -53,7 +53,7 @@ export const showDeleteConfirmation = async (
 
         if (result.isConfirmed) {
             try {
-                await deleteFunction(id)
+                await deleteFunction(id).unwrap()
 
                 await Swal.fire({
                     title: finalOptions.successTitle,
@@ -66,11 +66,11 @@ export const showDeleteConfirmation = async (
                 }
 
                 return true
-            } catch (error) {
-                console.error("Delete operation failed:", error)
+            } catch (error: any) {
+                console.error("Delete operation failed:", error.data)
 
                 await Swal.fire({
-                    title: finalOptions.errorTitle,
+                    title: finalOptions.errorTitle + '\n' + error.data.message,
                     text: finalOptions.errorText,
                     icon: "error"
                 })
