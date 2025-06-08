@@ -157,7 +157,6 @@ export function CourseFormDialog() {
                 </form>
 
                 {/* Debug information - remove in production */}
-                {process.env.NODE_ENV === "development" && (
                     <div className="mt-4 p-4 bg-gray-100 rounded text-xs">
                         <p>
                             <strong>Form Valid:</strong> {form.formState.isValid ? "Yes" : "No"}
@@ -179,7 +178,6 @@ export function CourseFormDialog() {
                             </div>
                         )}
                     </div>
-                )}
             </DialogContent>
         </Dialog>
     )
