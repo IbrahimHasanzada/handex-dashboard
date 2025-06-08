@@ -111,7 +111,7 @@ export function ImageUpload({ onImageUpload, setImageState, imageState, setAltTe
                         onChange={(e) => setAltText(e.target.value)}
                     />
                 </div>
-                {imageState?.selectedFile && altText && (
+                {altText && (
                     <Button
                         type="button"
                         variant="default"

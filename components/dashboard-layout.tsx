@@ -30,14 +30,14 @@ import {
 
 } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
 import Cookies from "js-cookie"
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-
+  const router = useRouter()
   const menuItems = [
     { name: "Ana Səhifə", href: "/", icon: Home },
     { name: "Blog", href: "/blog", icon: FileText },
@@ -55,7 +55,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   const handleLogOut = () => {
     Cookies.remove('token')
-    location.reload()
+    router.push('/login')
   }
 
   return (
