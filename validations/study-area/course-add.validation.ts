@@ -100,7 +100,7 @@ export const courseSchema = z.object({
             return languages.includes("az") && languages.includes("en") && languages.includes("ru")
         }, "Azərbaycan, İngilis və Rus dillərində FAQ-lar tələb olunur"),
     program: z.array(programSchema).min(1, "Ən azı bir proqram tələb olunur"),
-    meta: z.array(metaSchema).optional(),
+    meta: z.array(metaSchema).min(1, "Ən azı bir meta tələb olunur"),
     group: z.array(groupSchema).optional(),
     model: z.string().min(1, "Model tələb olunur")
 })

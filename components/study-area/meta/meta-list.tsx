@@ -58,11 +58,11 @@ export function MetaList({
         if (!onDeleteMeta) return
 
         try {
-            await showDeleteConfirmation(() => onDeleteMeta(id), id, onRefresh, {
-                title: "Meta məlumatını silmək istəyirsinizmi?",
-                text: "Bu əməliyyat geri qaytarıla bilməz!",
-                successText: "Meta məlumatı uğurla silindi.",
-            })
+            // await showDeleteConfirmation(onDeleteMeta, id, onRefresh, {
+            //     title: "Meta məlumatını silmək istəyirsinizmi?",
+            //     text: "Bu əməliyyat geri qaytarıla bilməz!",
+            //     successText: "Meta məlumatı uğurla silindi.",
+            // })
         } catch (error) {
             console.error("Error:", error)
             toast.error("Meta məlumatını silərkən xəta baş verdi")

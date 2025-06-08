@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { CourseFormData } from "@/validations/study-area/course-add.validation"
-import { Dispatch, SetStateAction } from "react"
+import type { Dispatch, SetStateAction } from "react"
 import { ImageUpload } from "./image-upload"
 import type { imageState } from "@/types/home/graduates.dto"
 
@@ -20,7 +21,13 @@ interface CourseProgramProps {
     setProgramAltTexts: Dispatch<SetStateAction<Record<number, string>>>
 }
 
-export function CourseProgram({ form, setProgramImageStates, programImageStates, setProgramAltTexts, programAltTexts }: CourseProgramProps) {
+export function CourseProgram({
+    form,
+    setProgramImageStates,
+    programImageStates,
+    setProgramAltTexts,
+    programAltTexts,
+}: CourseProgramProps) {
     const {
         fields: programFields,
         append: appendProgram,
@@ -30,36 +37,63 @@ export function CourseProgram({ form, setProgramImageStates, programImageStates,
         name: "program",
     })
 
-    const handleProgramImageUpload = (index: number, imageId: number) => form.setValue(`program.${index}.image` as any, imageId)
+    const languages = [
+        { code: "az", name: "Azərbaycan" },
+        { code: "en", name: "English" },
+        { code: "ru", name: "Русский" },
+    ]
+
+    const handleProgramImageUpload = (index: number, imageId: number) =>
+        form.setValue(`program.${index}.image` as any, imageId)
 
     const setProgramImageState = (index: number) => (newState: any) => {
-        setProgramImageStates(
-            (prev) => ({
-                ...prev,
-                [index]: typeof newState === "function"
-                    ? newState(prev[index] || {})
-                    : newState,
-            })
-        )
+        setProgramImageStates((prev) => ({
+            ...prev,
+            [index]: typeof newState === "function" ? newState(prev[index] || {}) : newState,
+        }))
     }
 
     const setProgramAltText = (index: number) => (altText: string) => {
-        setProgramAltTexts(
-            (prev) => ({
-                ...prev,
-                [index]: altText,
-            }))
+        setProgramAltTexts((prev) => ({
+            ...prev,
+            [index]: altText,
+        }))
     }
-
 
     return (
         <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Proqram</CardTitle>
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                        appendProgram({
+                            name: "",
+                            image: -1,
+                            translations: [
+                                { description: "", lang: "az" },
+                                { description: "", lang: "en" },
+                                { description: "", lang: "ru" },
+                            ],
+                        })
+                    }
+                >
+                    <Plus className="mr-2 h-4 w-4" /> Proqram Əlavə Et
+                </Button>
             </CardHeader>
             <CardContent className="space-y-4">
                 {programFields.map((field, index) => (
                     <div key={field.id} className="border rounded-lg p-4">
+                        <div className="flex justify-between items-center mb-4">
+                            <h4 className="font-medium">Proqram {index + 1}</h4>
+                            {programFields.length > 1 && (
+                                <Button type="button" variant="outline" size="icon" onClick={() => removeProgram(index)}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </div>
+
                         <div className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -89,28 +123,35 @@ export function CourseProgram({ form, setProgramImageStates, programImageStates,
                             </div>
 
                             <div className="space-y-4">
-                                <Label>Tərcümələr *</Label>
-                                {["az", "en", "ru"].map((lang, langIndex) => (
-                                    <div key={lang} className="border rounded p-3">
-                                        <Label className="text-sm font-medium mb-2 block">
-                                            {lang === "az" ? "Azərbaycan" : lang === "en" ? "English" : "Русский"} *
-                                        </Label>
-                                        <Textarea
-                                            {...form.register(`program.${index}.translations.${langIndex}.description`)}
-                                            placeholder="Proqram təsviri"
-                                        />
-                                        {form.formState.errors.program?.[index]?.translations?.[langIndex]?.description && (
-                                            <p className="text-sm text-red-500">
-                                                {form.formState.errors.program[index]?.translations?.[langIndex]?.description?.message}
-                                            </p>
-                                        )}
-                                        <input
-                                            type="hidden"
-                                            {...form.register(`program.${index}.translations.${langIndex}.lang`)}
-                                            value={lang}
-                                        />
-                                    </div>
-                                ))}
+                                <Label className="text-base font-medium">Tərcümələr *</Label>
+                                <Tabs defaultValue="az" className="w-full">
+                                    <TabsList className="grid w-full grid-cols-3">
+                                        {languages.map((lang) => (
+                                            <TabsTrigger key={lang.code} value={lang.code}>
+                                                {lang.name}
+                                            </TabsTrigger>
+                                        ))}
+                                    </TabsList>
+                                    {languages.map((lang, langIndex) => (
+                                        <TabsContent key={lang.code} value={lang.code} className="space-y-2">
+                                            <Textarea
+                                                {...form.register(`program.${index}.translations.${langIndex}.description`)}
+                                                placeholder="Proqram təsviri"
+                                                rows={4}
+                                            />
+                                            {form.formState.errors.program?.[index]?.translations?.[langIndex]?.description && (
+                                                <p className="text-sm text-red-500">
+                                                    {form.formState.errors.program[index]?.translations?.[langIndex]?.description?.message}
+                                                </p>
+                                            )}
+                                            <input
+                                                type="hidden"
+                                                {...form.register(`program.${index}.translations.${langIndex}.lang`)}
+                                                value={lang.code}
+                                            />
+                                        </TabsContent>
+                                    ))}
+                                </Tabs>
                                 {form.formState.errors.program?.[index]?.translations &&
                                     typeof form.formState.errors.program[index]?.translations === "object" &&
                                     "message" in form.formState.errors.program[index]!.translations! && (
@@ -122,6 +163,13 @@ export function CourseProgram({ form, setProgramImageStates, programImageStates,
                         </div>
                     </div>
                 ))}
+
+                {programFields.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                        <p>Hələ proqram əlavə edilməyib</p>
+                        <p className="text-sm">Proqramlar kursun məzmunu və strukturu üçün istifadə olunur</p>
+                    </div>
+                )}
             </CardContent>
         </Card>
     )
