@@ -8,28 +8,28 @@ import { Plus, Edit, Trash, Globe } from "lucide-react"
 import { MetaForm } from "./meta-form"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
+import { useDeleteMetaMutation } from "@/store/handexApi"
 
 
 interface MetaListProps {
     metaItems: any
     selectedLanguage: string
     onRefresh: () => void
-    onDeleteMeta?: (id: number) => Promise<void>
     onCreateMeta?: (data: any) => Promise<void>
-    onUpdateMeta?: (id: number, data: any) => Promise<void>
+    onUpdateMeta?: (data: any) => Promise<void>
 }
 
 export function MetaList({
     metaItems,
     selectedLanguage,
     onRefresh,
-    onDeleteMeta,
     onCreateMeta,
     onUpdateMeta,
 }: MetaListProps) {
     const [isMetaFormOpen, setIsMetaFormOpen] = useState(false)
     const [editingMeta, setEditingMeta] = useState<any>(null)
     const [isEditMode, setIsEditMode] = useState(false)
+    const [deleteMeta] = useDeleteMetaMutation()
 
     const onAddMeta = () => {
         setEditingMeta(null)
@@ -55,23 +55,20 @@ export function MetaList({
     }
 
     const handleDeleteMeta = async (id: number) => {
-        if (!onDeleteMeta) return
-
         try {
-            // await showDeleteConfirmation(onDeleteMeta, id, onRefresh, {
-            //     title: "Meta məlumatını silmək istəyirsinizmi?",
-            //     text: "Bu əməliyyat geri qaytarıla bilməz!",
-            //     successText: "Meta məlumatı uğurla silindi.",
-            // })
-        } catch (error) {
-            console.error("Error:", error)
-            toast.error("Meta məlumatını silərkən xəta baş verdi")
+            await showDeleteConfirmation(deleteMeta, id, onRefresh, {
+                title: "Meta məlumatını silmək istəyirsinizmi?",
+                text: "Bu əməliyyat geri qaytarıla bilməz!",
+                successText: "Meta məlumatı uğurla silindi.",
+            })
+        } catch (error: any) {
+            toast.error("Meta məlumatını silərkən xəta baş verdi", error.data.message)
         }
     }
 
     const handleSubmitMeta = async (data: any) => {
         if (isEditMode && editingMeta && editingMeta.id && onUpdateMeta) {
-            await onUpdateMeta(editingMeta.id, data)
+            await onUpdateMeta(data)
         } else if (onCreateMeta) {
             await onCreateMeta(data)
         }
@@ -121,7 +118,7 @@ export function MetaList({
                                                 <Button size="icon" variant="ghost" onClick={() => onEditMeta(meta)}>
                                                     <Edit className="h-4 w-4" />
                                                 </Button>
-                                                {meta.id && onDeleteMeta && (
+                                                {meta.id && metaItems.length > 1 && (
                                                     <Button size="icon" variant="ghost" onClick={() => handleDeleteMeta(meta.id!)}>
                                                         <Trash className="h-4 w-4" />
                                                     </Button>

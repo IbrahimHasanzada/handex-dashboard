@@ -74,7 +74,7 @@ export function GroupList({ studyArea, groups, selectedLanguage, courseColor, on
                                                         </Button>
                                                     }
                                                 />
-                                                <Button
+                                                {groups.length > 1 && <Button
                                                     size="icon"
                                                     variant="ghost"
                                                     className="h-6 w-6 text-white hover:bg-white/20"
@@ -82,7 +82,7 @@ export function GroupList({ studyArea, groups, selectedLanguage, courseColor, on
                                                     disabled={deletingId === group.id}
                                                 >
                                                     <Trash2 className="h-3 w-3" />
-                                                </Button>
+                                                </Button>}
                                             </div>
                                         </div>
                                     </CardHeader>

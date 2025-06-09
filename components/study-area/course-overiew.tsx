@@ -45,7 +45,6 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
         { skip: !slug },
     )
     const [deleteProgram] = useDeleteProgramMutation()
-
     const [updateStudyArea] = useUpdateStudyAreaMutation()
     const onEdit = () => setIsStudyAreaEditOpen(true)
 
@@ -87,7 +86,6 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
             toast.error("Proqram silərkən xəta baş verdi")
         }
     }
-    console.log(data)
 
     const handleCreateMeta = async (metaData: MetaItem) => {
         try {
@@ -114,7 +112,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
         }
     }
 
-    const handleUpdateMeta = async (id: number, metaData: MetaItem) => {
+    const handleUpdateMeta = async (metaData: MetaItem) => {
         try {
             const filteredTranslations = metaData.translations.filter((t) => t.value.trim())
 
@@ -123,31 +121,20 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
             }
 
             const apiData = {
-                id,
                 meta: [
                     {
                         translations: filteredTranslations,
                     },
                 ],
             }
-
-            // await updateMetaMutation(apiData)
-            console.log("Updating meta:", apiData)
-            await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API call
-        } catch (error) {
+            await updateStudyArea({ id: data.id, params: apiData }).unwrap()
+            toast.success("Meta uğurla redaktə edildi")
+        } catch (error: any) {
+            toast.error("Meta redaktə olunarkən xəta baş verdi \n" + error.data.message)
             throw new Error("Meta yenilənərkən xəta baş verdi")
         }
     }
 
-    const handleDeleteMeta = async (id: number) => {
-        try {
-            // await deleteMetaMutation(id)
-            console.log("Deleting meta:", id)
-            await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API call
-        } catch (error) {
-            throw new Error("Meta silinərkən xəta baş verdi")
-        }
-    }
 
     // Convert API meta format to component format if needed
     const metaItems: MetaItem[] = data?.meta || []
@@ -261,9 +248,11 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                                                     <Button size="icon" variant="ghost" onClick={() => onEditProgram(program.id)}>
                                                         <Edit className="h-4 w-4" />
                                                     </Button>
-                                                    <Button size="icon" variant="ghost" onClick={() => handleDeleteProgram(program.id)}>
-                                                        <Trash className="h-4 w-4" />
-                                                    </Button>
+                                                    {data.program.length > 1 &&
+                                                        <Button size="icon" variant="ghost" onClick={() => handleDeleteProgram(program.id)}>
+                                                            <Trash className="h-4 w-4" />
+                                                        </Button>
+                                                    }
                                                 </div>
                                             </div>
                                             <div className="text-sm text-muted-foreground mt-1 line-clamp-2">{program.description}</div>
@@ -326,7 +315,6 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                 metaItems={metaItems}
                 onCreateMeta={handleCreateMeta}
                 onUpdateMeta={handleUpdateMeta}
-                onDeleteMeta={handleDeleteMeta}
             />
 
 

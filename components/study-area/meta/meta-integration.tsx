@@ -19,8 +19,7 @@ interface MetaIntegrationProps {
   onRefresh: () => void
   metaItems?: MetaItem[]
   onCreateMeta?: (data: MetaItem) => Promise<void>
-  onUpdateMeta?: (id: number, data: MetaItem) => Promise<void>
-  onDeleteMeta?: (id: number) => Promise<void>
+  onUpdateMeta?: (data: MetaItem) => Promise<void>
 }
 
 export function MetaIntegration({
@@ -30,7 +29,6 @@ export function MetaIntegration({
   metaItems = [],
   onCreateMeta,
   onUpdateMeta,
-  onDeleteMeta,
 }: MetaIntegrationProps) {
   return (
     <MetaList
@@ -39,7 +37,6 @@ export function MetaIntegration({
       onRefresh={onRefresh}
       onCreateMeta={onCreateMeta}
       onUpdateMeta={onUpdateMeta}
-      onDeleteMeta={onDeleteMeta}
     />
   )
 }

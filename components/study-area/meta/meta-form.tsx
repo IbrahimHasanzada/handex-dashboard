@@ -132,11 +132,9 @@ export function MetaForm({
             if (onSubmit) {
                 await onSubmit(metaData)
             }
-            toast.success(isEditMode ? "Meta məlumatı yeniləndi" : "Meta məlumatı əlavə edildi")
             onSuccess()
         } catch (error) {
             console.error("Error:", error)
-            toast.error("Xəta baş verdi")
         } finally {
             setIsLoading(false)
         }
