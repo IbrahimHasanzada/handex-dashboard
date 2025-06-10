@@ -4,6 +4,7 @@ import Testimonials from "./home/testimonials/testimonials"
 import Graduates from "./home/graduates/graduates"
 import Partners from "./home/partners/partners"
 import { MetaTranslations } from "./meta/meta"
+import StatisticsSection from "./home/statistics/StatisticsSection"
 
 export function DashboardHome() {
 
@@ -26,8 +27,12 @@ export function DashboardHome() {
       {/* Partners Management */}
       <Partners />
 
+      {/* Statistic Section */}
+      <StatisticsSection field="home" />
+
+
       {/* Meta for home page */}
-       <MetaTranslations slug="home" />
+      <MetaTranslations slug="home" />
     </div>
   )
 }

@@ -37,6 +37,7 @@ export default function InstructorsFormModal({
     uploadImage,
     isEditMode = false,
     selectedLanguage = "az",
+    studyArea
 }: InstructorsFormModalProps & {
     uploadImage?: (file: File, alt: string) => Promise<any>
     isEditMode?: boolean

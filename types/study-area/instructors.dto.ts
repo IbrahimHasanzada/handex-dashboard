@@ -4,12 +4,18 @@ import type { UseFormReturn } from "react-hook-form"
 export type InstructorsProps = {
     selectedLanguage: any
     setSelectedLanguage: any
+    studyArea: number
+    instructorsData: any
+    isLoading: any
+    isError: any
+    refetch: any
 }
 
 export interface AddInstructorsModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     refetch: () => void
+    studyArea: number
 }
 
 export interface imageState {
@@ -23,6 +29,7 @@ export interface EditInstructorsModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     refetch: () => void
+    studyArea: number
     selectedLanguage?: string
     graduate: {
         id: number
@@ -54,4 +61,5 @@ export interface InstructorsFormModalProps {
     imageInputId?: string
     isEditMode?: boolean
     selectedLanguage?: string
+    studyArea: number
 }

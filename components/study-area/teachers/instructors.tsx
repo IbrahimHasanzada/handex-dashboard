@@ -9,12 +9,10 @@ import { toast } from "react-toastify"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import AddInstructorsModal from "./add-instructor"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import EditInstructorsModal from "./edit.instructors"
 import { InstructorsProps } from "@/types/study-area/instructors.dto"
 
-const Instructors = ({ selectedLanguage, setSelectedLanguage }: InstructorsProps) => {
-    const { data: instructorsData, isLoading, isError, refetch } = useGetProfilesQuery({ model: "instructor", lang: selectedLanguage })
+const Instructors = ({ selectedLanguage, setSelectedLanguage, studyArea, instructorsData, isLoading, isError, refetch }: InstructorsProps) => {
     const [deleteInstructor, { isSuccess }] = useDeleteProfilesMutation()
     const [currentPage, setCurrentPage] = useState(1)
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
@@ -144,7 +142,12 @@ const Instructors = ({ selectedLanguage, setSelectedLanguage }: InstructorsProps
                 )}
             </Card>
 
-            <AddInstructorsModal open={isAddModalOpen} onOpenChange={setIsAddModalOpen} refetch={refetch} />
+            <AddInstructorsModal
+                open={isAddModalOpen}
+                onOpenChange={setIsAddModalOpen}
+                refetch={refetch}
+                studyArea={studyArea}
+            />
 
             {selectedInstructor && (
                 <EditInstructorsModal
@@ -153,6 +156,7 @@ const Instructors = ({ selectedLanguage, setSelectedLanguage }: InstructorsProps
                     refetch={refetch}
                     graduate={selectedInstructor}
                     selectedLanguage={selectedLanguage}
+                    studyArea={studyArea}
                 />
             )}
         </>

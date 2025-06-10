@@ -17,7 +17,7 @@ export const handexApi = createApi({
             return headers
         }
     }),
-    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact', 'Study-area', 'FAQ', 'Program', 'Group', 'Content'],
+    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact', 'Study-area', 'FAQ', 'Program', 'Group', 'Content', 'Statistics'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (params) => ({
@@ -543,6 +543,39 @@ export const handexApi = createApi({
             }),
             invalidatesTags: ['Program']
         }),
+        getStatistics: builder.query({
+            query: ({ lang, field }) => `/statistic?field=${field}&lang=${lang}`,
+            providesTags: ['Statistics']
+        }),
+        addStatistics: builder.mutation({
+            query: (params) => ({
+                url: `/statistic`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+            invalidatesTags: ['Statistics']
+        }),
+        updateStatistics: builder.mutation({
+            query: ({ params, id }) => ({
+                url: `/statistic/${id}`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+            invalidatesTags: ['Statistics']
+        }),
+        deleteStatistics: builder.mutation({
+            query: (id) => ({
+                url: `/statistic/${id}`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: ['Statistics']
+        }),
     }),
 })
 
@@ -613,6 +646,10 @@ export const {
     useDeleteGroupMutation,
     useUpdateProgramMutation,
     useDeleteProgramMutation,
-    useAddProgramMutation
+    useAddProgramMutation,
+    useGetStatisticsQuery,
+    useAddStatisticsMutation,
+    useUpdateStatisticsMutation,
+    useDeleteStatisticsMutation
 
 } = handexApi

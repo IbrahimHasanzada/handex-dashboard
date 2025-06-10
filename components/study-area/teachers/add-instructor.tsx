@@ -11,7 +11,7 @@ import InstructorsFormModal from "./instructors-form-modal"
 import type { AddInstructorsModalProps, imageState } from "@/types/study-area/instructors.dto"
 import { formSchemaInstructors } from "@/validations/study-area/instructors.validation"
 
-export default function AddInstructorsModal({ open, onOpenChange, refetch }: AddInstructorsModalProps) {
+export default function AddInstructorsModal({ open, onOpenChange, refetch, studyArea }: AddInstructorsModalProps) {
     const [addProfile, { isLoading }] = useAddProfilesMutation()
     const [uploadImage, { isLoading: isUploading }] = useUploadFileMutation()
     const [imageState, setImageState] = useState<imageState>({
@@ -104,9 +104,10 @@ export default function AddInstructorsModal({ open, onOpenChange, refetch }: Add
             const jsonData = {
                 name: data.name,
                 speciality: data.speciality,
-                model: "instructor", 
+                model: "instructor",
                 image: data.image,
                 translations: translations,
+                studyArea
             }
 
             await addProfile(jsonData).unwrap()
@@ -138,6 +139,7 @@ export default function AddInstructorsModal({ open, onOpenChange, refetch }: Add
             loadingText="Əlavə edilir..."
             imageInputId="image-upload-add"
             uploadImage={handleUploadWithAlt}
+            studyArea={studyArea}
         />
     )
 }

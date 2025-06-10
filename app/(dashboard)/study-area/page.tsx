@@ -35,9 +35,6 @@ export default function page() {
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <Instructors
-            selectedLanguage={selectedLanguage}
-            setSelectedLanguage={setSelectedLanguage} />
 
           <AdminWhyHandexPage />
         </div>

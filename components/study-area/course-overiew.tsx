@@ -17,6 +17,8 @@ import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { EditHero } from "./edit-hero"
 import { MetaIntegration } from "./meta/meta-integration"
+import StatisticsSection from "../home/statistics/StatisticsSection"
+import Instructors from "./teachers/instructors"
 
 interface MetaTranslation {
     name: string
@@ -294,6 +296,19 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                     <Box>Heç bir məlumat tapılmadı</Box>
                 </div>
             )}
+
+            <Instructors
+                isError={isError}
+                isLoading={isLoading}
+                refetch={refetch}
+                instructorsData={data?.profile}
+                selectedLanguage={selectedLanguage}
+                setSelectedLanguage={setSelectedLanguage}
+                studyArea={data?.id}
+            />
+
+            {/* Statistics Section */}
+            <StatisticsSection studyArea={data?.id} field={slug} />
 
             {/* Program Form Modal */}
             <ProgramForm

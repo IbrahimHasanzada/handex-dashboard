@@ -17,6 +17,7 @@ export default function EditInstructorsModal({
     refetch,
     graduate,
     selectedLanguage,
+    studyArea
 }: EditInstructorsModalProps & { selectedLanguage: string }) {
     const [updateProfile, { isLoading }] = useUpdateProfilesMutation()
     const [uploadImage, { isLoading: isUploading }] = useUploadFileMutation()
@@ -125,6 +126,7 @@ export default function EditInstructorsModal({
                 model: "instructor",
                 image: data.image !== undefined ? data.image : null,
                 translations: translations,
+                studyArea
             }
 
             await updateProfile({ params: jsonData, id: graduate.id }).unwrap()
@@ -154,6 +156,7 @@ export default function EditInstructorsModal({
             imageInputId="image-upload-edit"
             isEditMode={true}
             selectedLanguage={selectedLanguage}
+            studyArea={studyArea}
         />
     )
 }
