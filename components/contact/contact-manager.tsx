@@ -33,10 +33,11 @@ export default function ContactManager() {
         location: '',
         email: '',
     })
+    console.log(data)
     useEffect(() => {
         if (data) {
             setContactData({
-                phone: [...data[0].phone],
+                phone: data[0].phone && [...data[0].phone],
                 email: data[0].email,
                 location: data[0].location
             })
@@ -232,7 +233,7 @@ export default function ContactManager() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-2">
-                                {contactData.phone.map((phone, index) => (
+                                {contactData.phone && contactData.phone.map((phone, index) => (
                                     <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                                         <Badge variant="secondary" className="font-mono">
                                             {phone}
@@ -242,7 +243,7 @@ export default function ContactManager() {
                                         </Button>
                                     </div>
                                 ))}
-                                {contactData.phone.length === 0 && (
+                                {contactData.phone && contactData.phone.length === 0 && (
                                     <p className="text-muted-foreground text-center py-4">Telefon nömrələri əlavə edilməyib</p>
                                 )}
                             </div>
