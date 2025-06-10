@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
-export default function EditNewsPage({ params }: { params: { slug: string } }) {
+export default async function EditNewsPage({ params }: { params: { slug: string } }) {
     return (
         <DashboardLayout>
             <div className="p-6">
@@ -18,7 +18,7 @@ export default function EditNewsPage({ params }: { params: { slug: string } }) {
                         </Link>
                     </Button>
                 </div>
-                <NewsForm slug={params.slug} />
+                <NewsForm slug={await params.slug} />
             </div>
         </DashboardLayout>
     )

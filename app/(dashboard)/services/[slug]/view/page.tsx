@@ -6,10 +6,10 @@ import { ViewService } from "@/components/service/view-service"
 import { useRouter, usePathname, useParams } from "next/navigation"
 import React from "react"
 
-export default function ViewServicesPage() {
+export default async function ViewServicesPage() {
     const router = useRouter()
     const params = useParams()
-    const slug = params.slug
+    const slug = await params.slug
 
     const handleEdit = () => {
         router.push(`/services/${slug}/edit`)

@@ -7,10 +7,10 @@ import { useRouter, useParams } from "next/navigation"
 import React from "react"
 
 
-export default function ViewArticlePage() {
+export default async function ViewArticlePage() {
     const router = useRouter()
     const params = useParams()
-    const slug = params.slug
+    const slug = await params.slug
 
     const handleEdit = () => {
         router.push(`/news/${slug}/edit`)

@@ -151,8 +151,8 @@ export function ServiceForm({ slug }: { slug?: string }) {
         try {
             const mainMetaTranslations = [
                 { name: values.metaName, value: values.meta_az, lang: "az" },
-                ...(values.meta_en !== undefined ? [{ name: values.metaName, value: values.meta_en, lang: "en" }] : []),
-                ...(values.meta_ru !== undefined ? [{ name: values.metaName, value: values.meta_ru, lang: "ru" }] : []),
+                ...(values.meta_en !== "" ? [{ name: values.metaName, value: values.meta_en, lang: "en" }] : []),
+                ...(values.meta_ru !== "" ? [{ name: values.metaName, value: values.meta_ru, lang: "ru" }] : []),
             ]
 
             const additionalMetaObjects = (values.additionalMeta || []).map((meta: any) => {
