@@ -41,6 +41,7 @@ export default function page() {
 
         <div>
           <CourseList
+          
             selectedLanguage={selectedLanguage}
             setSelectedLanguage={setSelectedLanguage} />
         </div>

@@ -4,11 +4,11 @@ import type { UseFormReturn } from "react-hook-form"
 export type InstructorsProps = {
     selectedLanguage: any
     setSelectedLanguage: any
-    studyArea: number
-    instructorsData: any
-    isLoading: any
-    isError: any
-    refetch: any
+    studyArea?: number
+    instructorsData?: any
+    isLoading?: any
+    isError?: any
+    refetch?: any
 }
 
 export interface AddInstructorsModalProps {
