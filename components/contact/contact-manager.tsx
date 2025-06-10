@@ -33,7 +33,6 @@ export default function ContactManager() {
         location: '',
         email: '',
     })
-    console.log(data)
     useEffect(() => {
         if (data) {
             setContactData({
