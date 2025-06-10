@@ -37,7 +37,7 @@ export default function ContactManager() {
     useEffect(() => {
         if (data) {
             setContactData({
-                phone: data[0].phone && [...data[0].phone],
+                phone: data[0].phone ? [...data[0].phone] : [],
                 email: data[0].email,
                 location: data[0].location
             })
