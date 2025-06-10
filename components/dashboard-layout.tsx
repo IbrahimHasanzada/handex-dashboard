@@ -47,7 +47,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     { name: "Təhsil Sahəsi", href: "/study-area", icon: GraduationCap },
     { name: "Korporativ", href: "/corporate", icon: Building2 },
     { name: "Layihələr", href: "/projects", icon: FolderKanban },
-    { name: "Statistika", href: "/statistics", icon: BarChart3 },
     { name: "Redirect", href: "/redirect", icon: WaypointsIcon },
     { name: "Konsultasiya", href: "/consultation", icon: UsersRound },
     { name: "Əlaqə", href: "/contact", icon: Contact },
