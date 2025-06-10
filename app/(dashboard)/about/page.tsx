@@ -96,9 +96,11 @@ export default function AboutPage() {
                     <div key={index} className=" p-1">
                       <div className="relative h-full w-full overflow-hidden rounded-lg">
                         <div className="absolute z-[2] right-0">
-                          <Button onClick={() => handleDeleteImage(item.id)}>
-                            <Trash />
-                          </Button>
+                          {aboutData?.[0].images.length > 1 &&
+                            <Button onClick={() => handleDeleteImage(item.id)}>
+                              <Trash />
+                            </Button>
+                          }
                         </div>
                         <Image
                           src={item.url ? item.url : '/placeholder.svg?height=300&width=400'}
@@ -118,9 +120,11 @@ export default function AboutPage() {
                       <div>
                         <Button onClick={() => handleEditData(item)}>Redaktə et <Edit /></Button>
                       </div>
-                      <div>
-                        <Button onClick={() => handleDeleteSection(item.id)}>Sil <Trash /></Button>
-                      </div>
+                      {aboutData?.[0].sections.length > 1 &&
+                        <div>
+                          <Button onClick={() => handleDeleteSection(item.id)}>Sil <Trash /></Button>
+                        </div>
+                      }
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
@@ -165,13 +169,30 @@ export default function AboutPage() {
 
       {/* Add or Edit Modal Sections */}
       {isAddSectionModalOpen ?
-        <SectionModal open={isAddSectionModalOpen} onOpenChange={setIsAddSectionModalOpen} edit={false} data={!isLoading && editedData} refetch={refetch} />
+        <SectionModal
+          open={isAddSectionModalOpen}
+          onOpenChange={setIsAddSectionModalOpen}
+          edit={false}
+          data={!isLoading && editedData}
+          refetch={refetch}
+        />
         :
-        <SectionModal open={isEditSectionModalOpen} onOpenChange={setIsEditSectionModalOpen} edit={true} data={!isLoading && editedData} refetch={refetch} />
+        <SectionModal
+          open={isEditSectionModalOpen}
+          onOpenChange={setIsEditSectionModalOpen}
+          edit={true}
+          data={!isLoading && editedData}
+          refetch={refetch}
+        />
       }
 
       {/* Add İmage Modal */}
-      <AddImageModal open={isImageModalOpen} onOpenChange={setIsImageModalOpen} refetch={refetch} data={imageIds} />
+      <AddImageModal
+        open={isImageModalOpen}
+        onOpenChange={setIsImageModalOpen}
+        refetch={refetch}
+        data={imageIds}
+      />
     </DashboardLayout>
   )
 }

@@ -159,8 +159,8 @@ export function ServiceForm({ slug }: { slug?: string }) {
                 return {
                     translations: [
                         { name: meta.metaName, value: meta.meta_az, lang: "az" },
-                        ...(meta.meta_en !== undefined ? [{ name: meta.metaName, value: meta.meta_en, lang: "en" }] : []),
-                        ...(meta.meta_ru !== undefined ? [{ name: meta.metaName, value: meta.meta_ru, lang: "ru" }] : []),
+                        ...(meta.meta_en !== '' ? [{ name: meta.metaName, value: meta.meta_en, lang: "en" }] : []),
+                        ...(meta.meta_ru !== '' ? [{ name: meta.metaName, value: meta.meta_ru, lang: "ru" }] : []),
                     ],
                 }
             })
@@ -169,8 +169,8 @@ export function ServiceForm({ slug }: { slug?: string }) {
                 image: values.featuredImage,
                 translations: [
                     { title: values.title_az, description: values.content_az, lang: "az" },
-                    ...(values.title_en !== undefined ? [{ title: values.title_en, description: values.content_en, lang: "en" }] : []),
-                    ...(values.title_ru !== undefined ? [{ title: values.title_ru, description: values.content_ru, lang: "ru" }] : []),
+                    ...(values.title_en !== '' ? [{ title: values.title_en, description: values.content_en, lang: "en" }] : []),
+                    ...(values.title_ru !== '' ? [{ title: values.title_ru, description: values.content_ru, lang: "ru" }] : []),
                 ],
                 meta: [
                     {
@@ -180,7 +180,7 @@ export function ServiceForm({ slug }: { slug?: string }) {
                 ],
                 slug: values.slug,
             }
-
+            console.log(postValue)
             !slug
                 ? await addService(postValue).unwrap()
                 : await updateService({ params: postValue, id: services.id }).unwrap()

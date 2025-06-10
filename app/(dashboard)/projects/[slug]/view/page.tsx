@@ -6,10 +6,10 @@ import { ViewProjects } from "@/components/projects/view-projects"
 import { useRouter, useParams } from "next/navigation"
 import React from "react"
 
-export default function ViewProjetcsPage() {
+export default async function ViewProjetcsPage() {
     const router = useRouter()
     const params = useParams()
-    const slug = params.slug
+    const slug = await params.slug
 
     const handleEdit = () => {
         router.push(`/projects/${slug}/edit`)

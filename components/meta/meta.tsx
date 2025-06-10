@@ -52,7 +52,6 @@ export function MetaTranslations({ slug }: { slug: string }) {
             lang: "az",
         },
     })
-    console.log(data)
     useEffect(() => {
         if (!isOpenMetaModal && queryParams) {
             refetch()
