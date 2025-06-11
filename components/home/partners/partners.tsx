@@ -24,12 +24,12 @@ const Partners = () => {
             const updatedPartners = compaines.filter((item: any) => item.id !== id).map((elem: any) => elem.id)
             fetchPartners()
             showDeleteConfirmation(updatePartner, { company: updatedPartners }, fetchPartners, {
-                title: "Tərəfdaşı silmək istəyirsinizmi?",
+                title: "Şirkəti silmək istəyirsinizmi?",
                 text: "Bu əməliyyat geri qaytarıla bilməz!",
                 successText: "Tərəfdaş uğurla silindi.",
             })
         } catch (error) {
-            toast.error('Tərəfdaş silinərkən xəta baş verdi')
+            toast.error('Şirkəti silinərkən xəta baş verdi')
         }
     }
 
@@ -37,8 +37,8 @@ const Partners = () => {
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                    <CardTitle>Tərəfdaşlar</CardTitle>
-                    <CardDescription>Tərəfdaş şirkətləri idarə edin</CardDescription>
+                    <CardTitle>Məzunların işlədiyi top şirkətlər</CardTitle>
+                    <CardDescription>Şirkətləri idarə edin</CardDescription>
                 </div>
                 <AddPartner partners={partners?.[0].company} refetch={fetchPartners} />
             </CardHeader>

@@ -79,7 +79,6 @@ export default function AdminWhyHandexPage() {
         setActiveLanguage(language)
         fetchFeatures()
     }
-
     return (
         <div className="container mx-auto py-8">
             <div className="flex justify-between items-center mb-8">

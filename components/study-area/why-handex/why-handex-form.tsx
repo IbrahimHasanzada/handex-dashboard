@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { ImageUploadFormItem } from "@/components/image-upload-form-item"
 import { validateImage } from "@/validations/upload.validation"
 import { useGetHeroQuery, useUploadFileMutation } from "@/store/handexApi"
@@ -42,7 +42,6 @@ export default function WhyHandexForm({ onSubmit, onCancel, isFeatLoading, slug,
 
     const [uploadImage, { isLoading: isUpLoading }] = useUploadFileMutation()
 
-    // Update the form schema to include imageAlt
     const form = useForm<FeatureFormValues & { imageAlt: string }>({
         resolver: zodResolver(FeatureSchema),
         defaultValues: {
@@ -81,7 +80,6 @@ export default function WhyHandexForm({ onSubmit, onCancel, isFeatLoading, slug,
         form.setValue("translations", currentTranslations, { shouldValidate: true })
     }
 
-    // Modified image change handler to only store the file without uploading
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
@@ -89,7 +87,6 @@ export default function WhyHandexForm({ onSubmit, onCancel, isFeatLoading, slug,
         const imageValidation = validateImage(file, setImageState, imageState)
         if (imageValidation === false) return
 
-        // Just store the file and show preview without uploading
         setImageState({
             preview: URL.createObjectURL(file),
             id: null,
@@ -99,7 +96,6 @@ export default function WhyHandexForm({ onSubmit, onCancel, isFeatLoading, slug,
         })
     }
 
-    // Function to handle image upload with alt text
     const uploadSelectedImage = async () => {
         if (!imageState.selectedFile) {
             toast.error("Zəhmət olmasa əvvəlcə şəkil seçin")
@@ -132,13 +128,11 @@ export default function WhyHandexForm({ onSubmit, onCancel, isFeatLoading, slug,
 
     const onFormSubmit = form.handleSubmit(
         (data) => {
-            // Check if we have an unuploaded image
             if (imageState.selectedFile && !imageState.id) {
                 toast.error("Zəhmət olmasa əvvəlcə şəkili yükləyin")
                 return
             }
 
-            // Remove imageAlt from data before submitting
             const { imageAlt, ...submitData } = data
             onSubmit(submitData)
         },
@@ -166,7 +160,6 @@ export default function WhyHandexForm({ onSubmit, onCancel, isFeatLoading, slug,
         }
     }, [form, translations])
 
-    // Set initial image state from defaultValues
     useEffect(() => {
         if (defaultValues?.[0]?.images?.[0]) {
             setImageState({

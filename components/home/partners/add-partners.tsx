@@ -54,7 +54,6 @@ export function AddPartner({ refetch, partners }: { refetch: () => void; partner
         const file = e.target.files?.[0]
         if (!file) return
 
-        // Just store the file and show preview without uploading
         setLogoState({
             preview: URL.createObjectURL(file),
             id: null,
@@ -119,7 +118,6 @@ export function AddPartner({ refetch, partners }: { refetch: () => void; partner
         const previousPartners = partners.map((item) => item.id)
 
         try {
-            // Remove logoAlt field before submitting to API
             const { logoAlt, ...submitData } = values
 
             await addPartner({ company: [...previousPartners, submitData.id] }).unwrap()
@@ -147,9 +145,9 @@ export function AddPartner({ refetch, partners }: { refetch: () => void; partner
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Yeni Tərəfdaş Əlavə Et</DialogTitle>
+                    <DialogTitle>Yeni Şirkət Əlavə Et</DialogTitle>
                     <DialogDescription>
-                        Yeni tərəfdaş məlumatlarını daxil edin. Tamamladıqdan sonra yadda saxla düyməsini basın.
+                        Yeni şirkət məlumatlarını daxil edin. Tamamladıqdan sonra yadda saxla düyməsini basın.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>

@@ -40,7 +40,7 @@ export function ImageUpload({ onImageUpload, setImageState, imageState, setAltTe
     }
 
     const handleUploadWithAlt = async (file: File, altText: string) => {
-        if (!file || !altText.trim()) return
+        if (!file) return
 
         try {
             const formData = new FormData()
@@ -111,7 +111,7 @@ export function ImageUpload({ onImageUpload, setImageState, imageState, setAltTe
                         onChange={(e) => setAltText(e.target.value)}
                     />
                 </div>
-                {altText && (
+                {imageState.selectedFile && (
                     <Button
                         type="button"
                         variant="default"

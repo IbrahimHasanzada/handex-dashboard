@@ -11,9 +11,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Form, FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { ImageUploadFormItem } from "@/components/image-upload-form-item"
 import { validateImage } from "@/validations/upload.validation"
-import { useGetHeroQuery, useUploadFileMutation } from "@/store/handexApi"
+import { useUploadFileMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
-import { type FeatureFormValues, EditFeatureFormSchema, FeatureSchema, type Language, EditFeatureSchema } from "@/validations/corporate/fetures.validation"
+import { EditFeatureFormSchema, EditFeatureSchema } from "@/validations/corporate/fetures.validation"
 import type { imageState } from "@/types/home/graduates.dto"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import type { EditFeatureFormProps } from "@/types/corporate/features.dto"
@@ -31,7 +31,6 @@ export default function EditWhyHandexForm({ onSubmit, onCancel, isFeatLoading, f
             }
         }
     }, [features, lang])
-
     const [imageState, setImageState] = useState<imageState>({
         preview: null,
         id: null,
@@ -87,7 +86,6 @@ export default function EditWhyHandexForm({ onSubmit, onCancel, isFeatLoading, f
         }
     }, [title, desc, lang, form])
 
-    // Modified image change handler to only store the file without uploading
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
@@ -95,7 +93,6 @@ export default function EditWhyHandexForm({ onSubmit, onCancel, isFeatLoading, f
         const imageValidation = validateImage(file, setImageState, imageState)
         if (imageValidation === false) return
 
-        // Just store the file and show preview without uploading
         setImageState({
             preview: URL.createObjectURL(file),
             id: null,
@@ -104,7 +101,6 @@ export default function EditWhyHandexForm({ onSubmit, onCancel, isFeatLoading, f
         })
     }
 
-    // Function to handle image upload with alt text
     const uploadSelectedImage = async () => {
         if (!imageState.selectedFile) {
             toast.error("Zəhmət olmasa əvvəlcə şəkil seçin")

@@ -35,6 +35,7 @@ const HomeHero = () => {
         id: null,
         error: null,
         selectedFile: null,
+        alt: null
     })
     const [isEditing, setIsEditing] = useState(false)
 
@@ -103,6 +104,7 @@ const HomeHero = () => {
                     id: response.id,
                     error: null,
                     selectedFile: null,
+                    alt: form.getValues("imageAlt")
                 })
 
                 form.setValue("image", response.id)
@@ -119,7 +121,6 @@ const HomeHero = () => {
 
     const onSubmit = async (data: FormValues) => {
         try {
-            // Check if we have an unuploaded image
             if (imageState.selectedFile && !imageState.id) {
                 toast.error("Zəhmət olmasa əvvəlcə şəkili yükləyin")
                 return
