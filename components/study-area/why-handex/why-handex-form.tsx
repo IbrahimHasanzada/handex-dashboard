@@ -114,6 +114,7 @@ export default function WhyHandexForm({ onSubmit, onCancel, isFeatLoading, slug,
                 preview: response.url,
                 id: response.id,
                 error: null,
+                alt: form.getValues("imageAlt"),
                 selectedFile: null,
                 isUploading: false,
             })
@@ -188,7 +189,7 @@ export default function WhyHandexForm({ onSubmit, onCancel, isFeatLoading, slug,
                     label="Şəkli Dəyişdir"
                 />
 
-                <Button type="button" onClick={uploadSelectedImage} disabled={imageState.isUploading} className="w-full">
+                {imageState.selectedFile && <Button type="button" onClick={uploadSelectedImage} disabled={imageState.isUploading} className="w-full">
                     {imageState.isUploading ? (
                         <div className="flex items-center">
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -200,7 +201,7 @@ export default function WhyHandexForm({ onSubmit, onCancel, isFeatLoading, slug,
                             Şəkili yüklə
                         </div>
                     )}
-                </Button>
+                </Button>}
 
 
                 <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Language)}>

@@ -154,20 +154,24 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
                     isUploading={isUpLoading}
                     imageInputId="feature-image"
                     label="Şəkli Dəyişdir"
+                    isEditing={imageState.alt}
                 />
-                <Button type="button" onClick={uploadSelectedImage} disabled={isUpLoading} className="w-full">
-                    {isUpLoading ? (
-                        <div className="flex items-center">
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Yüklənir...
-                        </div>
-                    ) : (
-                        <div className="flex items-center">
-                            <Upload className="mr-2 h-4 w-4" />
-                            Şəkili yüklə
-                        </div>
-                    )}
-                </Button>
+                {imageState.selectedFile &&
+
+                    <Button type="button" onClick={uploadSelectedImage} disabled={isUpLoading} className="w-full">
+                        {isUpLoading ? (
+                            <div className="flex items-center">
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Yüklənir...
+                            </div>
+                        ) : (
+                            <div className="flex items-center">
+                                <Upload className="mr-2 h-4 w-4" />
+                                Şəkili yüklə
+                            </div>
+                        )}
+                    </Button>
+                }
 
                 <Tabs value={lang}>
                     <TabsContent value={lang} className="space-y-4 mt-4">

@@ -215,6 +215,7 @@ const CorporateHero = () => {
                                     imageInputId="banner-image"
                                     label="Şəkli Dəyişdir"
                                     altFieldName="imageAlt"
+                                    isEditing={isEditing}
                                 />
 
                                 {imageState.preview && !imageState.id && (

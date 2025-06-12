@@ -230,6 +230,7 @@ export default function Side({
                                 imageInputId={`${side}-image-upload`}
                                 label="Şəkil yüklə"
                                 altFieldName={`${side}ImageAlt`}
+                                isEditing={edit}
                             />
 
                             {imageStates[side]?.selectedFile && (

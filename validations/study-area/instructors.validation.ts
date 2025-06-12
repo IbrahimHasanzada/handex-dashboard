@@ -7,11 +7,10 @@ export const formSchemaInstructors = z.object({
         .number({ required_error: "Şəkil tələb olunur." })
         .refine((val) => val !== -1, { message: "Şəkil tələb olunur." }),
     translations: z
-        .array(
-            z.object({
-                lang: z.enum(["az", "en", "ru"]),
-                value: z.string().min(1, { message: "Translation value is required" }),
-            }),
-        )
-        .length(3, { message: "Must have exactly 3 translations" }),
+        .object({
+            az: z.string().optional(),
+            en: z.string().optional(),
+            ru: z.string().optional(),
+        })
+        .optional(),
 })
