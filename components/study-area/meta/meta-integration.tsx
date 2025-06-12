@@ -20,6 +20,7 @@ interface MetaIntegrationProps {
   metaItems?: MetaItem[]
   onCreateMeta?: (data: MetaItem) => Promise<void>
   onUpdateMeta?: (data: MetaItem) => Promise<void>
+  isLoading: boolean
 }
 
 export function MetaIntegration({
@@ -29,6 +30,7 @@ export function MetaIntegration({
   metaItems = [],
   onCreateMeta,
   onUpdateMeta,
+  isLoading
 }: MetaIntegrationProps) {
   return (
     <MetaList
@@ -37,6 +39,7 @@ export function MetaIntegration({
       onRefresh={onRefresh}
       onCreateMeta={onCreateMeta}
       onUpdateMeta={onUpdateMeta}
+      isLoading={isLoading}
     />
   )
 }

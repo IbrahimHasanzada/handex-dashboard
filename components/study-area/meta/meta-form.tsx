@@ -11,7 +11,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
 import { toast } from "react-toastify"
-import { AVAILABLE_LANGUAGES, META_TYPES, MetaFormProps, MetaItem, MetaTranslation } from "@/types/study-area/meta.dto"
+import { AVAILABLE_LANGUAGES, MetaFormProps, MetaItem, MetaTranslation } from "@/types/study-area/meta.dto"
+
+
+
 
 
 export function MetaForm({
@@ -22,6 +25,7 @@ export function MetaForm({
     onSuccess,
     onSubmit,
     isEditMode = false,
+    availableTypes
 }: MetaFormProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [metaType, setMetaType] = useState("")
@@ -39,6 +43,9 @@ export function MetaForm({
         en: "Enter meta value (English)",
         ru: "Введите мета значение (Русский)",
     }
+
+    
+
 
     useEffect(() => {
         if (isOpen) {
@@ -168,7 +175,7 @@ export function MetaForm({
                                         <SelectValue placeholder="Meta növünü seçin..." />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {META_TYPES.map((type) => (
+                                        {availableTypes.map((type: any) => (
                                             <SelectItem key={type.value} value={type.value}>
                                                 {type.label}
                                             </SelectItem>

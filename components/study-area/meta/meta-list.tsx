@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Edit, Trash, Globe } from "lucide-react"
+import { Plus, Edit, Trash, Globe, Loader2 } from "lucide-react"
 import { MetaForm } from "./meta-form"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
@@ -17,6 +17,7 @@ interface MetaListProps {
     onRefresh: () => void
     onCreateMeta?: (data: any) => Promise<void>
     onUpdateMeta?: (data: any) => Promise<void>
+    isLoading: boolean
 }
 
 export function MetaList({
@@ -25,6 +26,7 @@ export function MetaList({
     onRefresh,
     onCreateMeta,
     onUpdateMeta,
+    isLoading
 }: MetaListProps) {
     const [isMetaFormOpen, setIsMetaFormOpen] = useState(false)
     const [editingMeta, setEditingMeta] = useState<any>(null)
@@ -83,6 +85,19 @@ export function MetaList({
         return metaTypes[name] || name
     }
 
+    const getAvailableMetaTypes = (metaItems: any) => {
+        return META_TYPES.filter(metaType => {
+            return !metaItems.some((item: any) => item.name === metaType.value);
+        })
+    }
+
+    const META_TYPES = [
+        { value: "title", label: "Title" },
+        { value: "description", label: "Description" },
+    ]
+
+    const availableTypes = getAvailableMetaTypes(metaItems);
+
     return (
         <>
             <Card>
@@ -94,41 +109,14 @@ export function MetaList({
                         </CardTitle>
                         <CardDescription>Səhifə meta məlumatlarını idarə edin (3 dil dəstəyi)</CardDescription>
                     </div>
-                    <Button onClick={onAddMeta}>
+                    {metaItems.length !== 2 && <Button onClick={onAddMeta}>
                         <Plus className="mr-2 h-4 w-4" />
                         Yeni Meta
-                    </Button>
+                    </Button>}
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                        {metaItems.map((meta: any, index: number) => {
-                            const metaType = meta?.name || "unknown"
 
-                            return (
-                                <div key={meta.id || index} className="flex items-start gap-4 border rounded-lg p-4">
-                                    <div className="flex-1">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center gap-2">
-                                                <div className="font-medium">{getMetaTypeLabel(metaType)}</div>
-                                                <Badge variant="outline" className="font-mono text-xs">
-                                                    {meta.value}
-                                                </Badge>
-                                            </div>
-                                            <div className="flex gap-1">
-                                                <Button size="icon" variant="ghost" onClick={() => onEditMeta(meta)}>
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                {meta.id && metaItems.length > 1 && (
-                                                    <Button size="icon" variant="ghost" onClick={() => handleDeleteMeta(meta.id!)}>
-                                                        <Trash className="h-4 w-4" />
-                                                    </Button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        })}
 
                         {metaItems.length === 0 && (
                             <div className="text-center py-8 text-muted-foreground">
@@ -136,6 +124,41 @@ export function MetaList({
                                 <p className="text-sm">İlk meta məlumatınızı əlavə etmək üçün yuxarıdakı düyməni basın</p>
                             </div>
                         )}
+
+                        {isLoading ? <div className="w-full flex justify-center items-center ">
+                            <Loader2 className="w-10 h-10 animate-spin" />
+                        </div> :
+
+                            metaItems.map((meta: any, index: number) => {
+                                const metaType = meta?.name || "unknown"
+
+                                return (
+                                    <div key={meta.id || index} className="flex items-start gap-4 border rounded-lg p-4">
+                                        <div className="flex-1">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="font-medium">{getMetaTypeLabel(metaType)}</div>
+                                                    <Badge variant="outline" className="font-mono text-xs">
+                                                        {meta.value}
+                                                    </Badge>
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    <Button size="icon" variant="ghost" onClick={() => onEditMeta(meta)}>
+                                                        <Edit className="h-4 w-4" />
+                                                    </Button>
+                                                    {meta.id && metaItems.length > 1 && (
+                                                        <Button size="icon" variant="ghost" onClick={() => handleDeleteMeta(meta.id!)}>
+                                                            <Trash className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        }
+
                     </div>
                 </CardContent>
             </Card>
@@ -148,6 +171,7 @@ export function MetaList({
                 onSuccess={handleMetaSuccess}
                 onSubmit={handleSubmitMeta}
                 isEditMode={isEditMode}
+                availableTypes={availableTypes}
             />
         </>
     )

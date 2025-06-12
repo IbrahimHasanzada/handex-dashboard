@@ -109,7 +109,6 @@ export function AddPartner({ refetch, partners }: { refetch: () => void; partner
     }
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        // Check if we have an unuploaded image
         if (logoState.selectedFile && !logoState.id) {
             toast.error("Zəhmət olmasa əvvəlcə logonu yükləyin")
             return

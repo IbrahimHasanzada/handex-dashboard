@@ -158,9 +158,9 @@ export function GroupForm({ studyArea, groupId, existingData, selectedLanguage, 
             toast.success(groupId ? "Qrup uğurla yeniləndi" : "Qrup uğurla əlavə edildi")
             setOpen(false)
             onSuccess?.()
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error:", error)
-            toast.error("Əməliyyat zamanı xəta baş verdi")
+            toast.error("Əməliyyat zamanı xəta baş verdi", error.data.message)
         } finally {
             setIsLoading(false)
         }

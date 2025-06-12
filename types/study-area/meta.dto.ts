@@ -17,6 +17,7 @@ export interface MetaFormProps {
     onSuccess: () => void
     onSubmit?: (data: MetaItem) => Promise<void>
     isEditMode?: boolean
+    availableTypes: any
 }
 
 export const AVAILABLE_LANGUAGES = [
@@ -25,7 +26,3 @@ export const AVAILABLE_LANGUAGES = [
     { code: "ru", name: "Русский" },
 ]
 
-export const META_TYPES = [
-    { value: "title", label: "Title" },
-    { value: "description", label: "Description" },
-]

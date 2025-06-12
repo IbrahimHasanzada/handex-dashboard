@@ -42,12 +42,12 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
         description: string
     } | null>(null)
 
-    const { data, isLoading, isError, refetch } = useGetStudyAreaBySlugQuery(
+    const { data, isLoading, isError, refetch, isFetching } = useGetStudyAreaBySlugQuery(
         { slug: slug, lang: selectedLanguage },
         { skip: !slug },
     )
     const [deleteProgram] = useDeleteProgramMutation()
-    const [updateStudyArea] = useUpdateStudyAreaMutation()
+    const [updateStudyArea, { isLoading: updateLoading }] = useUpdateStudyAreaMutation()
     const onEdit = () => setIsStudyAreaEditOpen(true)
 
     const onEditProgram = (id: number) => {
@@ -130,13 +130,13 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                 ],
             }
             await updateStudyArea({ id: data.id, params: apiData }).unwrap()
+            refetch()
             toast.success("Meta uğurla redaktə edildi")
         } catch (error: any) {
             toast.error("Meta redaktə olunarkən xəta baş verdi \n" + error.data.message)
             throw new Error("Meta yenilənərkən xəta baş verdi")
         }
     }
-
 
     // Convert API meta format to component format if needed
     const metaItems: MetaItem[] = data?.meta || []
@@ -330,6 +330,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                 metaItems={metaItems}
                 onCreateMeta={handleCreateMeta}
                 onUpdateMeta={handleUpdateMeta}
+                isLoading={isFetching}
             />
 
 

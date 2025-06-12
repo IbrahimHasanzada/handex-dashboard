@@ -15,7 +15,7 @@ export interface AddInstructorsModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     refetch: () => void
-    studyArea: number
+    studyArea: number | undefined
 }
 
 export interface imageState {
@@ -29,7 +29,7 @@ export interface EditInstructorsModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     refetch: () => void
-    studyArea: number
+    studyArea: number | undefined
     selectedLanguage?: string
     graduate: {
         id: number
@@ -61,5 +61,5 @@ export interface InstructorsFormModalProps {
     imageInputId?: string
     isEditMode?: boolean
     selectedLanguage?: string
-    studyArea: number
+    studyArea: number | undefined
 }
