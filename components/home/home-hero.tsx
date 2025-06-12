@@ -77,7 +77,6 @@ const HomeHero = () => {
         const imageValidation = validateImage(file, setImageState, imageState)
         if (imageValidation === false) return
 
-        // Just store the file and show preview without uploading
         setImageState({
             preview: URL.createObjectURL(file),
             id: null,
@@ -213,6 +212,7 @@ const HomeHero = () => {
                                     setImageState={setImageState}
                                     handleImageChange={handleImageChange}
                                     isUploading={isUploading}
+                                    isEditing={isEditing}
                                     imageInputId="banner-image"
                                     label="Şəkli Dəyişdir"
                                     altFieldName="imageAlt"

@@ -18,4 +18,5 @@ export interface ImageUploadFormItemProps {
     isUploading: boolean
     imageInputId?: string
     label?: string
+    isEditing?: boolean
 }

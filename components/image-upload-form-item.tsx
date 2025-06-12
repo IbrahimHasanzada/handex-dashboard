@@ -17,6 +17,7 @@ export function ImageUploadFormItem({
     imageInputId = "image-upload",
     label = "Şəkil yüklə",
     altFieldName = "imageAlt",
+    isEditing
 }: ImageUploadFormItemProps & { altFieldName?: string }) {
     useEffect(() => {
         if (form.getValues(altFieldName) === undefined) {
@@ -98,7 +99,7 @@ export function ImageUploadFormItem({
                 />
 
                 {/* Alt text input field - only show when an image is selected */}
-                {imageState.preview && (
+                {imageState.preview && !isEditing && (
                     <div className="p-5">
                         <FormField
                             control={form.control}
