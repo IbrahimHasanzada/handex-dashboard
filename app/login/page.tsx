@@ -40,9 +40,6 @@ export default function LoginPage() {
             }).unwrap();
 
             dispatch(setCredentials(response.token))
-            // Cookies.set('token', response.token, {
-            //     expires: 1,
-            // });
             toast.success('Daxil olundu');
             router.push('/');
 

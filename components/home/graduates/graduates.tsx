@@ -11,7 +11,6 @@ import { toast } from "react-toastify"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 const Graduates = () => {
     const { data: graduatesData, isLoading, isError, refetch } = useGetProfilesQuery({ lang: "az", model: "student" })
-    console.log(graduatesData)
     const [deleteGraduates, { isSuccess }] = useDeleteProfilesMutation()
     const [currentPage, setCurrentPage] = useState(1)
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)

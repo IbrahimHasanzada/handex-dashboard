@@ -1,7 +1,7 @@
 "use client"
 import Cookies from 'js-cookie'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-let tokenForConsultation = Cookies.get('token')
+let tokenForGet = Cookies.get('token')
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({
@@ -27,6 +27,14 @@ export const handexApi = createApi({
                     'Content-type': 'application/json'
                 },
                 body: JSON.stringify(params)
+            }),
+        }),
+        verifyToken: builder.query({
+            query: () => ({
+                url: '/auth/verify-token',
+                headers: {
+                    'authorization': `Bearer ${tokenForGet}`
+                },
             }),
         }),
         getGeneral: builder.query({
@@ -391,7 +399,7 @@ export const handexApi = createApi({
             query: () => ({
                 url: '/consultation',
                 headers: {
-                    'authorization': `Bearer ${tokenForConsultation}`
+                    'authorization': `Bearer ${tokenForGet}`
                 },
             }),
             providesTags: ['Consultation']
@@ -407,7 +415,7 @@ export const handexApi = createApi({
             query: () => ({
                 url: '/contact',
                 headers: {
-                    'authorization': `Bearer ${tokenForConsultation}`
+                    'authorization': `Bearer ${tokenForGet}`
                 },
             }),
             providesTags: ['Contact']
@@ -580,6 +588,7 @@ export const handexApi = createApi({
 })
 
 export const {
+    useVerifyTokenQuery,
     useGetGeneralQuery,
     useGeneralMutation,
     useGetHeroQuery,
