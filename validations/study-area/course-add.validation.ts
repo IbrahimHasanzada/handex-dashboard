@@ -53,31 +53,23 @@ const metaSchema = z.object({
 })
 
 const groupTextTranslationSchema = z.object({
-    name: z.string().min(1, "Qrup adı tələb olunur"),
-    lang: z.enum(["az", "en", "ru"]),
+    name: z.string().optional(),
+    lang: z.enum(["az", "en", "ru"]).optional(),
 })
 
 const groupTableTranslationSchema = z.object({
-    name: z.string().min(1, "Cədvəl məlumatı tələb olunur"),
-    lang: z.enum(["az", "en", "ru"]),
+    name: z.string().optional(),
+    lang: z.enum(["az", "en", "ru"]).optional(),
 })
 
 const groupSchema = z.object({
     text: z
         .array(groupTextTranslationSchema)
-        .length(3, "Hər 3 dil üçün qrup adı tərcüməsi tələb olunur")
-        .refine((translations) => {
-            const languages = translations.map((t) => t.lang)
-            return languages.includes("az") && languages.includes("en") && languages.includes("ru")
-        }, "Azərbaycan, İngilis və Rus dillərində qrup adı tərcümələri tələb olunur"),
+        .optional(),
     table: z
         .array(groupTableTranslationSchema)
-        .length(3, "Hər 3 dil üçün cədvəl tərcüməsi tələb olunur")
-        .refine((translations) => {
-            const languages = translations.map((t) => t.lang)
-            return languages.includes("az") && languages.includes("en") && languages.includes("ru")
-        }, "Azərbaycan, İngilis və Rus dillərində cədvəl tərcümələri tələb olunur"),
-    startDate: z.string().min(1, "Başlama tarixi tələb olunur"),
+        .optional(),
+    startDate: z.string().optional(),
 })
 
 export const courseSchema = z.object({

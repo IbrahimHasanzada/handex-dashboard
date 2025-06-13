@@ -4,7 +4,7 @@ export const courseDefaultValues: CourseFormData = {
     name: "",
     slug: "",
     color: "#DE465D",
-    image: 1,
+    image: 0,
     translations: [
         { course_detail: "", lang: "az" },
         { course_detail: "", lang: "en" },
@@ -28,4 +28,5 @@ export const courseDefaultValues: CourseFormData = {
     ],
     meta: [],
     group: [],
+    model: "corporate"
 };
