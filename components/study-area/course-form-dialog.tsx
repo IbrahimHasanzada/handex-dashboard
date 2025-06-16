@@ -22,7 +22,7 @@ import { CourseMeta } from "./course-form/course-meta"
 import { CourseGroups } from "./course-form/course-groups"
 import { type CourseFormData, courseSchema } from "@/validations/study-area/course-add.validation"
 import { CourseTranslations } from "./course-form/course-translation"
-import { renderFormErrors } from "@/utils/course-error-render"
+import { renderFormErrorsStudy } from "@/utils/course-error-render"
 import { courseDefaultValues } from "./course-form/defaultValues"
 import { useAddStudyAreaMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
@@ -51,62 +51,62 @@ export function CourseFormDialog() {
         defaultValues: courseDefaultValues
     })
 
-   const handleSubmit = async (data: CourseFormData) => {
-    console.log("Original data:", data)
-    
-    // Qrup məlumatlarını filtirləmək
-    const filteredData = { ...data }
-    
-    if (data.group && data.group.length > 0) {
-        const validGroups = data.group.filter(group => {
-            // startDate yoxlanılması
-            const hasStartDate = group.startDate && group.startDate.trim() !== ""
-            
-            // text array yoxlanılması
-            const hasValidText = group.text && group.text.some(textItem => 
-                textItem.name && textItem.name.trim() !== "" && textItem.lang
-            )
-            
-            // table array yoxlanılması
-            const hasValidTable = group.table && group.table.some(tableItem => 
-                tableItem.name && tableItem.name.trim() !== "" && tableItem.lang
-            )
-            
-            // Ən azı bir sahə doldurulubsa qrupu saxla
-            return hasStartDate || hasValidText || hasValidTable
-        })
-        
-        // Əgər valid qrup varsa, onu əlavə et, yoxsa group field-ini sil
-        if (validGroups.length > 0) {
-            filteredData.group = validGroups
+    const handleSubmit = async (data: CourseFormData) => {
+        console.log("Original data:", data)
+
+        // Qrup məlumatlarını filtirləmək
+        const filteredData = { ...data }
+
+        if (data.group && data.group.length > 0) {
+            const validGroups = data.group.filter(group => {
+                // startDate yoxlanılması
+                const hasStartDate = group.startDate && group.startDate.trim() !== ""
+
+                // text array yoxlanılması
+                const hasValidText = group.text && group.text.some(textItem =>
+                    textItem.name && textItem.name.trim() !== "" && textItem.lang
+                )
+
+                // table array yoxlanılması
+                const hasValidTable = group.table && group.table.some(tableItem =>
+                    tableItem.name && tableItem.name.trim() !== "" && tableItem.lang
+                )
+
+                // Ən azı bir sahə doldurulubsa qrupu saxla
+                return hasStartDate || hasValidText || hasValidTable
+            })
+
+            // Əgər valid qrup varsa, onu əlavə et, yoxsa group field-ini sil
+            if (validGroups.length > 0) {
+                filteredData.group = validGroups
+            } else {
+                delete filteredData.group
+            }
         } else {
+            // Əgər group array boşdursa və ya mövcud deyilsə, onu sil
             delete filteredData.group
         }
-    } else {
-        // Əgər group array boşdursa və ya mövcud deyilsə, onu sil
-        delete filteredData.group
+
+        console.log("Filtered data:", filteredData)
+
+        try {
+            await addStudyArea(filteredData).unwrap()
+            toast.success("Tədris sahəsi uğurla əlavə olundu")
+            setOpen(false)
+            form.reset()
+            setImageState({
+                preview: null,
+                id: null,
+                error: null,
+                selectedFile: null,
+            })
+        } catch (error: any) {
+            const errorMessage = Array.isArray(error?.data?.message)
+                ? error.data.message.join(', ')
+                : error.data.message;
+            toast.error(errorMessage)
+        }
     }
-    
-    console.log("Filtered data:", filteredData)
-    
-    try {
-        await addStudyArea(filteredData).unwrap()
-        toast.success("Tədris sahəsi uğurla əlavə olundu")
-        setOpen(false)
-        form.reset()
-        setImageState({
-            preview: null,
-            id: null,
-            error: null,
-            selectedFile: null,
-        })
-    } catch (error: any) {
-        const errorMessage = Array.isArray(error?.data?.message)
-            ? error.data.message.join(', ')
-            : error.data.message;
-        toast.error(errorMessage)
-    }
-}
 
     const generateSlug = (name: string) => {
         return name
@@ -194,21 +194,21 @@ export function CourseFormDialog() {
                 </form>
 
                 {/* Debug information - remove in production */}
-                    <div className="mt-4 p-4 bg-gray-100 rounded text-xs">
-                        <p>
-                            <strong>Form Valid:</strong> {form.formState.isValid ? "Yes" : "No"}
-                        </p>
-                        <p>
-                            <strong>Errors:</strong> {Object.keys(form.formState.errors).length}
-                        </p>
+                <div className="mt-4 p-4 bg-gray-100 rounded text-xs">
+                    <p>
+                        <strong>Form Valid:</strong> {form.formState.isValid ? "Yes" : "No"}
+                    </p>
+                    <p>
+                        <strong>Errors:</strong> {Object.keys(form.formState.errors).length}
+                    </p>
 
-                        {Object.keys(form.formState.errors).length > 0 && (
-                            <div className="mt-4">
-                                <strong className="text-red-600">Form Errors:</strong>
-                                <div className="mt-2 space-y-1">{renderFormErrors(form.formState.errors)}</div>
-                            </div>
-                        )}
-                    </div>
+                    {Object.keys(form.formState.errors).length > 0 && (
+                        <div className="mt-4">
+                            <strong className="text-red-600">Form Errors:</strong>
+                            <div className="mt-2 space-y-1">{renderFormErrorsStudy(form.formState.errors)}</div>
+                        </div>
+                    )}
+                </div>
             </DialogContent>
         </Dialog>
     )

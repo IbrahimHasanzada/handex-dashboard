@@ -1,6 +1,6 @@
 import { JSX } from "react"
 
-export const renderFormErrors = (errors: any, parentPath = ""): JSX.Element[] => {
+export const renderFormErrorsStudy = (errors: any, parentPath = ""): JSX.Element[] => {
     const errorElements: JSX.Element[] = []
 
     const getFieldDisplayName = (path: string): string => {
@@ -59,11 +59,11 @@ export const renderFormErrors = (errors: any, parentPath = ""): JSX.Element[] =>
             } else if (Array.isArray(error)) {
                 error.forEach((item, index) => {
                     if (item && typeof item === "object") {
-                        errorElements.push(...renderFormErrors(item, `${currentPath}.${index}`))
+                        errorElements.push(...renderFormErrorsStudy(item, `${currentPath}.${index}`))
                     }
                 })
             } else {
-                errorElements.push(...renderFormErrors(error, currentPath))
+                errorElements.push(...renderFormErrorsStudy(error, currentPath))
             }
         }
     })

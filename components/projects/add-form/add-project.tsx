@@ -24,6 +24,7 @@ import { MediaTab } from "./media-tab"
 import { ContentTab } from "./content-tab"
 import { useRouter } from "next/navigation"
 import { editFormSchemaNews, formSchemaNews } from "@/validations/home/news.validation"
+import { renderFormErrors } from "@/utils/render-error"
 
 export function ProjectsForm({ slug }: { slug?: string }) {
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
@@ -231,6 +232,7 @@ export function ProjectsForm({ slug }: { slug?: string }) {
 
     }
 
+
     const uploadSelectedImage = async () => {
         if (!imageState.selectedFile) {
             toast.error("Zəhmət olmasa əvvəlcə şəkil seçin")
@@ -353,6 +355,22 @@ export function ProjectsForm({ slug }: { slug?: string }) {
                         </Button>
                     </CardFooter>
                 </form>
+                {/* Debug information - remove in production */}
+                <div className="mt-4 p-4 bg-gray-100 rounded text-xs">
+                    <p>
+                        <strong>Form Valid:</strong> {form.formState.isValid ? "Yes" : "No"}
+                    </p>
+                    <p>
+                        <strong>Errors:</strong> {Object.keys(form.formState.errors).length}
+                    </p>
+
+                    {Object.keys(form.formState.errors).length > 0 && (
+                        <div className="mt-4">
+                            <strong className="text-red-600">Form Errors:</strong>
+                            <div className="mt-2 space-y-1">{renderFormErrors(form.formState.errors)}</div>
+                        </div>
+                    )}
+                </div>
             </Form>
         </Tabs>
     )

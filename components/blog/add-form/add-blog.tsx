@@ -24,6 +24,7 @@ import { MediaTab } from "./media-tab"
 import { MetaTab } from "./meta-tab"
 import { CardFooter } from "@/components/ui/card"
 import { ContentTab } from "./content-tab"
+import { renderFormErrors } from "@/utils/render-error"
 
 interface ImageState {
   preview: string | null
@@ -367,6 +368,23 @@ export function BlogsForm({ slug }: { slug?: string }) {
               </Button>
             </CardFooter>
           </form>
+
+          {/* Debug information - remove in production */}
+          <div className="mt-4 p-4 bg-gray-100 rounded text-xs">
+            <p>
+              <strong>Form Valid:</strong> {form.formState.isValid ? "Yes" : "No"}
+            </p>
+            <p>
+              <strong>Errors:</strong> {Object.keys(form.formState.errors).length}
+            </p>
+
+            {Object.keys(form.formState.errors).length > 0 && (
+              <div className="mt-4">
+                <strong className="text-red-600">Form Errors:</strong>
+                <div className="mt-2 space-y-1">{renderFormErrors(form.formState.errors)}</div>
+              </div>
+            )}
+          </div>
         </Form>
       </Tabs>
     </div>
