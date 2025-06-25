@@ -127,16 +127,15 @@ export default function WhyHandexForm({ onSubmit, onCancel, isFeatLoading, slug,
         }
     }
 
-    const onFormSubmit = form.handleSubmit(
-        (data) => {
-            if (imageState.selectedFile && !imageState.id) {
-                toast.error("Zəhmət olmasa əvvəlcə şəkili yükləyin")
-                return
-            }
+    const onFormSubmit = form.handleSubmit((data) => {
+        if (imageState.selectedFile && !imageState.id) {
+            toast.error("Zəhmət olmasa əvvəlcə şəkili yükləyin")
+            return
+        }
 
-            const { imageAlt, ...submitData } = data
-            onSubmit(submitData)
-        },
+        const { imageAlt, ...submitData } = data
+        onSubmit(submitData)
+    },
         (errors) => {
             toast.error("Zəhmət olmasa bütün sahələri doldurun")
         },

@@ -12,7 +12,7 @@ export const formSchema = z.object({
     image: z.number({ required_error: "Şəkil tələb olunur." })
         .refine((val) => val !== -1, { message: "Şəkil tələb olunur." }),
 
-    imageAlt: z.string()
+    imageAlt: z.string().optional()
 
 })
 

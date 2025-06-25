@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Label } from "@/components/ui/label"
-import { Upload } from "lucide-react"
+import { Upload } from 'lucide-react'
 import { useAddHeroMutation, useGetHeroQuery, useUploadFileMutation } from "@/store/handexApi"
 import { formSchema, type FormValues } from "@/validations/home/hero.validation"
 import { toast } from "react-toastify"
@@ -118,7 +118,8 @@ const HomeHero = () => {
         }
     }
 
-    const onSubmit = async (data: FormValues) => {
+    const onSubmit = form.handleSubmit(async (data: FormValues) => {
+
         try {
             if (imageState.selectedFile && !imageState.id) {
                 toast.error("Zəhmət olmasa əvvəlcə şəkili yükləyin")
@@ -140,9 +141,13 @@ const HomeHero = () => {
             setIsEditing(false)
             toast.success("Məlumat uğurla yeniləndi")
         } catch (error) {
+            console.error("Error submitting form:", error);
             toast.error("Məlumatı yükləyərkən xəta baş verdi")
         }
-    }
+    }, (errors: any) => {
+        console.error("Form validation errors:", errors);
+        toast.error(errors)
+    })
 
     return (
         <Card>
@@ -156,9 +161,7 @@ const HomeHero = () => {
                         <Button variant="outline" onClick={() => setIsEditing(!isEditing)} disabled={isSubmitting}>
                             Ləğv Et
                         </Button>
-                        <Button onClick={form.handleSubmit(onSubmit)} disabled={isSubmitting || isUploading}>
-                            {isSubmitting ? "Yüklənir..." : "Yadda Saxla"}
-                        </Button>
+
                     </div>
                 ) : (
                     <Button variant="outline" onClick={() => setIsEditing(!isEditing)}>
@@ -169,7 +172,7 @@ const HomeHero = () => {
             <CardContent>
                 {isEditing ? (
                     <Form {...form}>
-                        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+                        <form className="space-y-6" onSubmit={onSubmit}>
                             <Tabs defaultValue="az" value={activeLanguage} onValueChange={setActiveLanguage}>
                                 <TabsContent value={activeLanguage} className="space-y-4">
                                     <FormField
@@ -224,6 +227,9 @@ const HomeHero = () => {
                                     </Button>
                                 )}
                             </div>
+                            <Button type="submit" disabled={isSubmitting || isUploading}>
+                                {isSubmitting ? "Yüklənir..." : "Yadda Saxla"}
+                            </Button>
                         </form>
                     </Form>
                 ) : (

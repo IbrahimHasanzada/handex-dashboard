@@ -6,6 +6,7 @@ export interface ImageUploadFormItemProps {
         id: number | null
         error: string | null
         alt?: any
+        selectedFile: any
     }
     setImageState: (state: {
         preview: string | null

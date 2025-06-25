@@ -99,7 +99,7 @@ export function ImageUploadFormItem({
                 />
 
                 {/* Alt text input field - only show when an image is selected */}
-                {imageState.preview && !isEditing && (
+                {imageState.preview && imageState.selectedFile && (
                     <div className="p-5">
                         <FormField
                             control={form.control}
