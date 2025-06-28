@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
+import { GeneralHeader } from "@/components/general-header"
 import { ProjectsForm } from "@/components/projects/add-form/add-project"
-import { ProjectsHeader } from "@/components/projects/projects-header"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
@@ -9,7 +9,7 @@ export default async function EditProjectsPage({ params }: { params: { slug: str
     return (
         <DashboardLayout>
             <div className="p-6">
-                <ProjectsHeader heading="Layihələri redaktə edin" text="Layihədə dəyişikliklər edin." />
+                <GeneralHeader heading="Layihələri redaktə edin" text="Layihədə dəyişikliklər edin." />
                 <div className="my-5">
                     <Button variant="outline" size="sm" asChild>
                         <Link href="/projects">

@@ -1,7 +1,7 @@
 "use client"
 
 import { DashboardLayout } from "@/components/dashboard-layout"
-import { NewsHeader } from "@/components/news/news-header"
+import { GeneralHeader } from "@/components/general-header"
 import { ViewNews } from "@/components/news/view-news"
 import { useRouter, useParams } from "next/navigation"
 import React from "react"
@@ -22,7 +22,7 @@ export default async function ViewArticlePage() {
     return (
         <DashboardLayout>
             <div className="p-6">
-                <NewsHeader heading="Xəbərə baxın" text="Xəbər təfərrüatlarına baxın və idarə edin." />
+                <GeneralHeader heading="Xəbərə baxın" text="Xəbər təfərrüatlarına baxın və idarə edin." />
                 <ViewNews slug={slug} onEdit={handleEdit} onDelete={handleDelete} />
             </div>
         </DashboardLayout>

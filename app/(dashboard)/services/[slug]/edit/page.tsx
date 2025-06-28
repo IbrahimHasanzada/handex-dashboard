@@ -1,12 +1,12 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
+import { GeneralHeader } from "@/components/general-header"
 import { ServiceForm } from "@/components/service/add-form/add-service"
-import { ServiceHeader } from "@/components/service/service-header"
 
 export default async function EditServicePage({ params }: { params: { slug: string } }) {
     return (
         <DashboardLayout>
             <div className="p-6">
-                <ServiceHeader heading="Xidməti redaktə edin" text="Xidmətdə dəyişikliklər edin." />
+                <GeneralHeader heading="Xidməti redaktə edin" text="Xidmətdə dəyişikliklər edin." />
                 <ServiceForm slug={await params.slug} />
             </div>
         </DashboardLayout>

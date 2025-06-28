@@ -37,13 +37,12 @@ interface ImageState {
 export function BlogsForm({ slug }: { slug?: string }) {
   const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
   const [selectedLanguage, setSelectedLanguage] = useState<string>("az")
-  const [visitedLanguages, setVisitedLanguages] = useState<Set<string>>(new Set(["az"]))
+  const [languagesSkip, setLanguagesSkip] = useState<string[]>([])
   const [formEdited, setFormEdited] = useState<boolean>(false)
   const fileInputRef = useRef<any>(null)
   const [selectedTab, setSelectedTab] = useState("content")
   const [metaFields, setMetaFields] = useState<number[]>([0])
   const router = useRouter()
-  const shouldFetch = slug && (!visitedLanguages.has(selectedLanguage) || !formEdited)
 
   const [uploadImage, { isLoading: upLoading }] = useUploadFileMutation()
   const [addBlogs, { isLoading: newsLoading }] = useAddBlogsMutation()
@@ -56,7 +55,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
     {
       pollingInterval: 0,
       refetchOnMountOrArgChange: true,
-      skip: !shouldFetch,
+      skip: languagesSkip.includes(selectedLanguage) || !slug,
     },
   )
 
@@ -106,7 +105,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
 
   const handleLanguageChange = (lang: string) => {
     setSelectedLanguage(lang)
-    setVisitedLanguages((prev) => new Set([...prev, lang]))
+    setLanguagesSkip((prev) => [...prev, selectedLanguage])
   }
 
   useEffect(() => {

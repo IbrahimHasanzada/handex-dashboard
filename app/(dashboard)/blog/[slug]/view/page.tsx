@@ -2,14 +2,14 @@
 
 import { ViewBlogs } from "@/components/blog/view-blog"
 import { DashboardLayout } from "@/components/dashboard-layout"
-import { NewsHeader } from "@/components/news/news-header"
+import { GeneralHeader } from "@/components/general-header"
 import { useRouter, useParams } from "next/navigation"
 import React from "react"
 
-export default function ViewBlogsPage() {
+export default async function ViewBlogsPage() {
     const router = useRouter()
     const params = useParams()
-    const slug = params.slug
+    const slug =  await params.slug
 
     const handleEdit = () => {
         router.push(`/blog/${slug}/edit`)
@@ -21,7 +21,7 @@ export default function ViewBlogsPage() {
     return (
         <DashboardLayout>
             <div className="p-6">
-                <NewsHeader heading="Bloqa baxın" text="Bloq detallarına baxın və idarə edin." />
+                <GeneralHeader heading="Bloqa baxın" text="Bloq detallarına baxın və idarə edin." />
                 <ViewBlogs slug={slug} onEdit={handleEdit} onDelete={handleDelete} />
             </div>
         </DashboardLayout>

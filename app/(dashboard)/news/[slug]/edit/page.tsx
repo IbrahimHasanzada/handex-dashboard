@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
+import { GeneralHeader } from "@/components/general-header"
 import { NewsForm } from "@/components/news/add-form/add-news"
-import { NewsHeader } from "@/components/news/news-header"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
@@ -9,7 +9,7 @@ export default async function EditNewsPage({ params }: { params: { slug: string 
     return (
         <DashboardLayout>
             <div className="p-6">
-                <NewsHeader heading="Xəbəri redaktə edin" text="Xəbərdə dəyişikliklər edin." />
+                <GeneralHeader heading="Xəbəri redaktə edin" text="Xəbərdə dəyişikliklər edin." />
                 <div className="my-5">
                     <Button variant="outline" size="sm" asChild>
                         <Link href="/news">

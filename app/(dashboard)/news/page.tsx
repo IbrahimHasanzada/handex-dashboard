@@ -1,16 +1,13 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
-import { NewsHeader } from "@/components/news/news-header"
+import { GeneralHeader } from "@/components/general-header"
 import { ArticlesTable } from "@/components/news/news-table"
-import { NewsTableFilters } from "@/components/news/news-table-filter"
 
 
 export default function ArticlesPage() {
   return (
     <DashboardLayout>
       <div className="p-6">
-        <NewsHeader heading="Xəbərlər" text="Xəbərləri və məzmununlarını idarə edin.">
-          <NewsTableFilters />
-        </NewsHeader>
+        <GeneralHeader heading="Xəbərlər" text="Xəbərləri və məzmununlarını idarə edin." />
         <ArticlesTable />
       </div>
     </DashboardLayout>

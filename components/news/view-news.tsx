@@ -6,12 +6,12 @@ import { ArrowLeft, Calendar, Edit, Loader2, Share2, Trash2 } from "lucide-react
 import { Button } from "@/components/ui/button"
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useParams, usePathname, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useDeleteNewsMutation, useGetNewsBySlugQuery, useGetNewsQuery } from "@/store/handexApi"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { ViewArticleProps } from "@/types/news/news-view.dto"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
 
 

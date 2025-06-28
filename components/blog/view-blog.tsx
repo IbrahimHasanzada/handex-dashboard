@@ -1,7 +1,6 @@
 "use client"
 import Link from "next/link"
 import Image from "next/image"
-import { format } from "date-fns"
 import { ArrowLeft, Calendar, Edit, Loader2, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"

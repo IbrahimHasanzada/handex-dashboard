@@ -1,7 +1,7 @@
 "use client"
 
 import { DashboardLayout } from "@/components/dashboard-layout"
-import { ProjectsHeader } from "@/components/projects/projects-header"
+import { GeneralHeader } from "@/components/general-header"
 import { ViewProjects } from "@/components/projects/view-projects"
 import { useRouter, useParams } from "next/navigation"
 import React from "react"
@@ -21,7 +21,7 @@ export default async function ViewProjetcsPage() {
     return (
         <DashboardLayout>
             <div className="p-6">
-                <ProjectsHeader heading="Layihəyə Baxın" text="Layihə detallarına baxın və idarə edin." />
+                <GeneralHeader heading="Layihəyə Baxın" text="Layihə detallarına baxın və idarə edin." />
                 <ViewProjects slug={slug} onEdit={handleEdit} onDelete={handleDelete} />
             </div>
         </DashboardLayout>

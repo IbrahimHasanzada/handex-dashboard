@@ -1,16 +1,13 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
-import { ServiceHeader } from "@/components/service/service-header"
+import { GeneralHeader } from "@/components/general-header"
 import { ServiceTable } from "@/components/service/service-table"
-import { ServiceTableFilters } from "@/components/service/service-table-filter"
 
 
 export default function ServicesPage() {
   return (
     <DashboardLayout>
       <div className="p-6">
-        <ServiceHeader heading="Xidmətlər" text="Xidmətləri və məzmununlarını idarə edin.">
-          <ServiceTableFilters />
-        </ServiceHeader>
+        <GeneralHeader heading="Xidmətlər" text="Xidmətləri və məzmununlarını idarə edin." />
         <ServiceTable />
       </div>
     </DashboardLayout>
