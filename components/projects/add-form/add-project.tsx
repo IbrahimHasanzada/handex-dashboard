@@ -105,6 +105,7 @@ export function ProjectsForm({ slug }: { slug?: string }) {
         setLanguagesSkip((prev) => [...prev, selectedLanguage])
     }
 
+
     useEffect(() => {
         const subscription = form.watch(() => {
             setFormEdited(true)
@@ -311,7 +312,7 @@ export function ProjectsForm({ slug }: { slug?: string }) {
                                     form={form}
                                     apiKey={apiKey}
                                     selectedLanguage={selectedLanguage}
-                                    setSelectedLanguage={setSelectedLanguage}
+                                    setSelectedLanguage={handleLanguageChange}
                                 />
                             </TabsContent>
                             <TabsContent value="media" className="space-y-6">

@@ -308,7 +308,7 @@ export function NewsForm({ slug }: { slug?: string }) {
                                     form={form}
                                     apiKey={apiKey}
                                     selectedLanguage={selectedLanguage}
-                                    setSelectedLanguage={setSelectedLanguage}
+                                    setSelectedLanguage={handleLanguageChange}
                                 />
                             </TabsContent>
                             <TabsContent value="media" className="space-y-6">
