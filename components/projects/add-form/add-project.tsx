@@ -29,7 +29,7 @@ import { renderFormErrors } from "@/utils/render-error"
 export function ProjectsForm({ slug }: { slug?: string }) {
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
     const [selectedLanguage, setSelectedLanguage] = useState<string>("az")
-    const [visitedLanguages, setVisitedLanguages] = useState<Set<string>>(new Set(["az"]))
+    const [languagesSkip, setLanguagesSkip] = useState<string[]>([])
     const [formEdited, setFormEdited] = useState<boolean>(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [selectedTab, setSelectedTab] = useState("content")
@@ -51,7 +51,6 @@ export function ProjectsForm({ slug }: { slug?: string }) {
     const [addprojetcs, { isLoading: projetcsLoading }] = useAddProjectsMutation()
     const [updateprojetcs, { isLoading: projetcsUpLoading }] = useUpdateProjectsMutation()
 
-    const shouldFetch = slug && (!visitedLanguages.has(selectedLanguage) || !formEdited)
 
     const { data: projetcs, isLoading: projetcsByIdLoading } = useGetProjectsBySlugQuery(
         {
@@ -61,7 +60,7 @@ export function ProjectsForm({ slug }: { slug?: string }) {
         {
             pollingInterval: 0,
             refetchOnMountOrArgChange: true,
-            skip: !shouldFetch,
+            skip: languagesSkip.includes(selectedLanguage) || !slug
         },
     )
 
@@ -103,7 +102,7 @@ export function ProjectsForm({ slug }: { slug?: string }) {
 
     const handleLanguageChange = (lang: string) => {
         setSelectedLanguage(lang)
-        setVisitedLanguages((prev) => new Set([...prev, lang]))
+        setLanguagesSkip((prev) => [...prev, selectedLanguage])
     }
 
     useEffect(() => {
