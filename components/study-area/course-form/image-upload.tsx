@@ -103,13 +103,17 @@ export function ImageUpload({ onImageUpload, setImageState, imageState, setAltTe
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="alt-text">Alt Text</Label>
-                    <Input
-                        id="alt-text"
-                        placeholder="Şəkil təsviri daxil edin"
-                        value={altText}
-                        onChange={(e) => setAltText(e.target.value)}
-                    />
+                    {!imageState.id &&
+                        <>
+                            <Label htmlFor="alt-text">Alt Text</Label>
+                            <Input
+                                id="alt-text"
+                                placeholder="Şəkil təsviri daxil edin"
+                                value={altText}
+                                onChange={(e) => setAltText(e.target.value)}
+                            />
+                        </>
+                    }
                 </div>
                 {imageState.selectedFile && (
                     <Button

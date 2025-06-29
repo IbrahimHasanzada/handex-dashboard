@@ -10,16 +10,13 @@ import { FormControl, FormField, FormItem, FormMessage, FormLabel } from "@/comp
 const TinyMCE = dynamic(
     () => import('@tinymce/tinymce-react').then((mod) => mod.Editor),
     {
-        ssr: false, 
+        ssr: false,
         loading: () => <p>Editor yüklənir...</p>
     }
 );
 import { editorConfig } from "@/utils/editor-config"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
-
-import { toast } from "sonner"
 import dynamic from "next/dynamic"
 export default function Side({
     form,
@@ -61,7 +58,7 @@ export default function Side({
     return (
         <TabsContent value={side} className="space-y-4">
             <div className="space-y-4">
-                <div>
+                {!edit && <div>
                     <Label>Content Type</Label>
                     <Controller
                         control={control}
@@ -78,7 +75,7 @@ export default function Side({
                             </Select>
                         )}
                     />
-                </div>
+                </div>}
 
                 {contentType === "text" ? (
                     edit ? (
@@ -218,7 +215,7 @@ export default function Side({
                             <ImageUploadFormItem
                                 form={form}
                                 name={`${sideName}.url`}
-                                imageState={imageStates[side] || { preview: null, id: null, error: null }}
+                                imageState={imageStates[side] || { preview: null, id: null, error: null, selectedFile: null }}
                                 setImageState={(newState) => {
                                     setImageStates((prev) => ({
                                         ...prev,

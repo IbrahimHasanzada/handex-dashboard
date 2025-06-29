@@ -87,7 +87,6 @@ export default function StatisticsSection({ field, studyArea }: { field: string,
                 field: field,
                 studyArea
             }
-            console.log(newStatistic)
             await addStatistics(newStatistic).unwrap()
             toast.success("Statistika uğurla əlavə edildi")
             setIsAddDialogOpen(false)

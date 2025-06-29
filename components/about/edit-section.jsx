@@ -93,12 +93,12 @@ export default function EditSection({ onComplete, edit, data, refetch }) {
                 onComplete()
             }
         } catch (error) {
-            toast.error("Bölmə əlavə edilərkən xəta baş verdi", error.message)
+            toast.error("Bölmə əlavə edilərkən xəta baş verdi", error?.message?.map(item => item).join(','))
         }
     }
 
 
-    const handleImageChange = (side) => async (e) => {
+    const handleImageChange = (side) => (e) => {
         const files = e.target.files
 
         if (!files || files.length === 0) {
@@ -110,11 +110,27 @@ export default function EditSection({ onComplete, edit, data, refetch }) {
         }
 
         const file = files[0]
+        const validitonFile = validateImage(file)
+        if (validitonFile == false) return
+        setImageStates((prev) => ({
+            ...prev,
+            [side]: {
+                ...prev[side],
+                preview: URL.createObjectURL(file),
+                selectedFile: file,
+            },
+        }))
+
+        if (form.getValues(`${side}ImageAlt`) === undefined) {
+            form.setValue(`${side}ImageAlt`, "")
+        }
+    }
+
+    const handleUploadWithAltText = async (file, altText, side) => {
         try {
-            const validitonFile = validateImage(file)
-            if (validitonFile == false) return
             const formData = new FormData()
             formData.append("file", file)
+            formData.append("alt", altText)
             const response = await uploadImage(formData).unwrap()
             setImageStates((prev) => ({
                 ...prev,
@@ -126,6 +142,7 @@ export default function EditSection({ onComplete, edit, data, refetch }) {
             }))
 
             setValue(`${side}_side.url`, response.url)
+            toast.success("Şəkil uğurla əlavə edildi")
         } catch (error) {
             toast.error("Şəkil yükləyərkən xəta baş vedi", error.message)
         }
@@ -153,6 +170,7 @@ export default function EditSection({ onComplete, edit, data, refetch }) {
                                     imageStates={imageStates}
                                     setImageStates={setImageStates}
                                     handleImageChange={handleImageChange}
+                                    handleUploadWithAltText={(file, altText) => handleUploadWithAltText(file, altText, "left")}
                                     upLoading={upLoading}
                                     edit={edit}
                                     data={data}
@@ -166,6 +184,7 @@ export default function EditSection({ onComplete, edit, data, refetch }) {
                                     imageStates={imageStates}
                                     setImageStates={setImageStates}
                                     handleImageChange={handleImageChange}
+                                    handleUploadWithAltText={(file, altText) => handleUploadWithAltText(file, altText, "right")}
                                     upLoading={upLoading}
                                     edit={edit}
                                     data={data}

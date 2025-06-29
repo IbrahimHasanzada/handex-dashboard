@@ -54,40 +54,32 @@ export function CourseFormDialog() {
     const handleSubmit = async (data: CourseFormData) => {
         console.log("Original data:", data)
 
-        // Qrup məlumatlarını filtirləmək
         const filteredData = { ...data }
 
         if (data.group && data.group.length > 0) {
             const validGroups = data.group.filter(group => {
-                // startDate yoxlanılması
                 const hasStartDate = group.startDate && group.startDate.trim() !== ""
 
-                // text array yoxlanılması
                 const hasValidText = group.text && group.text.some(textItem =>
                     textItem.name && textItem.name.trim() !== "" && textItem.lang
                 )
 
-                // table array yoxlanılması
                 const hasValidTable = group.table && group.table.some(tableItem =>
                     tableItem.name && tableItem.name.trim() !== "" && tableItem.lang
                 )
 
-                // Ən azı bir sahə doldurulubsa qrupu saxla
                 return hasStartDate || hasValidText || hasValidTable
             })
 
-            // Əgər valid qrup varsa, onu əlavə et, yoxsa group field-ini sil
             if (validGroups.length > 0) {
                 filteredData.group = validGroups
             } else {
                 delete filteredData.group
             }
         } else {
-            // Əgər group array boşdursa və ya mövcud deyilsə, onu sil
             delete filteredData.group
         }
 
-        console.log("Filtered data:", filteredData)
 
         try {
             await addStudyArea(filteredData).unwrap()

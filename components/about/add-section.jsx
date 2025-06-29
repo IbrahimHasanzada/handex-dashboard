@@ -11,6 +11,9 @@ import { useAddSectionAboutMutation, useUploadFileMutation } from "@/store/hande
 import { toast } from "react-toastify"
 import Side from "@/components/about/section-sides"
 import { validateImage } from "@/validations/upload.validation"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { defaultValuesSchema } from "@/validations/about/section-about"
+import { renderFormErrors } from "@/utils/render-error-about"
 export default function AddSection({ onComplete, edit, refetch }) {
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
     const [saving, setSaving] = useState(false)
@@ -42,6 +45,8 @@ export default function AddSection({ onComplete, edit, refetch }) {
                 url: "",
             },
         },
+        resolver: zodResolver(defaultValuesSchema)
+
     })
 
     const { control, handleSubmit, watch, setValue } = form
@@ -210,6 +215,25 @@ export default function AddSection({ onComplete, edit, refetch }) {
                     </div>
                 </form>
             </Form>
+            {/* Debug information - remove in production */}
+            <div className="mt-4 p-4 bg-gray-100 rounded text-xs">
+                <p>
+                    <strong>Form Valid:</strong> {form.formState.isValid ? "Yes" : "No"}
+                </p>
+                <p>
+                    <strong>Errors:</strong> {Object.keys(form.formState.errors).length}
+                </p>
+
+                {Object.keys(form.formState.errors).length > 0 && (
+                    <div className="mt-4">
+                        <strong className="text-red-600">Form Errors:</strong>
+                        <div className="mt-2 space-y-1">
+                            {renderFormErrors(form.formState.errors)}
+                        </div>
+                    </div>
+                )}
+            </div>
+
         </div>
     )
 }

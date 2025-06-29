@@ -36,7 +36,6 @@ export function ViewNews({ slug, onEdit, onDelete }: ViewArticleProps) {
             toast.error('Xəbər silərkən xəta baş verdi!')
         }
     }
-    console.log(news)
     return (
         <div>
             {newsLoading ? (

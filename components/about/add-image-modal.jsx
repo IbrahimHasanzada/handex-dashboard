@@ -76,8 +76,6 @@ export function AddImageModal({ open, onOpenChange, refetch, data }) {
             formData.append("file", imageState.selectedFile)
             formData.append("alt", altText)
 
-            console.log({ file: formData.get('file'), alt: formData.get('alt') })
-
             const response = await uploadImage(formData).unwrap()
 
             await addImageAbout({

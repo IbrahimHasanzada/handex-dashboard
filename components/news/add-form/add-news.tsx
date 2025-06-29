@@ -51,8 +51,7 @@ export function NewsForm({ slug }: { slug?: string }) {
     const [addNews, { isLoading: newsLoading }] = useAddNewsMutation()
     const [updateNews, { isLoading: newsUpLoading }] = useUpdateNewsMutation()
 
-    // Only fetch when language changes and we haven't visited this language before
-    // or if we haven't edited the form
+
     const shouldFetch = slug && (!visitedLanguages.has(selectedLanguage) || !formEdited)
 
     const { data: news, isLoading: newsByIdLoading } = useGetNewsBySlugQuery(

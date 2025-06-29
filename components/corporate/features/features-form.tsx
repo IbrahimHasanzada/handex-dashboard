@@ -21,10 +21,7 @@ import { Loader2, Upload } from "lucide-react"
 export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, id }: FeatureFormProps) {
     const [activeTab, setActiveTab] = useState<Language>("az")
     const {
-        data: featuresData,
-        refetch: fetchFeatures,
-        isFetching,
-        isLoading,
+        data: featuresData
     } = useGetHeroQuery({ slug, lang: activeTab, scope: "componentC" }, { skip: false })
     const [defaultValues, setDefaultValue] = useState<string[] | any>()
 
@@ -42,7 +39,6 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
 
     const [uploadImage, { isLoading: isUpLoading }] = useUploadFileMutation()
 
-    // Update the form schema to include imageAlt
     const form = useForm<FeatureFormValues & { imageAlt: string }>({
         resolver: zodResolver(FeatureSchema),
         defaultValues: {
@@ -89,7 +85,6 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
         const imageValidation = validateImage(file, setImageState, imageState)
         if (imageValidation === false) return
 
-        // Just store the file and show preview without uploading
         setImageState({
             preview: URL.createObjectURL(file),
             id: null,
@@ -99,7 +94,6 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
         })
     }
 
-    // Function to handle image upload with alt text
     const uploadSelectedImage = async () => {
         if (!imageState.selectedFile) {
             toast.error("Zəhmət olmasa əvvəlcə şəkil seçin")
@@ -132,13 +126,11 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
 
     const onFormSubmit = form.handleSubmit(
         (data) => {
-            // Check if we have an unuploaded image
             if (imageState.selectedFile && !imageState.id) {
                 toast.error("Zəhmət olmasa əvvəlcə şəkili yükləyin")
                 return
             }
 
-            // Remove imageAlt from data before submitting
             const { imageAlt, ...submitData } = data
             onSubmit(submitData)
         },
@@ -166,7 +158,6 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
         }
     }, [form, translations])
 
-    // Set initial image state from defaultValues
     useEffect(() => {
         if (defaultValues?.[0]?.images?.[0]) {
             setImageState({
@@ -183,7 +174,6 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
     return (
         <Form {...form}>
             <form onSubmit={onFormSubmit} className="space-y-6">
-                {/* Use ImageUploadFormItem component */}
                 <ImageUploadFormItem
                     form={form}
                     name="images"
@@ -195,7 +185,7 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
                     label="Şəkli Dəyişdir"
                 />
 
-                <Button type="button" onClick={uploadSelectedImage} disabled={imageState.isUploading} className="w-full">
+                {!imageState.id && <Button type="button" onClick={uploadSelectedImage} disabled={imageState.isUploading} className="w-full">
                     {imageState.isUploading ? (
                         <div className="flex items-center">
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -207,7 +197,7 @@ export default function FeatureForm({ onSubmit, onCancel, isFeatLoading, slug, i
                             Şəkili yüklə
                         </div>
                     )}
-                </Button>
+                </Button>}
 
 
                 <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Language)}>
