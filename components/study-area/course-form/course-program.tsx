@@ -62,26 +62,6 @@ export function CourseProgram({
 
     return (
         <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Proqram</CardTitle>
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() =>
-                        appendProgram({
-                            name: "",
-                            image: -1,
-                            translations: [
-                                { description: "", lang: "az" },
-                                { description: "", lang: "en" },
-                                { description: "", lang: "ru" },
-                            ],
-                        })
-                    }
-                >
-                    <Plus className="mr-2 h-4 w-4" /> Proqram Əlavə Et
-                </Button>
-            </CardHeader>
             <CardContent className="space-y-4">
                 {programFields.map((field, index) => (
                     <div key={field.id} className="border rounded-lg p-4">

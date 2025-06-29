@@ -22,26 +22,27 @@ export default function page() {
         </div>
 
         <div>
-          <Tabs className="mb-5" value={selectedLanguage} onValueChange={(value) => setSelectedLanguage(value as Language)}>
-            <TabsList className="grid w-full grid-cols-3 max-w-md">
-              <TabsTrigger value="az" className="flex items-center gap-2">
-                Azərbaycanca
-              </TabsTrigger>
-              <TabsTrigger value="en" className="flex items-center gap-2">
-                English
-              </TabsTrigger>
-              <TabsTrigger value="ru" className="flex items-center gap-2">
-                Русский
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-
           <AdminWhyHandexPage />
         </div>
 
+
+        <Tabs className="mb-5" value={selectedLanguage} onValueChange={(value) => setSelectedLanguage(value as Language)}>
+          <TabsList className="grid w-full grid-cols-3 max-w-md">
+            <TabsTrigger value="az" className="flex items-center gap-2">
+              Azərbaycanca
+            </TabsTrigger>
+            <TabsTrigger value="en" className="flex items-center gap-2">
+              English
+            </TabsTrigger>
+            <TabsTrigger value="ru" className="flex items-center gap-2">
+              Русский
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         <div>
           <CourseList
-          
+
             selectedLanguage={selectedLanguage}
             setSelectedLanguage={setSelectedLanguage} />
         </div>
