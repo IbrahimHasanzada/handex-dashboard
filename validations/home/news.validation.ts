@@ -17,7 +17,12 @@ export const formSchemaNews = z.object({
     meta_az: z.string().min(1, { message: "Meta təsviri (AZ) tələb olunur" }),
     meta_en: z.string().min(1, { message: "Meta təsviri (EN) tələb olunur" }),
     meta_ru: z.string().min(1, { message: "Meta təsviri (RU) tələb olunur" }),
-    slug: z.string().min(3, { message: "Ən azı 3 simvol olmalıdır" }),
+    slug: z.string()
+        .min(1, "Slug boş ola bilməz")
+        .regex(/^[a-z0-9-]+$/, "Slug yalnız kiçik ingilis hərfləri, rəqəmlər və `-` icazə verir")
+        .refine((val) => !/[əıöüşç]/i.test(val), {
+            message: "Slug içində ə, ı, ö, ü, ş, ç hərfləri ola bilməz",
+        }),
     featuredImage: z
         .number({ required_error: "Şəkil tələb olunur." })
         .refine((val) => val !== -1, { message: "Şəkil tələb olunur." }),
@@ -53,7 +58,12 @@ export const editFormSchemaNews = z.object({
     meta_en: z.string().optional(),
     meta_ru: z.string().optional(),
 
-    slug: z.string().min(3, { message: "Ən azı 3 simvol olmalıdır" }),
+    slug: z.string()
+        .min(1, "Slug boş ola bilməz")
+        .regex(/^[a-z0-9-]+$/, "Slug yalnız kiçik ingilis hərfləri, rəqəmlər və `-` icazə verir")
+        .refine((val) => !/[əıöüşç]/i.test(val), {
+            message: "Slug içində ə, ı, ö, ü, ş, ç hərfləri ola bilməz",
+        }),
 
     featuredImage: z
         .number({ required_error: "Şəkil tələb olunur." })

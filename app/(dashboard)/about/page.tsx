@@ -12,6 +12,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "react-toastify"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { MetaTranslations } from "@/components/meta/meta"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import EditSection from "@/components/about/edit-section"
+import AddSection from "@/components/about/add-section"
+import { useRouter } from "next/navigation"
 
 export default function AboutPage() {
   const [currentLanguage, setCurrentLanguage] = useState<string>("az")
@@ -24,7 +28,7 @@ export default function AboutPage() {
   const [deleteSection, { isLoading: deleteLoading }] = useDeleteSectionsMutation()
   const [delImageAbout, { isLoading: imageLoading }] = useUpdateAboutMutation()
 
-
+  const router = useRouter()
   const handleDeleteSection = async (id: number) => {
     try {
       showDeleteConfirmation(deleteSection, id, refetch, {
@@ -62,7 +66,7 @@ export default function AboutPage() {
     <DashboardLayout>
       <div className="mx-auto p-6">
         <div className="pb-6 flex justify-end flex-col sm:flex-row gap-5">
-          <Button onClick={() => setIsAddSectionModalOpen(true)}>
+          <Button onClick={() => router.push('/about/new')}>
             <Plus className="mr-2 h-4 w-4" /> Yeni bölmə əlavə et
           </Button>
           <Button onClick={() => setIsImageModalOpen(true)}>
@@ -167,8 +171,26 @@ export default function AboutPage() {
         }
       </div>
 
+
+      <Dialog open={isAddSectionModalOpen || isEditSectionModalOpen} onOpenChange={isEditSectionModalOpen ? setIsEditSectionModalOpen : setIsAddSectionModalOpen}>
+        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="flex flex-row items-center justify-between">
+            <div>
+              <DialogTitle>Yeni bölmə əlavə et</DialogTitle>
+              <DialogDescription>Haqqımızda səhifənizə hər iki tərəf üçün məzmunlu yeni bölmə əlavə edin.</DialogDescription>
+            </div>
+          </DialogHeader>
+          <div className="-mx-6" style={{ position: 'relative', zIndex: 1 }}>
+            {isEditSectionModalOpen ?
+              <EditSection edit={true} onComplete={() => setIsEditSectionModalOpen(false)} data={!isLoading && editedData} refetch={refetch} />
+              :
+              <AddSection edit={false} onComplete={() => setIsAddSectionModalOpen(false)} refetch={refetch} />
+            }
+          </div>
+        </DialogContent>
+      </Dialog>
       {/* Add or Edit Modal Sections */}
-      {isAddSectionModalOpen ?
+      {/* {isAddSectionModalOpen ?
         <SectionModal
           open={isAddSectionModalOpen}
           onOpenChange={setIsAddSectionModalOpen}
@@ -184,7 +206,7 @@ export default function AboutPage() {
           data={!isLoading && editedData}
           refetch={refetch}
         />
-      }
+      } */}
 
       {/* Add İmage Modal */}
       <AddImageModal

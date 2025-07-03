@@ -31,7 +31,7 @@ export default function AdminWhyHandexPage() {
         refetch: fetchFeatures,
         isFetching,
         isLoading,
-    } = useGetContentQuery({ slug: "corporate-informations", lang: activeLanguage }, { skip: false })
+    } = useGetContentQuery({ slug: "why-handex", lang: activeLanguage }, { skip: false })
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
     const [currentFeature, setCurrentFeature] = useState<Feature>()
@@ -42,7 +42,7 @@ export default function AdminWhyHandexPage() {
     }
     const handleAddFeature = async (data: Omit<Feature, "id">) => {
         try {
-            await addFeatures({ slug: "corporate-informations", ...data }).unwrap()
+            await addFeatures({ slug: "why-handex", ...data }).unwrap()
             fetchFeatures()
             setIsAddDialogOpen(false)
             toast.success("Məlumat uğurla əlavə edildi")

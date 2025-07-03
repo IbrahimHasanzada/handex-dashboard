@@ -129,3 +129,12 @@ body {
     @apply text-base font-normal my-1;
   }
 }
+
+.tox .tox-menu.tox-collection.tox-collection--list.tox-selected-menu {
+  z-index: 100000 !important;
+}
+
+.tox-tinymce-aux {
+  z-index: 130000000000 !important;
+
+}

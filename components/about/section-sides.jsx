@@ -1,5 +1,7 @@
 "use client"
 
+
+
 import { Controller } from "react-hook-form"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -13,11 +15,12 @@ const TinyMCE = dynamic(
         ssr: false,
         loading: () => <p>Editor yüklənir...</p>
     }
-);
-import { editorConfig } from "@/utils/editor-config"
+)
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import dynamic from "next/dynamic"
+import { editorConfig } from "@/utils/editor-config"
+
 export default function Side({
     form,
     control,

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Save } from "lucide-react"
+import { ArrowBigLeft, ArrowLeft, Save } from "lucide-react"
 import { Form } from "@/components/ui/form"
 import { useAddSectionAboutMutation, useUploadFileMutation } from "@/store/handexApi"
 import { toast } from "react-toastify"
@@ -14,6 +14,9 @@ import { validateImage } from "@/validations/upload.validation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { defaultValuesSchema } from "@/validations/about/section-about"
 import { renderFormErrors } from "@/utils/render-error-about"
+import { useRouter } from "next/navigation"
+import { Arrow } from "@radix-ui/react-tooltip"
+import Link from "next/link"
 export default function AddSection({ onComplete, edit, refetch }) {
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
     const [saving, setSaving] = useState(false)
@@ -23,6 +26,7 @@ export default function AddSection({ onComplete, edit, refetch }) {
         left: { preview: null, id: null, error: null, selectedFile: null },
         right: { preview: null, id: null, error: null, selectedFile: null },
     })
+    const router = useRouter()
 
     const form = useForm({
         defaultValues: {
@@ -101,6 +105,7 @@ export default function AddSection({ onComplete, edit, refetch }) {
             }
             await addSection(processedData).unwrap()
             refetch()
+            router.push('/about')
 
             toast.success("Bölmə uğurla əlavə edildi")
 
@@ -166,6 +171,12 @@ export default function AddSection({ onComplete, edit, refetch }) {
     const rightSideType = watch("right_side.type")
     return (
         <div className="p-6">
+            <Button className="mb-5" variant="outline" size="sm" asChild>
+                <Link href="/about">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Haqqımızdaya qayıt
+                </Link>
+            </Button>
             <Form {...form}>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Card className="relative border-0 shadow-none">

@@ -74,7 +74,12 @@ const groupSchema = z.object({
 
 export const courseSchema = z.object({
     name: z.string().min(1, "Kurs adı tələb olunur"),
-    slug: z.string().min(1, "Slug tələb olunur"),
+    slug: z.string()
+        .min(1, "Slug boş ola bilməz")
+        .regex(/^[a-z0-9-]+$/, "Slug yalnız kiçik ingilis hərfləri, rəqəmlər və `-` icazə verir")
+        .refine((val) => !/[əıöüşç]/i.test(val), {
+            message: "Slug içində ə, ı, ö, ü, ş, ç hərfləri ola bilməz",
+        }),
     color: z.string().regex(/^#[0-9A-F]{6}$/i, "Düzgün hex rəng formatı tələb olunur"),
     image: z.number().min(1, "Şəkil tələb olunur"),
     translations: z
