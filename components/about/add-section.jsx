@@ -174,7 +174,7 @@ export default function AddSection({ onComplete, edit, refetch }) {
             <Button className="mb-5" variant="outline" size="sm" asChild>
                 <Link href="/about">
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Haqqımızdaya qayıt
+                    Əvvələ qayıt
                 </Link>
             </Button>
             <Form {...form}>

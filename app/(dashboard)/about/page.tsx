@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { DashboardLayout } from "@/components/dashboard-layout"
-import { SectionModal } from "@/components/about/add-section-modal"
 import { AddImageModal } from "@/components/about/add-image-modal"
-import { Box, CheckCircle2, Edit, Loader2, Plus, Trash } from "lucide-react"
+import { Box, Edit, Loader2, Plus, Trash } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { useDeleteSectionsMutation, useGetAboutQuery, useUpdateAboutMutation } from "@/store/handexApi"
@@ -12,22 +11,19 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "react-toastify"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { MetaTranslations } from "@/components/meta/meta"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import EditSection from "@/components/about/edit-section"
-import AddSection from "@/components/about/add-section"
 import { useRouter } from "next/navigation"
+import { useDispatch } from "react-redux"
+import { addToAbout } from "@/store/aboutSlice"
 
 export default function AboutPage() {
   const [currentLanguage, setCurrentLanguage] = useState<string>("az")
-  const [isAddSectionModalOpen, setIsAddSectionModalOpen] = useState(false)
-  const [isEditSectionModalOpen, setIsEditSectionModalOpen] = useState(false)
-  const [editedData, setEditedData] = useState()
+
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   const [imageIds, setImageIds] = useState()
   const { data: aboutData, isLoading, refetch } = useGetAboutQuery(currentLanguage)
   const [deleteSection, { isLoading: deleteLoading }] = useDeleteSectionsMutation()
   const [delImageAbout, { isLoading: imageLoading }] = useUpdateAboutMutation()
-
+  const dispatch = useDispatch()
   const router = useRouter()
   const handleDeleteSection = async (id: number) => {
     try {
@@ -45,9 +41,10 @@ export default function AboutPage() {
     setImageIds(aboutData?.[0].images.map((item: any) => item.id))
   }, [aboutData])
 
+
   const handleEditData = (item: any) => {
-    setEditedData(item)
-    setIsEditSectionModalOpen(true)
+    router.push(`about/${item.id}/edit`)
+    dispatch(addToAbout(item))
   }
 
   const handleDeleteImage = async (id: number) => {
@@ -172,7 +169,7 @@ export default function AboutPage() {
       </div>
 
 
-      <Dialog open={isAddSectionModalOpen || isEditSectionModalOpen} onOpenChange={isEditSectionModalOpen ? setIsEditSectionModalOpen : setIsAddSectionModalOpen}>
+      {/* <Dialog open={isAddSectionModalOpen || isEditSectionModalOpen} onOpenChange={isEditSectionModalOpen ? setIsEditSectionModalOpen : setIsAddSectionModalOpen}>
         <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
           <DialogHeader className="flex flex-row items-center justify-between">
             <div>
@@ -188,7 +185,7 @@ export default function AboutPage() {
             }
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
       {/* Add or Edit Modal Sections */}
       {/* {isAddSectionModalOpen ?
         <SectionModal

@@ -1,19 +1,38 @@
 "use client"
+
 import { useState } from "react"
 import type React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useAddProfilesMutation, useUploadFileMutation } from "@/store/handexApi"
-import type { AddGraduateModalProps, imageState } from "@/types/home/graduates.dto"
-import type { z } from "zod"
-import { validateImage } from "@/validations/upload.validation"
-import { formSchema } from "@/validations/home/graduate.validation"
-import GraduateFormModal from "./graduate-form-modal"
 import { toast } from "react-toastify"
+import { AddGraduateModalProps, imageState } from "@/types/home/graduates.dto"
+import { useAddContentMutation, useUploadFileMutation } from "@/store/handexApi"
+import { TranslationFormData, translationSchema } from "@/validations/home/graduate.validation"
+import TranslationFormModal from "./graduate-form-modal"
 
-export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGraduateModalProps) {
-    const [addProfile, { isLoading }] = useAddProfilesMutation()
+
+
+const validateImage = (file: File, setImageState: any, imageState: imageState) => {
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"]
+
+    if (!allowedTypes.includes(file.type)) {
+        setImageState({ ...imageState, error: "Yalnız JPEG, PNG və WebP formatları dəstəklənir" })
+        return false
+    }
+
+    if (file.size > maxSize) {
+        setImageState({ ...imageState, error: "Şəkil ölçüsü 5MB-dan çox ola bilməz" })
+        return false
+    }
+
+    return true
+}
+
+export default function TranslationModal({ open, onOpenChange, refetch }: AddGraduateModalProps) {
+    const [addTranslation, { isLoading }] = useAddContentMutation()
     const [uploadImage, { isLoading: isUploading }] = useUploadFileMutation()
+
     const [imageState, setImageState] = useState<imageState>({
         preview: null,
         id: null,
@@ -21,14 +40,17 @@ export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGra
         selectedFile: null,
     })
 
-    const form = useForm<z.infer<typeof formSchema> & { imageAlt: string }>({
+    const form = useForm<TranslationFormData & { imageAlt: string }>({
         defaultValues: {
-            name: "",
-            speciality: "",
-            image: -1,
+            translations: [
+                { title: "", desc: "", lang: "az" as const },
+                { title: "", desc: "", lang: "en" as const },
+                { title: "", desc: "", lang: "ru" as const },
+            ],
+            images: [],
             imageAlt: "",
         },
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(translationSchema),
     })
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,18 +72,19 @@ export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGra
         try {
             const formData = new FormData()
             formData.append("file", file)
-            formData.append("alt", altText) 
+            formData.append("alt", altText)
 
             const response = await uploadImage(formData).unwrap()
 
-            form.setValue("image", response.id)
+            const currentImages = form.getValues("images")
+            form.setValue("images", [...currentImages, response.id])
+
             setImageState({
                 preview: response.url,
                 id: response.id,
                 error: null,
                 selectedFile: null,
             })
-
             return response
         } catch (error) {
             toast.error("Şəkli yükləyərkən xəta baş verdi")
@@ -70,33 +93,31 @@ export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGra
         }
     }
 
-    const onSubmit = async (data: z.infer<typeof formSchema> & { imageAlt: string }) => {
+    const onSubmit = async (data: TranslationFormData & { imageAlt: string }) => {
         try {
             const jsonData = {
-                name: data.name,
-                speciality: data.speciality,
-                model: "student",
-                image: data.image,
+                translations: data.translations,
+                images: data.images,
+                slug: "partners", // Fixed slug as requested
             }
 
-            await addProfile(jsonData).unwrap()
-
+            await addTranslation(jsonData).unwrap()
             form.reset()
             setImageState({ preview: null, id: null, error: null, selectedFile: null })
             refetch()
-            toast.success("Məzun uğurla əlavə edildi!")
+            toast.success("Tərcümə uğurla əlavə edildi!")
             onOpenChange(false)
         } catch (error) {
-            toast.error("Məzun əlavə edərkən xəta baş verdi")
+            toast.error("Tərcümə əlavə edərkən xəta baş verdi")
         }
     }
 
     return (
-        <GraduateFormModal
+        <TranslationFormModal
             open={open}
             onOpenChange={onOpenChange}
-            title="Yeni Məzun Əlavə Et"
-            description="Məzun məlumatlarını daxil edin və yadda saxlayın."
+            title="Yeni Tərcümə Əlavə Et"
+            description="Müxtəlif dillər üçün tərcümə məlumatlarını daxil edin."
             form={form}
             imageState={imageState}
             setImageState={setImageState}
@@ -106,7 +127,7 @@ export default function AddGraduateModal({ open, onOpenChange, refetch }: AddGra
             isUploading={isUploading}
             submitButtonText="Əlavə et"
             loadingText="Əlavə edilir..."
-            imageInputId="image-upload-add"
+            imageInputId="translation-image-upload"
             uploadImage={handleUploadWithAlt}
         />
     )

@@ -1,50 +1,80 @@
 "use client"
+
 import { useState, useEffect } from "react"
 import type React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useUpdateProfilesMutation, useUploadFileMutation } from "@/store/handexApi"
-import type { z } from "zod"
-import { validateImage } from "@/validations/upload.validation"
-import type { EditGraduateModalProps, imageState } from "@/types/home/graduates.dto"
-import { formSchema } from "@/validations/home/graduate.validation"
-import GraduateFormModal from "./graduate-form-modal"
+
 import { toast } from "react-toastify"
+import { EditTranslationModalProps, imageState } from "@/types/home/graduates.dto"
+import { useUpdateContentMutation, useUploadFileMutation } from "@/store/handexApi"
+import { SingleLanguageTranslationFormData, singleLanguageTranslationSchema } from "@/validations/home/graduate.validation"
+import TranslationFormModal from "./graduate-form-modal"
 
-export default function EditGraduateModal({ open, onOpenChange, refetch, graduate }: EditGraduateModalProps) {
-    const [updateProfile, { isLoading }] = useUpdateProfilesMutation()
+
+const validateImage = (file: File, setImageState: any, imageState: imageState) => {
+    const maxSize = 5 * 1024 * 1024
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"]
+
+    if (!allowedTypes.includes(file.type)) {
+        setImageState({ ...imageState, error: "Yalnız JPEG, PNG və WebP formatları dəstəklənir" })
+        return false
+    }
+
+    if (file.size > maxSize) {
+        setImageState({ ...imageState, error: "Şəkil ölçüsü 5MB-dan çox ola bilməz" })
+        return false
+    }
+
+    return true
+}
+
+export default function EditTranslationModal({
+    open,
+    onOpenChange,
+    refetch,
+    translation,
+    selectedLanguage,
+}: EditTranslationModalProps) {
+    const [updateTranslation, { isLoading }] = useUpdateContentMutation()
     const [uploadImage, { isLoading: isUploading }] = useUploadFileMutation()
+
     const [imageState, setImageState] = useState<imageState>({
-        preview: graduate?.image?.url || null,
-        id: graduate?.image?.id || null,
+        preview: translation?.images?.[0]?.url || null,
+        id: translation?.images?.[0]?.id || null,
         error: null,
-        selectedFile: null
+        selectedFile: null,
     })
 
-    const form = useForm<z.infer<typeof formSchema>>({
+    const form = useForm<SingleLanguageTranslationFormData & { imageAlt: string }>({
         defaultValues: {
-            name: graduate?.name || "",
-            speciality: graduate?.speciality || "",
-            image: graduate?.image?.id || -1,
+            title: translation?.title || "",
+            desc: translation?.desc || "",
+            lang: selectedLanguage,
+            images: translation?.images?.map((img) => img.id) || [],
+            imageAlt: "",
         },
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(singleLanguageTranslationSchema),
     })
+
     useEffect(() => {
-        if (graduate) {
+        if (translation) {
             form.reset({
-                name: graduate.name,
-                speciality: graduate.speciality,
-                image: graduate.image?.id || -1,
+                title: translation.title || "",
+                desc: translation.desc || "",
+                lang: selectedLanguage,
+                images: translation.images?.map((img) => img.id) || [],
+                imageAlt: "",
             })
 
             setImageState({
-                preview: graduate.image?.url || null,
-                id: graduate.image?.id || null,
+                preview: translation.images?.[0]?.url || null,
+                id: translation.images?.[0]?.id || null,
                 error: null,
-                selectedFile: null
+                selectedFile: null,
             })
         }
-    }, [graduate, form])
+    }, [translation, selectedLanguage, form])
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -69,14 +99,14 @@ export default function EditGraduateModal({ open, onOpenChange, refetch, graduat
 
             const response = await uploadImage(formData).unwrap()
 
-            form.setValue("image", response.id)
+            form.setValue("images", [response.id])
+
             setImageState({
                 preview: response.url,
                 id: response.id,
                 error: null,
                 selectedFile: null,
             })
-
             return response
         } catch (error) {
             toast.error("Şəkli yükləyərkən xəta baş verdi")
@@ -85,31 +115,48 @@ export default function EditGraduateModal({ open, onOpenChange, refetch, graduat
         }
     }
 
-    const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    const onSubmit = async (data: SingleLanguageTranslationFormData & { imageAlt: string }) => {
         try {
             const jsonData = {
-                name: data.name,
-                speciality: data.speciality,
-                model: "student",
-                image: data.image !== undefined && data.image,
+                translations: [
+                    {
+                        title: data.title,
+                        desc: data.desc,
+                        lang: selectedLanguage
+                    }
+                ],
+                images: data.images,
             }
+            console.log(jsonData)
 
-            await updateProfile({ params: jsonData, id: graduate.id }).unwrap()
+            await updateTranslation({ params: jsonData, id: translation!.id }).unwrap()
             refetch()
-            toast.success('Məzun uğurla yeniləndi!')
+            toast.success(`${getLanguageName(selectedLanguage)} dilində tərcümə uğurla yeniləndi!`)
             onOpenChange(false)
         } catch (error) {
-            toast.error("Məzun əlavə edilərkən xəta baş verdi!")
+            toast.error("Tərcümə yeniləyərkən xəta baş verdi")
         }
     }
 
+    const getLanguageName = (lang: "az" | "en" | "ru") => {
+        switch (lang) {
+            case "az":
+                return "Azərbaycan"
+            case "en":
+                return "İngilis"
+            case "ru":
+                return "Rus"
+            default:
+                return ""
+        }
+    }
 
     return (
-        <GraduateFormModal
+        <TranslationFormModal
             open={open}
             onOpenChange={onOpenChange}
-            title="Məzun Məlumatlarını Redaktə Et"
-            description="Məzun məlumatlarını yeniləyin və yadda saxlayın."
+            title={`${getLanguageName(selectedLanguage)} Dilində Tərcümə Redaktəsi`}
+            description={`${getLanguageName(selectedLanguage)} dilində tərcümə məlumatlarını yeniləyin.`}
             form={form}
             imageState={imageState}
             setImageState={setImageState}
@@ -119,8 +166,10 @@ export default function EditGraduateModal({ open, onOpenChange, refetch, graduat
             isUploading={isUploading}
             submitButtonText="Yadda saxla"
             loadingText="Yenilənir..."
-            imageInputId="image-upload-edit"
+            imageInputId="translation-image-upload-edit"
             uploadImage={handleUploadWithAlt}
+            selectedLanguage={selectedLanguage}
+            singleLanguageMode={true}
         />
     )
 }

@@ -351,6 +351,7 @@ export const handexApi = createApi({
                 },
                 body: params
             }),
+            invalidatesTags: ['About']
         }),
         deleteSections: builder.mutation({
             query: (id) => ({

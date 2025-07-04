@@ -28,9 +28,7 @@ export default function AdminFeaturesPage() {
     const [activeLanguage, setActiveLanguage] = useState<string>("az")
     const {
         data: featuresData,
-        refetch: fetchFeatures,
-        isFetching,
-        isLoading,
+        refetch: fetchFeatures
     } = useGetHeroQuery({ slug: "corporate-features", lang: activeLanguage, scope: "componentC" }, { skip: false })
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -53,7 +51,6 @@ export default function AdminFeaturesPage() {
 
     const handleUpdateFeature = async (data: Omit<Feature, "id">, id: number) => {
         try {
-            // const { imageAlt, ...data } = data
             await updateFeature({ params: data, id }).unwrap()
             fetchFeatures()
             setIsEditDialogOpen(false)

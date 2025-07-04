@@ -50,7 +50,6 @@ const Partners = () => {
                                         height={80}
                                         className="object-contain"
                                     />
-                                    <p className="mt-2">{partner.title}</p>
                                 </div>
                                 <div className="w-full items-end justify-end flex gap-1">
                                     <AddPartner
@@ -76,7 +75,7 @@ const Partners = () => {
                         :
                         <div className="flex flex-col items-center gap-5 justify-center w-full p-5">
                             <Package className="w-10 h-10 md:w-20 md:h-20" />
-                            <span className="text-xl">Xəbər tapılmadı</span>
+                            <span className="text-xl">Tərəfdaş tapılmadı</span>
                         </div>
                     }
 

@@ -2,21 +2,24 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useDeleteProfilesMutation, useGetProfilesQuery } from "@/store/handexApi"
+import { useDeleteContentMutation, useDeleteProfilesMutation, useGetContentQuery, useGetProfilesQuery } from "@/store/handexApi"
 import { ChevronLeft, ChevronRight, Edit, Loader2, Plus, Trash2 } from "lucide-react"
 import Image from "next/image"
 import AddGraduateModal from "./add-graduate-modal"
 import EditGraduateModal from "./edit-graduate-modal"
 import { toast } from "react-toastify"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 const Graduates = () => {
-    const { data: graduatesData, isLoading, isError, refetch } = useGetProfilesQuery({ lang: "az", model: "student" })
-    const [deleteGraduates, { isSuccess }] = useDeleteProfilesMutation()
+
+
+    const [deleteGraduates, { isSuccess }] = useDeleteContentMutation()
     const [currentPage, setCurrentPage] = useState(1)
+    const [currentLanguage, setCurrentLanguage] = useState<"az" | "en" | "ru">("az")
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [selectedGraduate, setSelectedGraduate] = useState(null)
-
+    const { data: graduatesData, isLoading, isError, refetch } = useGetContentQuery({ lang: currentLanguage, slug: "partners" })
     const startIndex = (currentPage - 1) * 10
     const endIndex = startIndex + 10
     const displayedGraduates = graduatesData?.slice(startIndex, endIndex)
@@ -45,9 +48,18 @@ const Graduates = () => {
                         <CardTitle>Məzunlar</CardTitle>
                         <CardDescription>Məzunları idarə edin</CardDescription>
                     </div>
-                    <Button onClick={() => setIsAddModalOpen(true)}>
-                        <Plus className="mr-2 h-4 w-4" /> Yeni Məzun Əlavə Et
-                    </Button>
+                    <div className="flex gap-2">
+                        <Tabs value={currentLanguage} onValueChange={setCurrentLanguage as any} className="mr-4">
+                            <TabsList>
+                                <TabsTrigger value="az">AZ</TabsTrigger>
+                                <TabsTrigger value="en">EN</TabsTrigger>
+                                <TabsTrigger value="ru">RU</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                        <Button onClick={() => setIsAddModalOpen(true)}>
+                            <Plus className="mr-2 h-4 w-4" /> Yeni Məzun Əlavə Et
+                        </Button>
+                    </div>
                 </CardHeader>
                 {isLoading ? (
                     <div className="w-full h-full flex !justify-center items-center">
@@ -63,8 +75,8 @@ const Graduates = () => {
                                     <div key={graduate.id} className="border rounded-lg p-4 flex flex-col items-center">
                                         <div className="relative">
                                             <Image
-                                                src={graduate.image?.url || "/placeholder.svg"}
-                                                alt={graduate.name}
+                                                src={graduate.images[0]?.url || "/placeholder.svg"}
+                                                alt={graduate.images[0]?.alt}
                                                 width={80}
                                                 height={80}
                                                 className="rounded-lg object-cover"
@@ -83,8 +95,8 @@ const Graduates = () => {
                                                 </Button>
                                             </div>
                                         </div>
-                                        <div className="font-medium text-center mt-3">{graduate.name}</div>
-                                        <div className="text-sm text-muted-foreground text-center">{graduate.speciality}</div>
+                                        <div className="font-medium text-center mt-3">{graduate.title}</div>
+                                        <div className="text-sm text-muted-foreground text-center">{graduate.desc}</div>
                                     </div>
                                 ))}
                             </div>
@@ -121,7 +133,8 @@ const Graduates = () => {
                     open={isEditModalOpen}
                     onOpenChange={setIsEditModalOpen}
                     refetch={refetch}
-                    graduate={selectedGraduate}
+                    translation={selectedGraduate}
+                    selectedLanguage={currentLanguage}
                 />
             )}
         </>

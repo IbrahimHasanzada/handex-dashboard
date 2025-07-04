@@ -25,7 +25,6 @@ import { useAddContentMutation, useUpdateContentMutation, useUploadFileMutation 
 const formSchema = z.object({
     imageId: z.number().min(1, "Şəkil tələb olunur"),
     logoAlt: z.string().optional(),
-    companyName: z.string().min(1, "Şirkət adı tələb olunur"),
 })
 
 interface AddPartnerProps {
@@ -60,7 +59,6 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
         defaultValues: {
             imageId: 0,
             logoAlt: "",
-            companyName: "",
         },
     })
 
@@ -70,7 +68,6 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
             form.reset({
                 imageId: editPartner.imageId,
                 logoAlt: editPartner.alt || "",
-                companyName: editPartner.title || "",
             })
 
             if (editPartner.url) {
@@ -91,7 +88,6 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
                 form.reset({
                     imageId: 0,
                     logoAlt: "",
-                    companyName: "",
                 })
                 setLogoState({
                     preview: null,
@@ -170,13 +166,7 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
                 toast.error("Zəhmət olmasa əvvəlcə logonu yükləyin")
                 return
             }
-
-            if (!values.companyName.trim()) {
-                toast.error("Şirkət adı tələb olunur")
-                return
-            }
             if (!result.success) {
-                // ZodError varsa, bütün mesajları göstər
                 result.error.issues.forEach((issue: any) => {
                     toast.error(issue.message);
                 });
@@ -187,18 +177,18 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
                 const requestData = {
                     translations: [
                         {
-                            title: values.companyName,
-                            desc: values.companyName,
+                            title: 'partners',
+                            desc: 'partners',
                             lang: "az",
                         },
                         {
-                            title: values.companyName,
-                            desc: values.companyName,
+                            title: 'partners',
+                            desc: 'partners',
                             lang: "en",
                         },
                         {
-                            title: values.companyName,
-                            desc: values.companyName,
+                            title: 'partners',
+                            desc: 'partners',
                             lang: "ru",
                         },
                     ],
@@ -346,20 +336,6 @@ export function AddPartner({ partners = [], refetch, editPartner }: AddPartnerPr
                                 </Button>
                             </div>
                         )}
-
-                        <FormField
-                            control={form.control}
-                            name="companyName"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Şirkətin adı</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Şirkət adını daxil edin" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
 
 
                         <DialogFooter>
