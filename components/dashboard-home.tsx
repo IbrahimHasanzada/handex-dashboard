@@ -17,7 +17,7 @@ export function DashboardHome() {
       {/* Testimonials Management */}
 
       <div>
-        <Testimonials />
+        <Testimonials slug='home' />
       </div>
       {/* Graduates Management */}
       <div>

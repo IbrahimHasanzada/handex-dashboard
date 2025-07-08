@@ -5,7 +5,7 @@ let tokenForGet = Cookies.get('token')
 export const handexApi = createApi({
     reducerPath: 'handexApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'https://api.drafts.az/api',
+        baseUrl: 'https://backend.handex.edu.az/api',
         prepareHeaders: (headers, { getState, endpoint, type, url }: any) => {
             if (type === 'query' || endpoint === '/auth/login') {
                 return headers
@@ -102,7 +102,7 @@ export const handexApi = createApi({
         }),
 
         getCustomers: builder.query({
-            query: (lang) => `/customers?lang=${lang}`,
+            query: ({ lang, slug }) => `/customers/${slug}?lang=${lang}`,
             providesTags: ['Customers']
         }),
         deleteCustomers: builder.mutation({

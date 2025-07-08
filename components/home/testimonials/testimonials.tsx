@@ -11,14 +11,14 @@ import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { TestimonialsAdd } from "./testimonials-add"
 import TestimonialsEditModal from "./testimonials-edit"
 
-const Testimonials = () => {
+const Testimonials = ({ slug }: any) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedTestimonial, setSelectedTestimonial] = useState<any>(null)
     const [currentPage, setCurrentPage] = useState(1)
     const [addData, setAddData] = useState<boolean>(false)
     const [currentLanguage, setCurrentLanguage] = useState<string>("az")
 
-    const { data: getCustomers, isLoading, isError, refetch } = useGetCustomersQuery(currentLanguage)
+    const { data: getCustomers, isLoading, isError, refetch } = useGetCustomersQuery({ lang: currentLanguage, slug })
     const [deleteCustomer] = useDeleteCustomersMutation()
 
     const startIndex = (currentPage - 1) * 4
@@ -75,6 +75,7 @@ const Testimonials = () => {
             {addData ? (
                 <CardContent>
                     <TestimonialsAdd
+                        slug={slug}
                         refetch={refetch}
                         currentLanguage={currentLanguage}
                         addData={addData}

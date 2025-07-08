@@ -19,7 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { testimonialFormSchema, type TestimonialFormValues } from "@/validations/home/testimonials.validation"
 
-export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData, refetch, currentLanguage }) => {
+export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData, refetch, currentLanguage, slug }) => {
   const [activeTab, setActiveTab] = useState("az")
   const [profileImageState, setProfileImageState] = useState<{
     preview: string | null
@@ -62,6 +62,7 @@ export const TestimonialsAdd: React.FC<any> = ({ addData, setAddData, refetch, c
       bank_logo: -1,
       profileAlt: "",
       bankAlt: "",
+      slug: slug
     },
   })
 

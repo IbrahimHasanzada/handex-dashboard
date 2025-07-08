@@ -14,6 +14,7 @@ import { MetaTranslations } from "@/components/meta/meta"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { addToAbout } from "@/store/aboutSlice"
+import AdminFeaturesPage from "@/components/featuresSections/features-about"
 
 export default function AboutPage() {
   const [currentLanguage, setCurrentLanguage] = useState<string>("az")
@@ -79,6 +80,11 @@ export default function AboutPage() {
           </TabsList>
         </Tabs>
 
+        <div className="mb-5">
+          <AdminFeaturesPage slug='about-features' />
+        </div>
+
+        <h2 className="mb-10">Şəkillər</h2>
         {isLoading ?
           <div className="w-full flex justify-center items-center">
             <Loader2 className="w-10 h-10  animate-spin" />

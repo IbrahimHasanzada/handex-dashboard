@@ -14,7 +14,8 @@ export const testimonialFormSchema = z.object({
       comment: z.string().min(2, { message: "Rəy mətni minimum 2 simvol olmalıdır" }),
       lang: z.string()
     })
-  )
+  ),
+  slug: z.string().optional()
 })
 
 export type TestimonialFormValues = z.infer<typeof testimonialFormSchema>

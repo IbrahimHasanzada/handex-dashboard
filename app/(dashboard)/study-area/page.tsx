@@ -2,10 +2,9 @@
 
 import { CourseList } from "@/components/study-area/course-list"
 import { DashboardLayout } from "@/components/dashboard-layout"
-import Instructors from "@/components/study-area/teachers/instructors"
 import { useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import AdminWhyHandexPage from "@/components/study-area/why-handex/why-handex"
+import AdminFeaturesPage from "@/components/featuresSections/features-about"
 
 type Language = "az" | "en" | "ru"
 export default function page() {
@@ -22,7 +21,7 @@ export default function page() {
         </div>
 
         <div>
-          <AdminWhyHandexPage />
+          <AdminFeaturesPage slug='why-handex' />
         </div>
 
 

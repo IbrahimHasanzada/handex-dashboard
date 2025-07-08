@@ -1,8 +1,9 @@
 "use client"
 import CorporateHero from "./corporate/corporate-hero"
-import FeaturesSection from "./corporate/features/features-corporate"
 import Partners from "./corporate/partners/partners"
+import AdminFeaturesPage from "./featuresSections/features-about"
 import StatisticsSection from "./home/statistics/StatisticsSection"
+import Testimonials from "./home/testimonials/testimonials"
 import { MetaTranslations } from "./meta/meta"
 
 export function DashboardCorporate() {
@@ -13,8 +14,14 @@ export function DashboardCorporate() {
                 <CorporateHero />
             </div>
 
+            {/* Testimonials Management */}
+
             <div>
-                <FeaturesSection />
+                <Testimonials slug='corporate' />
+            </div>
+
+            <div>
+                <AdminFeaturesPage slug='corporate-informations' />
             </div>
 
             {/* Partners Management */}
