@@ -21,7 +21,7 @@ export default function page() {
         </div>
 
         <div>
-          <AdminFeaturesPage slug='why-handex' />
+          <AdminFeaturesPage title="Niyə Handex?" slug='why-handex' />
         </div>
 
 

@@ -21,7 +21,7 @@ export function DashboardCorporate() {
             </div>
 
             <div>
-                <AdminFeaturesPage slug='corporate-informations' />
+                <AdminFeaturesPage title='Üstünlükləri idarə edin' slug='corporate-informations' />
             </div>
 
             {/* Partners Management */}

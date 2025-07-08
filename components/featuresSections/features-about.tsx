@@ -20,7 +20,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import EditFeatureForm from "./features-form-edit"
 
-export default function AdminFeaturesPage({ slug }: any) {
+export default function AdminFeaturesPage({ slug , title}: any) {
     type Language = "az" | "en" | "ru"
     const [addFeatures, { isLoading: isFeatLoading }] = useAddContentMutation()
     const [delFeatures] = useDeleteContentMutation()
@@ -81,7 +81,7 @@ export default function AdminFeaturesPage({ slug }: any) {
     return (
         <div className="container mx-auto py-8">
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold">Üstünlükləri idarə edin</h1>
+                <h1 className="text-3xl font-bold">{title}</h1>
                 <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                     <div className="w-full sm:w-auto">
                         <Tabs value={activeLanguage} onValueChange={(value) => handleLanguageChange(value as Language)}>

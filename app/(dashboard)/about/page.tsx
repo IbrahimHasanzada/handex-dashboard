@@ -81,7 +81,7 @@ export default function AboutPage() {
         </Tabs>
 
         <div className="mb-5">
-          <AdminFeaturesPage slug='about-features' />
+          <AdminFeaturesPage title="Üstünlükləri idarə edin" slug='about-features' />
         </div>
 
         <h2 className="mb-10">Şəkillər</h2>
