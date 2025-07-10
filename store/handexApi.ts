@@ -588,6 +588,13 @@ export const handexApi = createApi({
             }),
             invalidatesTags: ['Statistics']
         }),
+        addBrochure: builder.mutation({
+            query: ({ params }) => ({
+                url: '/brochure/upload',
+                method: 'post',
+                body: params
+            })
+        })
     }),
 })
 
@@ -663,6 +670,7 @@ export const {
     useGetStatisticsQuery,
     useAddStatisticsMutation,
     useUpdateStatisticsMutation,
-    useDeleteStatisticsMutation
+    useDeleteStatisticsMutation,
+    useAddBrochureMutation
 
 } = handexApi

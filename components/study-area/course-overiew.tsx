@@ -19,6 +19,7 @@ import { EditHero } from "./edit-hero"
 import { MetaIntegration } from "./meta/meta-integration"
 import StatisticsSection from "../home/statistics/StatisticsSection"
 import Instructors from "./teachers/instructors"
+import BrochureForm from "./brochure"
 
 interface MetaTranslation {
     name: string
@@ -268,6 +269,9 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                                     </div>
                                 )}
                             </div>
+                        </CardContent>
+                        <CardContent>
+                            <BrochureForm studyAreaId={data?.id} />
                         </CardContent>
                     </Card>
 

@@ -7,7 +7,7 @@ export function validateImage(file: any, setImageState: any, imageState: any) {
     }
 
     if (file.size > UPLOAD_IMAGE_MAX_SIZE) {
-        setImageState({ ...imageState, error: "Maksimum şəkil ölçüsü 5 MB-dır." })
+        setImageState({ ...imageState, error: "Maksimum şəkil ölçüsü 500 kb-dır." })
         return false
     }
 
