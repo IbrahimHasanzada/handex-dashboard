@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Upload, X, File, Plus } from 'lucide-react'
-import { useAddBrochureMutation } from "@/store/handexApi"
+import { useAddBrochureMutation, useGetBrochureQuery } from "@/store/handexApi"
 import { toast } from "react-toastify"
 
 const fileSchema = z
@@ -38,7 +38,8 @@ export default function BrochureForm({ studyAreaId }: { studyAreaId: number }) {
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [addBrochure, { isLoading }] = useAddBrochureMutation()
-
+    const { data } = useGetBrochureQuery(studyAreaId && studyAreaId, { skip: !studyAreaId })
+    console.log(data)
     const {
         register,
         handleSubmit,
@@ -75,15 +76,8 @@ export default function BrochureForm({ studyAreaId }: { studyAreaId: number }) {
         try {
             const formData = new FormData()
             formData.append("file", data.file)
-            // formData.append("studyAreaId", studyAreaId as any)
-
-            console.log("Sending data:", {
-                file: data.file,
-                studyAreaId: studyAreaId,
-            })
-
-            await addBrochure({ parmas: { formData, studyAreaId } }).unwrap()
-
+            formData.append("studyAreaId", studyAreaId as any)
+            await addBrochure(formData).unwrap()
             toast.success("Məlumatlar uğurla göndərildi!")
             handleReset()
         } catch (error) {
@@ -91,6 +85,20 @@ export default function BrochureForm({ studyAreaId }: { studyAreaId: number }) {
             alert("Xəta baş verdi!")
         }
     }
+
+    const downloadFile = async () => {
+        const response = await fetch(`https://backend.handex.edu.az${data?.url}`);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'file.pdf'; // Fayl adı
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    };
+
 
     return (
         <div className="mx-auto space-y-6">
@@ -184,17 +192,15 @@ export default function BrochureForm({ studyAreaId }: { studyAreaId: number }) {
                         </Dialog>
 
                         {/* Seçilmiş faylın göstərilməsi */}
-                        {selectedFile && (
+                        {data && (
                             <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border">
-                                <div className="flex items-center space-x-3">
-                                    <File className="w-5 h-5 text-muted-foreground" />
-                                    <div>
-                                        <p className="text-sm font-medium">{selectedFile.name}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                                        </p>
+                                <button onClick={downloadFile}>
+                                    <div className="flex items-center space-x-3">
+                                        <File className="w-5 h-5 text-muted-foreground" />
+                                        <div><p className="text-sm font-medium">File</p></div>
                                     </div>
-                                </div>
+                                </button>
+
                                 <Button type="button" variant="ghost" size="sm" onClick={removeFile}>
                                     <X className="w-4 h-4" />
                                 </Button>
@@ -203,6 +209,6 @@ export default function BrochureForm({ studyAreaId }: { studyAreaId: number }) {
                     </div>
                 </CardContent>
             </Card>
-        </div>
+        </div >
     )
 }

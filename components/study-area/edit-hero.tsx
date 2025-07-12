@@ -1,12 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -14,9 +12,12 @@ import { toast } from "react-toastify"
 import type { imageState } from "@/types/home/graduates.dto"
 import { useUpdateStudyAreaMutation } from "@/store/handexApi"
 import { ImageUpload } from "./course-form/image-upload"
-import { StudyAreaEditFormProps } from "@/types/study-area/dit-hero.dto"
-import { StudyAreaFormData, studyAreaFormSchema } from "@/validations/study-area/edit-hero.validation"
+import type { StudyAreaEditFormProps } from "@/types/study-area/dit-hero.dto"
+import { type StudyAreaFormData, studyAreaFormSchema } from "@/validations/study-area/edit-hero.validation"
 
+// TinyMCE Editor component
+import { Editor as TinyMCE } from "@tinymce/tinymce-react"
+import { editorConfig } from "@/utils/editor-config"
 
 export function EditHero({
     isOpen,
@@ -28,15 +29,16 @@ export function EditHero({
 }: StudyAreaEditFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [updateStudyArea] = useUpdateStudyAreaMutation()
-
     const [imageState, setImageState] = useState<imageState>({
         preview: initialData?.image?.url || null,
         id: initialData?.image?.id || null,
         error: null,
         selectedFile: null,
     })
-
     const [altText, setAltText] = useState(initialData?.image?.alt || "")
+
+    const apiKey = process.env.NEXT_PUBLIC_TINYMCE_API_KEY 
+
 
     const getLanguageDisplayName = (lang: string) => {
         switch (lang) {
@@ -84,7 +86,6 @@ export function EditHero({
                 image: initialData.image?.id || 0,
                 course_detail: initialData.course_detail || "",
             })
-
             setImageState({
                 preview: initialData.image?.url || null,
                 id: initialData.image?.id || null,
@@ -113,6 +114,7 @@ export function EditHero({
             toast.error("Zəhmət olmasa şəkil yükləyin")
             return
         }
+
         setIsSubmitting(true)
         try {
             const payload = {
@@ -127,6 +129,7 @@ export function EditHero({
                     },
                 ],
             }
+
             await updateStudyArea({ id: studyAreaId, params: payload }).unwrap()
             toast.success("Tədris sahəsi uğurla yeniləndi")
             onSuccess()
@@ -232,7 +235,24 @@ export function EditHero({
                         <CardContent>
                             <div className="space-y-2">
                                 <Label>Təfərrüat *</Label>
-                                <Textarea {...form.register("course_detail")} placeholder={getPlaceholder(selectedLanguage)} rows={4} />
+                                <Controller
+                                    name="course_detail"
+                                    control={form.control}
+                                    render={({ field }) => (
+                                        <TinyMCE
+                                            value={field.value as string}
+                                            onEditorChange={(content) => {
+                                                field.onChange(content)
+                                            }}
+                                            apiKey={apiKey}
+                                            init={{
+                                                ...editorConfig,
+                                                language: selectedLanguage,
+                                                placeholder: getPlaceholder(selectedLanguage),
+                                            } as any}
+                                        />
+                                    )}
+                                />
                                 {form.formState.errors.course_detail && (
                                     <p className="text-sm text-red-500">{form.formState.errors.course_detail.message}</p>
                                 )}

@@ -4,7 +4,6 @@ import { type UseFormReturn, useFieldArray } from "react-hook-form"
 import { Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -12,7 +11,8 @@ import type { CourseFormData } from "@/validations/study-area/course-add.validat
 import type { Dispatch, SetStateAction } from "react"
 import { ImageUpload } from "./image-upload"
 import type { imageState } from "@/types/home/graduates.dto"
-
+import { editorConfig } from "@/utils/editor-config"
+import { Editor as TinyMCE } from "@tinymce/tinymce-react"
 interface CourseProgramProps {
     form: UseFormReturn<CourseFormData>
     setProgramImageStates: Dispatch<SetStateAction<Record<number, imageState>>>
@@ -28,6 +28,8 @@ export function CourseProgram({
     setProgramAltTexts,
     programAltTexts,
 }: CourseProgramProps) {
+
+    const apiKey = process.env.NEXT_PUBLIC_TINYMCE_API_KEY
     const {
         fields: programFields,
         append: appendProgram,
@@ -60,8 +62,20 @@ export function CourseProgram({
         }))
     }
 
+    const getPlaceholder = (language: string): string => {
+        const placeholders: Record<string, string> = {
+            az: "Proqram təsviri (Azərbaycanca)",
+            en: "Program description (English)",
+            ru: "Описание программы (Русский)",
+        }
+        return placeholders[language] || "Proqram təsviri"
+    }
+
     return (
         <Card>
+            <CardHeader>
+                <CardTitle>Kurs Proqramı</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-4">
                 {programFields.map((field, index) => (
                     <div key={field.id} className="border rounded-lg p-4">
@@ -73,17 +87,19 @@ export function CourseProgram({
                                 </Button>
                             )}
                         </div>
-
                         <div className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Proqram Adı *</Label>
-                                    <Input {...form.register(`program.${index}.name`)} placeholder="Proqram adı" />
+                                    <Label htmlFor={`program.${index}.name`}>Proqram Adı *</Label>
+                                    <Input
+                                        {...form.register(`program.${index}.name`)}
+                                        placeholder="Proqram adı"
+                                        id={`program.${index}.name`}
+                                    />
                                     {form.formState.errors.program?.[index]?.name && (
                                         <p className="text-sm text-red-500">{form.formState.errors.program[index]?.name?.message}</p>
                                     )}
                                 </div>
-
                                 {/* Image upload section using ImageUpload component */}
                                 <div className="space-y-2">
                                     <ImageUpload
@@ -101,7 +117,6 @@ export function CourseProgram({
                                     )}
                                 </div>
                             </div>
-
                             <div className="space-y-4">
                                 <Label className="text-base font-medium">Tərcümələr *</Label>
                                 <Tabs defaultValue="az" className="w-full">
@@ -114,10 +129,21 @@ export function CourseProgram({
                                     </TabsList>
                                     {languages.map((lang, langIndex) => (
                                         <TabsContent key={lang.code} value={lang.code} className="space-y-2">
-                                            <Textarea
-                                                {...form.register(`program.${index}.translations.${langIndex}.description`)}
-                                                placeholder="Proqram təsviri"
-                                                rows={4}
+                                            <TinyMCE
+                                                value={form.watch(`program.${index}.translations.${langIndex}.description`) || ""}
+                                                onEditorChange={(content: any) => {
+                                                    form.setValue(`program.${index}.translations.${langIndex}.description`, content, {
+                                                        shouldValidate: true,
+                                                    })
+                                                }}
+                                                apiKey={apiKey}
+                                                init={
+                                                    {
+                                                        ...editorConfig,
+                                                        language: lang.code,
+                                                        placeholder: getPlaceholder(lang.code),
+                                                    } as any
+                                                }
                                             />
                                             {form.formState.errors.program?.[index]?.translations?.[langIndex]?.description && (
                                                 <p className="text-sm text-red-500">
@@ -143,7 +169,21 @@ export function CourseProgram({
                         </div>
                     </div>
                 ))}
-
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                        appendProgram({
+                            name: "",
+                            image: null as any,
+                            translations: languages.map((lang) => ({ lang: lang.code, description: "" })) as any,
+                        })
+                    }
+                    className="w-full"
+                >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Proqram əlavə et
+                </Button>
                 {programFields.length === 0 && (
                     <div className="text-center py-8 text-muted-foreground">
                         <p>Hələ proqram əlavə edilməyib</p>

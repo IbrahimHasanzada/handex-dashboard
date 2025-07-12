@@ -174,43 +174,6 @@ export default function AboutPage() {
         }
       </div>
 
-
-      {/* <Dialog open={isAddSectionModalOpen || isEditSectionModalOpen} onOpenChange={isEditSectionModalOpen ? setIsEditSectionModalOpen : setIsAddSectionModalOpen}>
-        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="flex flex-row items-center justify-between">
-            <div>
-              <DialogTitle>Yeni bölmə əlavə et</DialogTitle>
-              <DialogDescription>Haqqımızda səhifənizə hər iki tərəf üçün məzmunlu yeni bölmə əlavə edin.</DialogDescription>
-            </div>
-          </DialogHeader>
-          <div className="-mx-6" style={{ position: 'relative', zIndex: 1 }}>
-            {isEditSectionModalOpen ?
-              <EditSection edit={true} onComplete={() => setIsEditSectionModalOpen(false)} data={!isLoading && editedData} refetch={refetch} />
-              :
-              <AddSection edit={false} onComplete={() => setIsAddSectionModalOpen(false)} refetch={refetch} />
-            }
-          </div>
-        </DialogContent>
-      </Dialog> */}
-      {/* Add or Edit Modal Sections */}
-      {/* {isAddSectionModalOpen ?
-        <SectionModal
-          open={isAddSectionModalOpen}
-          onOpenChange={setIsAddSectionModalOpen}
-          edit={false}
-          data={!isLoading && editedData}
-          refetch={refetch}
-        />
-        :
-        <SectionModal
-          open={isEditSectionModalOpen}
-          onOpenChange={setIsEditSectionModalOpen}
-          edit={true}
-          data={!isLoading && editedData}
-          refetch={refetch}
-        />
-      } */}
-
       {/* Add İmage Modal */}
       <AddImageModal
         open={isImageModalOpen}

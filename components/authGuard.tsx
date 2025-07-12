@@ -14,7 +14,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         }
 
         try {
-            fetch('https://api.drafts.az/api/auth/verify-token', {
+            fetch('https://backend.handex.edu.az/api/auth/verify-token', {
                 headers: {
                     'authorization': `Bearer ${token}`
                 }

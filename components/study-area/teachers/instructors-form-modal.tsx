@@ -1,4 +1,5 @@
 "use client"
+
 import {
     Dialog,
     DialogContent,
@@ -17,7 +18,8 @@ import Image from "next/image"
 import { useRef } from "react"
 import type { InstructorsFormModalProps } from "@/types/study-area/instructors.dto"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Textarea } from "@/components/ui/textarea"
+import { Editor as TinyMCE } from "@tinymce/tinymce-react"
+import { editorConfig } from "@/utils/editor-config"
 
 export default function InstructorsFormModal({
     open,
@@ -37,13 +39,16 @@ export default function InstructorsFormModal({
     uploadImage,
     isEditMode = false,
     selectedLanguage = "az",
-    studyArea
+    studyArea,
 }: InstructorsFormModalProps & {
     uploadImage?: (file: File, alt: string) => Promise<any>
     isEditMode?: boolean
     selectedLanguage?: string
+    apiKey?: string
+    editorConfig?: any
 }) {
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const apiKey = process.env.NEXT_PUBLIC_TINYMCE_API_KEY
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -86,14 +91,12 @@ export default function InstructorsFormModal({
         if (imageState.preview && !imageState.id) {
             URL.revokeObjectURL(imageState.preview)
         }
-
         setImageState({
             ...imageState,
             preview: null,
             id: null,
             selectedFile: null,
         })
-
         form.setValue("image", -1)
         form.setValue("imageAlt", "")
     }
@@ -112,10 +115,13 @@ export default function InstructorsFormModal({
         ru: "Русский",
     }
 
-    const placeholders: Record<string, string> = {
-        az: "Müəllim haqqında məlumat (Azərbaycanca)",
-        en: "Information about the instructor (English)",
-        ru: "Информация о преподавателе (Русский)",
+    const getPlaceholder = (language: string): string => {
+        const placeholders: Record<string, string> = {
+            az: "Müəllim haqqında məlumat (Azərbaycanca)",
+            en: "Information about the instructor (English)",
+            ru: "Информация о преподавателе (Русский)",
+        }
+        return placeholders[language] || "Təsvir daxil edin"
     }
 
     return (
@@ -125,6 +131,7 @@ export default function InstructorsFormModal({
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>{description}</DialogDescription>
                 </DialogHeader>
+
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
                         {/* Custom image upload section */}
@@ -172,7 +179,7 @@ export default function InstructorsFormModal({
                                                         <Button
                                                             type="button"
                                                             variant="outline"
-                                                            className="text-destructive"
+                                                            className="text-destructive bg-transparent"
                                                             onClick={handleRemoveImage}
                                                         >
                                                             Şəkli sil
@@ -204,7 +211,6 @@ export default function InstructorsFormModal({
                                         </FormItem>
                                     )}
                                 />
-
                                 <Button type="button" onClick={handleUploadWithAlt} disabled={isUploading} className="w-full">
                                     {isUploading ? (
                                         <span className="flex items-center">
@@ -260,10 +266,19 @@ export default function InstructorsFormModal({
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
-                                                    <Textarea
-                                                        placeholder={placeholders[selectedLanguage] || "Təsvir daxil edin"}
-                                                        className="min-h-[120px]"
-                                                        {...field}
+                                                    <TinyMCE
+                                                        value={field.value as string}
+                                                        onEditorChange={(content: any) => {
+                                                            field.onChange(content)
+                                                        }}
+                                                        apiKey={apiKey}
+                                                        init={
+                                                            {
+                                                                ...editorConfig,
+                                                                language: selectedLanguage,
+                                                                placeholder: getPlaceholder(selectedLanguage),
+                                                            } as any
+                                                        }
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -287,10 +302,19 @@ export default function InstructorsFormModal({
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Textarea
-                                                                placeholder="Müəllim haqqında məlumat (Azərbaycanca)"
-                                                                className="min-h-[120px]"
-                                                                {...field}
+                                                            <TinyMCE
+                                                                value={field.value as string}
+                                                                onEditorChange={(content: any) => {
+                                                                    field.onChange(content)
+                                                                }}
+                                                                apiKey={apiKey}
+                                                                init={
+                                                                    {
+                                                                        ...editorConfig,
+                                                                        language: "az",
+                                                                        placeholder: getPlaceholder("az"),
+                                                                    } as any
+                                                                }
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -305,10 +329,19 @@ export default function InstructorsFormModal({
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Textarea
-                                                                placeholder="Information about the instructor (English)"
-                                                                className="min-h-[120px]"
-                                                                {...field}
+                                                            <TinyMCE
+                                                                value={field.value as string}
+                                                                onEditorChange={(content: any) => {
+                                                                    field.onChange(content)
+                                                                }}
+                                                                apiKey={apiKey}
+                                                                init={
+                                                                    {
+                                                                        ...editorConfig,
+                                                                        language: "en",
+                                                                        placeholder: getPlaceholder("en"),
+                                                                    } as any
+                                                                }
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -323,10 +356,19 @@ export default function InstructorsFormModal({
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Textarea
-                                                                placeholder="Информация о преподавателе (Русский)"
-                                                                className="min-h-[120px]"
-                                                                {...field}
+                                                            <TinyMCE
+                                                                value={field.value as string}
+                                                                onEditorChange={(content: any) => {
+                                                                    field.onChange(content)
+                                                                }}
+                                                                apiKey={apiKey}
+                                                                init={
+                                                                    {
+                                                                        ...editorConfig,
+                                                                        language: "ru",
+                                                                        placeholder: getPlaceholder("ru"),
+                                                                    } as any
+                                                                }
                                                             />
                                                         </FormControl>
                                                         <FormMessage />

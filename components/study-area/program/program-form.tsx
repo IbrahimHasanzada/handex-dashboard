@@ -1,11 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -14,10 +13,16 @@ import { toast } from "react-toastify"
 import type { imageState } from "@/types/home/graduates.dto"
 import { ImageUpload } from "../course-form/image-upload"
 import { useAddProgramMutation, useUpdateProgramMutation } from "@/store/handexApi"
-import { AddProgramFormData, addProgramFormSchema, EditProgramFormData, editProgramFormSchema } from "@/validations/study-area/program.validation"
-import { ProgramFormProps } from "@/types/study-area/program"
+import {
+    type AddProgramFormData,
+    addProgramFormSchema,
+    type EditProgramFormData,
+    editProgramFormSchema,
+} from "@/validations/study-area/program.validation"
+import type { ProgramFormProps } from "@/types/study-area/program"
 
-
+import { Editor as TinyMCE } from "@tinymce/tinymce-react"
+import { editorConfig } from "@/utils/editor-config"
 
 export function ProgramForm({
     isOpen,
@@ -31,7 +36,6 @@ export function ProgramForm({
     const isEditMode = !!programId
     const [activeTab, setActiveTab] = useState("az")
     const [isSubmitting, setIsSubmitting] = useState(false)
-
     const [imageState, setImageState] = useState<imageState>({
         preview: initialData?.image?.url || null,
         id: initialData?.image?.id || null,
@@ -39,8 +43,11 @@ export function ProgramForm({
         selectedFile: null,
     })
     const [altText, setAltText] = useState(initialData?.image?.alt || "")
+
     const [addProgram] = useAddProgramMutation()
     const [updateProgram] = useUpdateProgramMutation()
+
+    const apiKey = process.env.NEXT_PUBLIC_TINYMCE_API_KEY
 
     const getLanguageDisplayName = (lang: string) => {
         switch (lang) {
@@ -102,7 +109,6 @@ export function ProgramForm({
                 description: initialData.description || "",
                 studyArea: studyAreaId || 0,
             })
-
             setImageState({
                 preview: initialData.image?.url || null,
                 id: initialData.image?.id || null,
@@ -250,10 +256,23 @@ export function ProgramForm({
                             {isEditMode ? (
                                 <div className="space-y-2">
                                     <Label>Təsvir ({getLanguageDisplayName(selectedLanguage)}) *</Label>
-                                    <Textarea
-                                        {...editForm.register("description")}
-                                        placeholder={getPlaceholder(selectedLanguage)}
-                                        rows={4}
+                                    <Controller
+                                        name="description"
+                                        control={editForm.control}
+                                        render={({ field }) => (
+                                            <TinyMCE
+                                                value={field.value as string}
+                                                onEditorChange={(content) => {
+                                                    field.onChange(content)
+                                                }}
+                                                apiKey={apiKey}
+                                                init={{
+                                                    ...editorConfig as any,
+                                                    language: selectedLanguage,
+                                                    placeholder: getPlaceholder(selectedLanguage),
+                                                }}
+                                            />
+                                        )}
                                     />
                                     {editForm.formState.errors.description && (
                                         <p className="text-sm text-red-500">{editForm.formState.errors.description.message}</p>
@@ -269,10 +288,23 @@ export function ProgramForm({
 
                                     <TabsContent value="az" className="space-y-2">
                                         <Label>Azərbaycanca Təsvir *</Label>
-                                        <Textarea
-                                            {...addForm.register("translations.0.description")}
-                                            placeholder="Proqramın azərbaycanca təsvirini daxil edin"
-                                            rows={4}
+                                        <Controller
+                                            name="translations.0.description"
+                                            control={addForm.control}
+                                            render={({ field }) => (
+                                                <TinyMCE
+                                                    value={field.value as string}
+                                                    onEditorChange={(content) => {
+                                                        field.onChange(content)
+                                                    }}
+                                                    apiKey={apiKey}
+                                                    init={{
+                                                        ...editorConfig as any,
+                                                        language: "az",
+                                                        placeholder: "Proqramın azərbaycanca təsvirini daxil edin",
+                                                    }}
+                                                />
+                                            )}
                                         />
                                         {addForm.formState.errors.translations?.[0]?.description && (
                                             <p className="text-sm text-red-500">
@@ -283,10 +315,23 @@ export function ProgramForm({
 
                                     <TabsContent value="en" className="space-y-2">
                                         <Label>English Description *</Label>
-                                        <Textarea
-                                            {...addForm.register("translations.1.description")}
-                                            placeholder="Enter program description in English"
-                                            rows={4}
+                                        <Controller
+                                            name="translations.1.description"
+                                            control={addForm.control}
+                                            render={({ field }) => (
+                                                <TinyMCE
+                                                    value={field.value as string}
+                                                    onEditorChange={(content) => {
+                                                        field.onChange(content)
+                                                    }}
+                                                    apiKey={apiKey}
+                                                    init={{
+                                                        ...editorConfig as any,
+                                                        language: "en",
+                                                        placeholder: "Enter program description in English",
+                                                    }}
+                                                />
+                                            )}
                                         />
                                         {addForm.formState.errors.translations?.[1]?.description && (
                                             <p className="text-sm text-red-500">
@@ -297,10 +342,23 @@ export function ProgramForm({
 
                                     <TabsContent value="ru" className="space-y-2">
                                         <Label>Русское Описание *</Label>
-                                        <Textarea
-                                            {...addForm.register("translations.2.description")}
-                                            placeholder="Введите описание программы на русском языке"
-                                            rows={4}
+                                        <Controller
+                                            name="translations.2.description"
+                                            control={addForm.control}
+                                            render={({ field }) => (
+                                                <TinyMCE
+                                                    value={field.value as string}
+                                                    onEditorChange={(content) => {
+                                                        field.onChange(content)
+                                                    }}
+                                                    apiKey={apiKey}
+                                                    init={{
+                                                        ...editorConfig as any,
+                                                        language: "ru",
+                                                        placeholder: "Введите описание программы на русском языке",
+                                                    }}
+                                                />
+                                            )}
                                         />
                                         {addForm.formState.errors.translations?.[2]?.description && (
                                             <p className="text-sm text-red-500">

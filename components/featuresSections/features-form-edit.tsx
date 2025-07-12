@@ -87,7 +87,6 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
         }
     }, [title, desc, lang, form])
 
-    // Modified image change handler to only store the file without uploading
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
@@ -95,7 +94,7 @@ export default function EditFeatureForm({ onSubmit, onCancel, isFeatLoading, fea
         const imageValidation = validateImage(file, setImageState, imageState)
         if (imageValidation === false) return
 
-        // Just store the file and show preview without uploading
+
         setImageState({
             preview: URL.createObjectURL(file),
             id: null,

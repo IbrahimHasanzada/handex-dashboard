@@ -246,6 +246,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
 
     try {
       const formData = new FormData()
+      console.log(imageState.selectedFile)
       formData.append("file", imageState.selectedFile)
       formData.append("alt", form.getValues("imageAlt") || "")
 

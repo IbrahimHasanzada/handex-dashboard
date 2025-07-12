@@ -20,7 +20,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import EditFeatureForm from "./features-form-edit"
 
-export default function AdminFeaturesPage({ slug , title}: any) {
+export default function AdminFeaturesPage({ slug, title }: any) {
     type Language = "az" | "en" | "ru"
     const [addFeatures, { isLoading: isFeatLoading }] = useAddContentMutation()
     const [delFeatures] = useDeleteContentMutation()
@@ -43,7 +43,7 @@ export default function AdminFeaturesPage({ slug , title}: any) {
             await addFeatures({ slug, ...data }).unwrap()
             fetchFeatures()
             setIsAddDialogOpen(false)
-            toast.success("Üstünlük uğurla əlavə edildi")
+            toast.success("Məlumat uğurla əlavə edildi")
         } catch (error) {
             toast.error("Məlumatı əlavə edərkən xəta baş verdi")
         }
@@ -54,7 +54,7 @@ export default function AdminFeaturesPage({ slug , title}: any) {
             await updateFeature({ params: data, id }).unwrap()
             fetchFeatures()
             setIsEditDialogOpen(false)
-            toast.success("Üstünlük uğurla yeniləndi")
+            toast.success("Məlumat uğurla yeniləndi")
         } catch (error) {
             toast.error("Məlumatları daxil edərkən xəta baş verdi")
         }
@@ -65,7 +65,7 @@ export default function AdminFeaturesPage({ slug , title}: any) {
     const handleDeleteFeature = async (id: number) => {
         try {
             showDeleteConfirmation(delFeatures, id, fetchFeatures, {
-                title: "Üstünlüyü silmək istəyirsinizmi?",
+                title: "Məlumatı silmək istəyirsinizmi?",
                 text: "Bu əməliyyat geri qaytarıla bilməz!",
                 successText: "Üstünlük uğurla silindi.",
             })
@@ -93,9 +93,9 @@ export default function AdminFeaturesPage({ slug , title}: any) {
                         </Tabs>
                     </div>
 
-                    <Button onClick={() => setIsAddDialogOpen(true)} className="w-full sm:w-auto">
+                    {featuresData?.length < 6 && <Button onClick={() => setIsAddDialogOpen(true)} className="w-full sm:w-auto">
                         <Plus className="mr-2 h-4 w-4" /> Yeni üstünlük əlavə edin
-                    </Button>
+                    </Button>}
                 </div>
             </div>
 
@@ -103,7 +103,7 @@ export default function AdminFeaturesPage({ slug , title}: any) {
                 {!featuresData?.length ?
                     <div className="flex flex-col items-center gap-5 justify-center w-full p-5">
                         <Package className="w-10 h-10 md:w-20 md:h-20" />
-                        <span className="text-xl">Xəbər tapılmadı</span>
+                        <span className="text-xl">Məlumat tapılmadı</span>
                     </div>
                     : featuresData?.map((feature: any) => (
                         <Card key={feature.id}>
