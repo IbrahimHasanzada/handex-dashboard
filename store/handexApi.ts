@@ -17,7 +17,7 @@ export const handexApi = createApi({
             return headers
         }
     }),
-    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact', 'Study-area', 'FAQ', 'Program', 'Group', 'Content', 'Statistics', 'About'],
+    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact', 'Study-area', 'FAQ', 'Program', 'Group', 'Content', 'Statistics', 'About', 'Brochure'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (params) => ({
@@ -590,19 +590,22 @@ export const handexApi = createApi({
         }),
         getBrochure: builder.query({
             query: (studyAreaId) => `/brochure/${studyAreaId}`,
+            providesTags: ['Brochure']
         }),
         addBrochure: builder.mutation({
             query: (params) => ({
                 url: '/brochure/upload',
                 method: 'post',
                 body: params
-            })
+            }),
+            invalidatesTags: ['Brochure']
         }),
         deleteBrochure: builder.mutation({
             query: (id) => ({
                 url: `/brochure/${id}`,
                 method: 'delete'
-            })
+            }),
+            invalidatesTags: ['Brochure']
         })
     }),
 })
