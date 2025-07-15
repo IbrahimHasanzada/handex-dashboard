@@ -11,8 +11,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Upload, X, File, Plus } from 'lucide-react'
-import { useAddBrochureMutation, useGetBrochureQuery } from "@/store/handexApi"
+import { useAddBrochureMutation, useDeleteBrochureMutation, useGetBrochureQuery } from "@/store/handexApi"
 import { toast } from "react-toastify"
+import { showDeleteConfirmation } from "@/utils/sweet-alert"
 
 const fileSchema = z
     .custom<File>((file) => {
@@ -38,8 +39,8 @@ export default function BrochureForm({ studyAreaId }: { studyAreaId: number }) {
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [addBrochure, { isLoading }] = useAddBrochureMutation()
-    const { data } = useGetBrochureQuery(studyAreaId && studyAreaId, { skip: !studyAreaId })
-    console.log(data)
+    const { data, refetch } = useGetBrochureQuery(studyAreaId && studyAreaId, { skip: !studyAreaId })
+    const [deleteBrochure] = useDeleteBrochureMutation()
     const {
         register,
         handleSubmit,
@@ -98,6 +99,19 @@ export default function BrochureForm({ studyAreaId }: { studyAreaId: number }) {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
     };
+
+    const handleDeleteBrochure = async () => {
+        console.log(data?.id)
+        try {
+            showDeleteConfirmation(deleteBrochure, data?.id, refetch, {
+                title: "Broşürü silmək istəyirsinizmi?",
+                text: "Bu əməliyyat geri qaytarıla bilməz!",
+                successText: "Broşür uğurla silindi.",
+            })
+        } catch (error: any) {
+            toast.error(error?.data.message)
+        }
+    }
 
 
     return (
@@ -201,7 +215,7 @@ export default function BrochureForm({ studyAreaId }: { studyAreaId: number }) {
                                     </div>
                                 </button>
 
-                                <Button type="button" variant="ghost" size="sm" onClick={removeFile}>
+                                <Button type="button" variant="ghost" size="sm" onClick={() => handleDeleteBrochure()}>
                                     <X className="w-4 h-4" />
                                 </Button>
                             </div>

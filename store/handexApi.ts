@@ -597,6 +597,12 @@ export const handexApi = createApi({
                 method: 'post',
                 body: params
             })
+        }),
+        deleteBrochure: builder.mutation({
+            query: (id) => ({
+                url: `/brochure/${id}`,
+                method: 'delete'
+            })
         })
     }),
 })
@@ -675,6 +681,7 @@ export const {
     useUpdateStatisticsMutation,
     useDeleteStatisticsMutation,
     useAddBrochureMutation,
-    useGetBrochureQuery
+    useGetBrochureQuery,
+    useDeleteBrochureMutation
 
 } = handexApi

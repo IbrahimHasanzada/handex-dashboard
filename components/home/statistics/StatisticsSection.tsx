@@ -120,10 +120,11 @@ export default function StatisticsSection({ field, studyArea }: { field: string,
 
                 {/* Add New Statistic Button */}
                 <div className="mb-6">
-                    <Button onClick={() => setIsAddDialogOpen(true)} className="flex items-center gap-2">
-                        <Plus className="h-4 w-4" />
-                        Yeni Statistika Əlavə et
-                    </Button>
+                    {statisticsData?.length < 4 &&
+                        <Button onClick={() => setIsAddDialogOpen(true)} className="flex items-center gap-2">
+                            <Plus className="h-4 w-4" />
+                            Yeni Statistika Əlavə et
+                        </Button>}
                 </div>
             </div>
 
@@ -277,6 +278,6 @@ export default function StatisticsSection({ field, studyArea }: { field: string,
                     </form>
                 </DialogContent>
             </Dialog>
-        </div>
+        </div >
     )
 }

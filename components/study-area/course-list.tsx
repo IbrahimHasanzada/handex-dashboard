@@ -56,9 +56,9 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
     const handleDelete = (courseId: number) => {
         try {
             showDeleteConfirmation(deleteStudyArea, courseId, refetch, {
-                title: "Təhsil sahəsini nömrəsini silmək istəyirsinizmi?",
+                title: "Təhsil sahəsini silmək istəyirsinizmi?",
                 text: "Bu əməliyyat geri qaytarıla bilməz!",
-                successText: "Təhsil sahəsi nömrəsi uğurla silindi.",
+                successText: "Təhsil sahəsi uğurla silindi.",
             })
         } catch (error: any) {
             toast.error(error.data)
