@@ -19,7 +19,7 @@ const Graduates = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [selectedGraduate, setSelectedGraduate] = useState(null)
-    const { data: graduatesData, isLoading, isError, refetch } = useGetContentQuery({ lang: currentLanguage, slug: "partners" })
+    const { data: graduatesData, isLoading, isError, refetch } = useGetContentQuery({ lang: currentLanguage, slug: "graduates" })
     const startIndex = (currentPage - 1) * 10
     const endIndex = startIndex + 10
     const displayedGraduates = graduatesData?.slice(startIndex, endIndex)

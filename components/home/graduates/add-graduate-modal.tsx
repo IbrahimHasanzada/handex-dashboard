@@ -98,7 +98,7 @@ export default function TranslationModal({ open, onOpenChange, refetch }: AddGra
             const jsonData = {
                 translations: data.translations,
                 images: data.images,
-                slug: "partners", // Fixed slug as requested
+                slug: "graduates", // Fixed slug as requested
             }
 
             await addTranslation(jsonData).unwrap()
