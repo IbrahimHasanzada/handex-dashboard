@@ -17,7 +17,6 @@ import Link from "next/link"
 import { DashboardLayout } from "@/components/dashboard-layout"
 export default function EditSection() {
   const { id } = useParams()
-  console.log(id)
   const [editSection, { isLoading }] = useEditSectionsMutation()
   const [uploadImage, { isLoading: upLoading }] = useUploadFileMutation()
   const [imageStates, setImageStates] = useState({
@@ -27,7 +26,6 @@ export default function EditSection() {
   const router = useRouter()
   const about = useSelector((store: any) => store.about.data)
   const data = about[0]
-  console.log(data)
   const form = useForm({
     defaultValues: {
       left_side: {

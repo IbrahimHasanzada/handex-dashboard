@@ -52,7 +52,6 @@ export function CourseFormDialog() {
     })
 
     const handleSubmit = async (data: CourseFormData) => {
-        console.log("Original data:", data)
 
         const filteredData = { ...data }
 

@@ -127,7 +127,6 @@ export default function EditTranslationModal({
                 ],
                 images: data.images,
             }
-            console.log(jsonData)
 
             await updateTranslation({ params: jsonData, id: translation!.id }).unwrap()
             refetch()
