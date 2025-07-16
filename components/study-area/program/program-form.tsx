@@ -47,7 +47,7 @@ export function ProgramForm({
     const [addProgram] = useAddProgramMutation()
     const [updateProgram] = useUpdateProgramMutation()
 
-    const apiKey = process.env.NEXT_PUBLIC_TINYMCE_API_KEY
+    const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
 
     const getLanguageDisplayName = (lang: string) => {
         switch (lang) {

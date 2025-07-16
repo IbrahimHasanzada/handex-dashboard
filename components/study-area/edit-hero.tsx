@@ -37,7 +37,7 @@ export function EditHero({
     })
     const [altText, setAltText] = useState(initialData?.image?.alt || "")
 
-    const apiKey = process.env.NEXT_PUBLIC_TINYMCE_API_KEY 
+    const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
 
 
     const getLanguageDisplayName = (lang: string) => {

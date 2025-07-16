@@ -48,7 +48,7 @@ export default function InstructorsFormModal({
     editorConfig?: any
 }) {
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const apiKey = process.env.NEXT_PUBLIC_TINYMCE_API_KEY
+    const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
