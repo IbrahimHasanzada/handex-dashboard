@@ -435,6 +435,27 @@ export const handexApi = createApi({
             query: ({ slug, lang }) => `/study-area/${slug}?lang=${lang}`,
             providesTags: ['Study-area']
         }),
+        getStudyAreaPrograms: builder.query({
+            query: ({ slug, lang }) => `/study-area/${slug}/programs?lang=${lang}`,
+            providesTags: ['Study-area']
+
+        }),
+        getStudyAreaGroups: builder.query({
+            query: ({ slug, lang }) => `/study-area/${slug}/groups?lang=${lang}`,
+            providesTags: ['Study-area']
+        }),
+        getStudyAreaItem: builder.query({
+            query: ({ slug, lang }) => `/study-area/${slug}/item?lang=${lang}`,
+            providesTags: ['Study-area']
+        }),
+        getStudyAreaProfile: builder.query({
+            query: ({ slug, lang }) => `/study-area/${slug}/profile?lang=${lang}`,
+            providesTags: ['Study-area']
+        }),
+        getStudyAreaFaq: builder.query({
+            query: ({ slug, lang }) => `/study-area/${slug}/faq?lang=${lang}`,
+            providesTags: ['Study-area']
+        }),
         getStudyArea: builder.query({
             query: ({ lang, model }) => `/study-area?model=${model}&lang=${lang}`,
             providesTags: ['Study-area']
@@ -525,6 +546,10 @@ export const handexApi = createApi({
                 method: 'DELETE'
             }),
             invalidatesTags: ['Group']
+        }),
+        getProgram: builder.query({
+            query: (id) => `/program/${id}`,
+            providesTags: ['Program']
         }),
         addProgram: builder.mutation({
             query: (params) => ({
@@ -685,6 +710,12 @@ export const {
     useDeleteStatisticsMutation,
     useAddBrochureMutation,
     useGetBrochureQuery,
-    useDeleteBrochureMutation
+    useDeleteBrochureMutation,
+    useGetProgramQuery,
+    useGetStudyAreaProgramsQuery,
+    useGetStudyAreaFaqQuery,
+    useGetStudyAreaGroupsQuery,
+    useGetStudyAreaItemQuery,
+    useGetStudyAreaProfileQuery,
 
 } = handexApi

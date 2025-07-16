@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Edit, Award, Loader2, Box, ArrowLeft, Trash } from "lucide-react"
 import type { CourseOverviewProps } from "@/types/study-area/overview"
-import { useDeleteProgramMutation, useGetStudyAreaBySlugQuery, useUpdateStudyAreaMutation } from "@/store/handexApi"
+import { useDeleteProgramMutation, useGetStudyAreaBySlugQuery, useGetStudyAreaFaqQuery, useGetStudyAreaGroupsQuery, useGetStudyAreaItemQuery, useGetStudyAreaProfileQuery, useGetStudyAreaProgramsQuery, useUpdateStudyAreaMutation } from "@/store/handexApi"
 import { useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs"
 import Link from "next/link"
@@ -43,16 +43,22 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
         description: string
     } | null>(null)
 
-    const { data, isLoading, isError, refetch, isFetching } = useGetStudyAreaBySlugQuery(
-        { slug: slug, lang: selectedLanguage },
-        { skip: !slug },
-    )
+    // const { data, isLoading, isError, refetch, isFetching } = useGetStudyAreaBySlugQuery(
+    //     { slug: slug, lang: selectedLanguage },
+    //     { skip: !slug },
+    // )
+    const { data: programsData, isLoading, isError, refetch, isFetching } = useGetStudyAreaProgramsQuery({ slug, lang: selectedLanguage }, { skip: !slug })
+    const { data: groupsData, isLoading: groupsLoading, isError: groupsError, refetch: groupsFetch } = useGetStudyAreaGroupsQuery({ slug, lang: selectedLanguage }, { skip: !slug })
+    const { data: faqData, isLoading: faqLoading, isError: faqError, refetch: faqFetch } = useGetStudyAreaFaqQuery({ slug, lang: selectedLanguage }, { skip: !slug })
+    const { data: itemData, isLoading: itemLoading, isError: itemError, refetch: itemFetch } = useGetStudyAreaItemQuery({ slug, lang: selectedLanguage }, { skip: !slug })
+    const { data: profileData, isLoading: profileLoading, isError: profileError, refetch: profileFetch } = useGetStudyAreaProfileQuery({ slug, lang: selectedLanguage }, { skip: !slug })
     const [deleteProgram] = useDeleteProgramMutation()
+    console.log(programsData, groupsData, faqData, itemData, profileData)
     const [updateStudyArea, { isLoading: updateLoading }] = useUpdateStudyAreaMutation()
     const onEdit = () => setIsStudyAreaEditOpen(true)
 
     const onEditProgram = (id: number) => {
-        const program = data?.program.find((p: any) => p.id === id)
+        const program = programsData.find((p: any) => p.id === id)
         if (program) {
             setEditingProgram({
                 id: program.id,
@@ -76,7 +82,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
 
     const handleStudyAreaEditClose = () => setIsStudyAreaEditOpen(false)
     const handleProgramSuccess = () => refetch()
-    const handleStudyAreaSuccess = () => refetch()
+    const handleStudyAreaSuccess = () => itemFetch()
     const handleDeleteProgram = (id: number) => {
         try {
             showDeleteConfirmation(deleteProgram, id, refetch, {
@@ -107,7 +113,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
             }
 
 
-            await updateStudyArea({ params: apiData, id: data.id }).unwrap()
+            await updateStudyArea({ params: apiData, id: itemData.id }).unwrap()
             toast.success("Meta uğurla əlavə edildi")
             refetch()
         } catch (error) {
@@ -130,7 +136,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                     },
                 ],
             }
-            await updateStudyArea({ id: data.id, params: apiData }).unwrap()
+            await updateStudyArea({ id: itemData.id, params: apiData }).unwrap()
             refetch()
             toast.success("Meta uğurla redaktə edildi")
         } catch (error: any) {
@@ -139,8 +145,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
         }
     }
 
-    // Convert API meta format to component format if needed
-    const metaItems: MetaItem[] = data?.meta || []
+    const metaItems: MetaItem[] = itemData?.meta || []
 
     return (
         <div className="space-y-6 p-10">
@@ -168,15 +173,15 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                 <div>
                     <div className="flex w-full justify-center items-center">Məlumatları yükləyərkən xəta baş verdi</div>
                 </div>
-            ) : data ? (
+            ) : itemData ? (
                 <div>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
                                 <CardTitle className="flex items-center gap-2">
-                                    {data && data.name}
-                                    <Badge variant="secondary" style={{ backgroundColor: `${data.color}20`, color: data.color }}>
-                                        {data.slug}
+                                    {itemData && itemData.name}
+                                    <Badge variant="secondary" style={{ backgroundColor: `${itemData.color}20`, color: itemData.color }}>
+                                        {itemData.slug}
                                     </Badge>
                                 </CardTitle>
                             </div>
@@ -191,29 +196,29 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                                     <div className="space-y-4">
                                         <div className="space-y-2">
                                             <div className="font-medium text-sm text-muted-foreground">Kurs Adı</div>
-                                            <div className="font-semibold">{data.name}</div>
+                                            <div className="font-semibold">{itemData.name}</div>
                                         </div>
                                         <div className="space-y-2">
                                             <div className="font-medium text-sm text-muted-foreground">Slug</div>
-                                            <div className="text-sm font-mono bg-muted px-2 py-1 rounded">{data.slug}</div>
+                                            <div className="text-sm font-mono bg-muted px-2 py-1 rounded">{itemData.slug}</div>
                                         </div>
                                         <div className="space-y-2">
                                             <div className="font-medium text-sm text-muted-foreground">Kurs Təfərrüatı</div>
-                                            <div className="text-sm leading-relaxed">{data.course_detail}</div>
+                                            <div className="text-sm leading-relaxed">{itemData.course_detail}</div>
                                         </div>
                                         <div className="space-y-2">
                                             <div className="font-medium text-sm text-muted-foreground">Rəng</div>
                                             <div className="flex items-center gap-2">
-                                                <div className="w-6 h-6 rounded border" style={{ backgroundColor: data.color }} />
-                                                <span className="font-mono text-sm">{data.color}</span>
+                                                <div className="w-6 h-6 rounded border" style={{ backgroundColor: itemData.color }} />
+                                                <span className="font-mono text-sm">{itemData.color}</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="relative w-full max-w-[300px] aspect-video bg-gray-100 rounded-lg overflow-hidden">
                                     <Image
-                                        src={data.image?.url || "/placeholder.svg"}
-                                        alt={data.image ? data.image.alt : "tədris sahəsi şəkil alt tagı"}
+                                        src={itemData.image?.url || "/placeholder.svg"}
+                                        alt={itemData.image ? itemData.image.alt : "tədris sahəsi şəkil alt tagı"}
                                         fill
                                         className="object-cover"
                                     />
@@ -239,7 +244,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {data.program.map((program: any, index: number) => (
+                                {programsData.map((program: any, index: number) => (
                                     <div key={program.id} className="flex items-start gap-4 border rounded-lg p-4">
                                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                                             {index + 1}
@@ -251,7 +256,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                                                     <Button size="icon" variant="ghost" onClick={() => onEditProgram(program.id)}>
                                                         <Edit className="h-4 w-4" />
                                                     </Button>
-                                                    {data.program.length > 1 &&
+                                                    {programsData.length > 1 &&
                                                         <Button size="icon" variant="ghost" onClick={() => handleDeleteProgram(program.id)}>
                                                             <Trash className="h-4 w-4" />
                                                         </Button>
@@ -262,7 +267,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                                         </div>
                                     </div>
                                 ))}
-                                {data.program.length === 0 && (
+                                {programsData.length === 0 && (
                                     <div className="text-center py-8 text-muted-foreground">
                                         <p>Hələ proqram modulu əlavə edilməyib</p>
                                         <p className="text-sm">İlk modulunuzu əlavə etmək üçün yuxarıdakı düyməni basın</p>
@@ -271,23 +276,23 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                             </div>
                         </CardContent>
                         <CardContent>
-                            <BrochureForm studyAreaId={data?.id} />
+                            <BrochureForm studyAreaId={itemData?.id} />
                         </CardContent>
                     </Card>
 
                     {/* Groups Section */}
                     <GroupList
-                        studyArea={data?.id}
-                        groups={data?.groups}
+                        studyArea={itemData?.id}
+                        groups={groupsData}
                         selectedLanguage={selectedLanguage}
-                        courseColor={data?.color}
-                        onRefresh={refetch}
+                        courseColor={itemData?.color}
+                        onRefresh={groupsFetch}
                     />
 
                     {/* FAQ Section */}
                     <div className="space-y-4">
-                        <FAQList areaStudy={data?.id} faqs={data?.faq} selectedLanguage={selectedLanguage} onRefresh={refetch} />
-                        {data.faq.length === 0 && (
+                        <FAQList areaStudy={itemData?.id} faqs={faqData} selectedLanguage={selectedLanguage} onRefresh={faqFetch} />
+                        {faqData.length === 0 && (
                             <div className="text-center py-8 text-muted-foreground">
                                 <p>Hələ FAQ əlavə edilməyib</p>
                                 <p className="text-sm">İlk sualınızı əlavə etmək üçün yuxarıdakı düyməni basın</p>
@@ -304,21 +309,21 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
             <Instructors
                 isError={isError}
                 isLoading={isLoading}
-                refetch={refetch}
-                instructorsData={data?.profile}
+                refetch={profileFetch}
+                instructorsData={profileData}
                 selectedLanguage={selectedLanguage}
                 setSelectedLanguage={setSelectedLanguage}
-                studyArea={data?.id}
+                studyArea={itemData?.id}
             />
 
             {/* Statistics Section */}
-            <StatisticsSection studyArea={data?.id} field={slug} />
+            <StatisticsSection studyArea={itemData?.id} field={slug} />
 
             {/* Program Form Modal */}
             <ProgramForm
                 isOpen={isProgramFormOpen}
                 onClose={handleProgramFormClose}
-                studyAreaId={data?.id}
+                studyAreaId={itemData?.id}
                 programId={editingProgram?.id}
                 initialData={editingProgram}
                 selectedLanguage={selectedLanguage}
@@ -328,9 +333,9 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
 
             {/* Meta Management Section */}
             <MetaIntegration
-                studyAreaId={data?.id}
+                studyAreaId={itemData?.id}
                 selectedLanguage={selectedLanguage}
-                onRefresh={refetch}
+                onRefresh={itemFetch}
                 metaItems={metaItems}
                 onCreateMeta={handleCreateMeta}
                 onUpdateMeta={handleUpdateMeta}
@@ -339,17 +344,17 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
 
 
             {/* Study Area Edit Form Modal */}
-            {data && (
+            {itemData && (
                 <EditHero
                     isOpen={isStudyAreaEditOpen}
                     onClose={handleStudyAreaEditClose}
-                    studyAreaId={data.id}
+                    studyAreaId={itemData.id}
                     initialData={{
-                        name: data.name,
-                        slug: data.slug,
-                        color: data.color,
-                        image: data.image,
-                        course_detail: data.course_detail,
+                        name: itemData.name,
+                        slug: itemData.slug,
+                        color: itemData.color,
+                        image: itemData.image,
+                        course_detail: itemData.course_detail,
                     }}
                     selectedLanguage={selectedLanguage}
                     onSuccess={handleStudyAreaSuccess}
