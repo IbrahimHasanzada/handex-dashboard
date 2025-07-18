@@ -86,20 +86,37 @@ export default function EditInstructorsModal({
         const validationResult = validateImage(file, setImageState, imageState)
         if (validationResult === false) return
 
+
+        setImageState({
+            preview: URL.createObjectURL(file),
+            id: null,
+            error: null,
+            selectedFile: file,
+        })
+
+    }
+
+    const handleUploadWithAlt = async (file: File, altText: string) => {
         try {
             const formData = new FormData()
             formData.append("file", file)
+            formData.append("alt", altText)
+
             const response = await uploadImage(formData).unwrap()
 
+            form.setValue("image", response.id)
             setImageState({
-                preview: response.url || null,
-                id: response.id || null,
+                preview: response.url,
+                id: response.id,
                 error: null,
                 selectedFile: null,
             })
-            form.setValue("image", response.id)
+
+            return response
         } catch (error) {
+            toast.error("Şəkli yükləyərkən xəta baş verdi")
             setImageState((prev) => ({ ...prev, error: "Şəkil yükləmə xətası baş verdi" }))
+            throw error
         }
     }
 
@@ -157,6 +174,8 @@ export default function EditInstructorsModal({
             isEditMode={true}
             selectedLanguage={selectedLanguage}
             studyArea={studyArea}
+            uploadImage={handleUploadWithAlt}
+
         />
     )
 }

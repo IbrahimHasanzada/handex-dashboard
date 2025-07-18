@@ -77,6 +77,7 @@ export function EditHero({
         },
     })
 
+
     useEffect(() => {
         if (initialData) {
             form.reset({
@@ -114,6 +115,8 @@ export function EditHero({
             toast.error("Zəhmət olmasa şəkil yükləyin")
             return
         }
+
+        console.log("Editor content:", data.course_detail);
 
         setIsSubmitting(true)
         try {
@@ -246,10 +249,10 @@ export function EditHero({
                                             }}
                                             apiKey={apiKey}
                                             init={{
-                                                ...editorConfig,
+                                                ...editorConfig as any,
                                                 language: selectedLanguage,
                                                 placeholder: getPlaceholder(selectedLanguage),
-                                            } as any}
+                                            }}
                                         />
                                     )}
                                 />

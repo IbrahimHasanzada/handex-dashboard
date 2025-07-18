@@ -53,7 +53,6 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
     const { data: itemData, isLoading: itemLoading, isError: itemError, refetch: itemFetch } = useGetStudyAreaItemQuery({ slug, lang: selectedLanguage }, { skip: !slug })
     const { data: profileData, isLoading: profileLoading, isError: profileError, refetch: profileFetch } = useGetStudyAreaProfileQuery({ slug, lang: selectedLanguage }, { skip: !slug })
     const [deleteProgram] = useDeleteProgramMutation()
-    console.log(programsData, groupsData, faqData, itemData, profileData)
     const [updateStudyArea, { isLoading: updateLoading }] = useUpdateStudyAreaMutation()
     const onEdit = () => setIsStudyAreaEditOpen(true)
 
