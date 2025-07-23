@@ -28,5 +28,5 @@ export const courseDefaultValues: CourseFormData = {
     ],
     meta: [],
     group: [],
-    model: "corporate"
+    model: ""
 };
