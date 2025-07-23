@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Edit, Trash2, Search, ChevronLeft, ChevronRight, BookOpen, HelpCircle, AlertCircle, Globe } from "lucide-react"
+import { Edit, Trash2, Search, ChevronLeft, ChevronRight, BookOpen, HelpCircle, AlertCircle, Globe, Plus } from "lucide-react"
 import { CourseFormDialog } from "./course-form-dialog"
 import type { CourseFormData } from "@/validations/study-area/course-add.validation"
 import { useDeleteStudyAreaMutation, useGetStudyAreaQuery } from "@/store/handexApi"
@@ -20,6 +20,7 @@ import Image from "next/image"
 import { InstructorsProps } from "@/types/study-area/instructors.dto"
 import { Label } from "../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import Link from "next/link"
 
 
 
@@ -97,7 +98,11 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
                     </div>
                     <div className="flex gap-5">
                         <div className="flex items-center gap-2">
-                            <CourseFormDialog />
+                            <Button>
+                                <Link href='/study-area/new' className="flex items-center gap-3">
+                                    <Plus className="mr-2 h-4 w-4" /> Yeni Kurs Əlavə Et
+                                </Link>
+                            </Button>
                         </div>
                         <div className="space-y-2">
                             <Select value={modelTypes} onValueChange={handleChooseModel}>
