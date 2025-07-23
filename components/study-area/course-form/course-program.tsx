@@ -173,21 +173,6 @@ export function CourseProgram({
                         </div>
                     </div>
                 ))}
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() =>
-                        appendProgram({
-                            name: "",
-                            image: null as any,
-                            translations: languages.map((lang) => ({ lang: lang.code, description: "" })) as any,
-                        })
-                    }
-                    className="w-full"
-                >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Proqram əlavə et
-                </Button>
                 {programFields.length === 0 && (
                     <div className="text-center py-8 text-muted-foreground">
                         <p>Hələ proqram əlavə edilməyib</p>
