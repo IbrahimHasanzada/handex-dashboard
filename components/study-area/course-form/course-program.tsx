@@ -33,7 +33,7 @@ export function CourseProgram({
     programAltTexts,
 }: CourseProgramProps) {
 
-    const apiKey = process.env.NEXT_PUBLIC_TINYMCE_API_KEY
+    const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
     const {
         fields: programFields,
         append: appendProgram,

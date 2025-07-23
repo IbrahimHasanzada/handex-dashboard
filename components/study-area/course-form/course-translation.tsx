@@ -24,7 +24,7 @@ export function CourseTranslations({ form }: CourseTranslationsProps) {
         }
         return placeholders[language] || "Kurs haqqında ətraflı məlumat"
     }
-    const apiKey = process.env.NEXT_PUBLIC_TINYMCE_API_KEY
+    const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
 
     return (
         <Card>
