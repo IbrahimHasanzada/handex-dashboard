@@ -18,8 +18,12 @@ import Image from "next/image"
 import { useRef } from "react"
 import type { InstructorsFormModalProps } from "@/types/study-area/instructors.dto"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Editor as TinyMCE } from "@tinymce/tinymce-react"
+const Editor = dynamic(
+    () => import('@tinymce/tinymce-react').then((mod) => mod.Editor),
+    { ssr: false }
+);
 import { editorConfig } from "@/utils/editor-config"
+import dynamic from "next/dynamic"
 
 export default function InstructorsFormModal({
     open,
@@ -266,7 +270,7 @@ export default function InstructorsFormModal({
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
-                                                    <TinyMCE
+                                                    <Editor
                                                         value={field.value as string}
                                                         onEditorChange={(content: any) => {
                                                             field.onChange(content)
@@ -302,7 +306,7 @@ export default function InstructorsFormModal({
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <TinyMCE
+                                                            <Editor
                                                                 value={field.value as string}
                                                                 onEditorChange={(content: any) => {
                                                                     field.onChange(content)
@@ -329,7 +333,7 @@ export default function InstructorsFormModal({
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <TinyMCE
+                                                            <Editor
                                                                 value={field.value as string}
                                                                 onEditorChange={(content: any) => {
                                                                     field.onChange(content)
@@ -356,7 +360,7 @@ export default function InstructorsFormModal({
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <TinyMCE
+                                                            <Editor
                                                                 value={field.value as string}
                                                                 onEditorChange={(content: any) => {
                                                                     field.onChange(content)

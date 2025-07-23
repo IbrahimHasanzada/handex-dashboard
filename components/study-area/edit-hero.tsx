@@ -15,9 +15,12 @@ import { ImageUpload } from "./course-form/image-upload"
 import type { StudyAreaEditFormProps } from "@/types/study-area/dit-hero.dto"
 import { type StudyAreaFormData, studyAreaFormSchema } from "@/validations/study-area/edit-hero.validation"
 
-// TinyMCE Editor component
-import { Editor as TinyMCE } from "@tinymce/tinymce-react"
+const Editor = dynamic(
+    () => import('@tinymce/tinymce-react').then((mod) => mod.Editor),
+    { ssr: false }
+);
 import { editorConfig } from "@/utils/editor-config"
+import dynamic from "next/dynamic"
 
 export function EditHero({
     isOpen,
@@ -39,6 +42,7 @@ export function EditHero({
 
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
 
+    console.log(apiKey)
 
     const getLanguageDisplayName = (lang: string) => {
         switch (lang) {
@@ -242,7 +246,7 @@ export function EditHero({
                                     name="course_detail"
                                     control={form.control}
                                     render={({ field }) => (
-                                        <TinyMCE
+                                        <Editor
                                             value={field.value as string}
                                             onEditorChange={(content) => {
                                                 field.onChange(content)

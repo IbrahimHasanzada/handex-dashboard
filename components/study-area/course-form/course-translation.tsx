@@ -4,8 +4,12 @@ import type { UseFormReturn } from "react-hook-form"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { CourseFormData } from "@/validations/study-area/course-add.validation"
-import { Editor as TinyMCE } from "@tinymce/tinymce-react"
+const Editor = dynamic(
+    () => import('@tinymce/tinymce-react').then((mod) => mod.Editor),
+    { ssr: false }
+);
 import { editorConfig } from "@/utils/editor-config"
+import dynamic from "next/dynamic"
 
 interface CourseTranslationsProps {
     form: UseFormReturn<CourseFormData>
@@ -36,7 +40,7 @@ export function CourseTranslations({ form }: CourseTranslationsProps) {
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <Label>Kurs Təfərrüatı *</Label>
-                                <TinyMCE
+                                <Editor
                                     value={form.watch(`translations.${langIndex}.course_detail`) || ""}
                                     onEditorChange={(content: any) => {
                                         form.setValue(`translations.${langIndex}.course_detail`, content, {

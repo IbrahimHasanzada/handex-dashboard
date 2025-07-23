@@ -28,6 +28,9 @@ const baseConfig = {
     parallelServerCompiles: true,
   },
   transpilePackages: ['@tinymce/tinymce-react'],
+  env: {
+    NEXT_PUBLIC_EDITOR_API_KEY: process.env.NEXT_PUBLIC_EDITOR_API_KEY,
+  }
 };
 
 if (userConfig) {

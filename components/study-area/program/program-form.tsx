@@ -21,8 +21,12 @@ import {
 } from "@/validations/study-area/program.validation"
 import type { ProgramFormProps } from "@/types/study-area/program"
 
-import { Editor as TinyMCE } from "@tinymce/tinymce-react"
+const Editor = dynamic(
+    () => import('@tinymce/tinymce-react').then((mod) => mod.Editor),
+    { ssr: false }
+);
 import { editorConfig } from "@/utils/editor-config"
+import dynamic from "next/dynamic"
 
 export function ProgramForm({
     isOpen,
@@ -260,7 +264,7 @@ export function ProgramForm({
                                         name="description"
                                         control={editForm.control}
                                         render={({ field }) => (
-                                            <TinyMCE
+                                            <Editor
                                                 value={field.value as string}
                                                 onEditorChange={(content) => {
                                                     field.onChange(content)
@@ -292,7 +296,7 @@ export function ProgramForm({
                                             name="translations.0.description"
                                             control={addForm.control}
                                             render={({ field }) => (
-                                                <TinyMCE
+                                                <Editor
                                                     value={field.value as string}
                                                     onEditorChange={(content) => {
                                                         field.onChange(content)
@@ -319,7 +323,7 @@ export function ProgramForm({
                                             name="translations.1.description"
                                             control={addForm.control}
                                             render={({ field }) => (
-                                                <TinyMCE
+                                                <Editor
                                                     value={field.value as string}
                                                     onEditorChange={(content) => {
                                                         field.onChange(content)
@@ -346,7 +350,7 @@ export function ProgramForm({
                                             name="translations.2.description"
                                             control={addForm.control}
                                             render={({ field }) => (
-                                                <TinyMCE
+                                                <Editor
                                                     value={field.value as string}
                                                     onEditorChange={(content) => {
                                                         field.onChange(content)

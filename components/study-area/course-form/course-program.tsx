@@ -12,7 +12,11 @@ import type { Dispatch, SetStateAction } from "react"
 import { ImageUpload } from "./image-upload"
 import type { imageState } from "@/types/home/graduates.dto"
 import { editorConfig } from "@/utils/editor-config"
-import { Editor as TinyMCE } from "@tinymce/tinymce-react"
+import dynamic from "next/dynamic"
+const Editor = dynamic(
+    () => import('@tinymce/tinymce-react').then((mod) => mod.Editor),
+    { ssr: false }
+);
 interface CourseProgramProps {
     form: UseFormReturn<CourseFormData>
     setProgramImageStates: Dispatch<SetStateAction<Record<number, imageState>>>
@@ -129,7 +133,7 @@ export function CourseProgram({
                                     </TabsList>
                                     {languages.map((lang, langIndex) => (
                                         <TabsContent key={lang.code} value={lang.code} className="space-y-2">
-                                            <TinyMCE
+                                            <Editor
                                                 value={form.watch(`program.${index}.translations.${langIndex}.description`) || ""}
                                                 onEditorChange={(content: any) => {
                                                     form.setValue(`program.${index}.translations.${langIndex}.description`, content, {
