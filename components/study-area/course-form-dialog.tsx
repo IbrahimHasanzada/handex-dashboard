@@ -48,7 +48,6 @@ export function CourseFormDialog() {
     })
     const [programImageStates, setProgramImageStates] = useState<Record<number, imageState>>({})
     const [programAltTexts, setProgramAltTexts] = useState<Record<number, string>>({})
-
     const form = useForm<CourseFormData>({
         resolver: zodResolver(courseSchema),
         defaultValues: courseDefaultValues
