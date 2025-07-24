@@ -149,6 +149,14 @@ export function MediaTab({
                             )}
                         </div>
                     </FormControl>
+                    {imageState.id && imageState.preview && <p className="font-bold my-5 flex gap-5">
+                        <span>
+                            Şəkil linki:
+                        </span>
+                        <span>
+                            {imageState.preview}
+                        </span>
+                    </p>}
                     {imageState.error && <p className="text-sm text-destructive mt-1">{imageState.error}</p>}
                     <FormMessage />
                 </FormItem>
