@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image"
-import { MoreHorizontal, Eye, Edit, Trash2, ArrowUpDown, Plus, Loader2, Package, ChevronLeft, ChevronRight } from "lucide-react"
+import { MoreHorizontal, Eye, Edit, Trash2, ArrowUpDown, Plus, Loader2, Package, ChevronLeft, ChevronRight, Pin, PinOff } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { useDeleteServiceMutation, useGetServiceQuery } from "@/store/handexApi"
+import { useDeleteServiceMutation, useGetServiceQuery, usePinServiceMutation, useUnpinServiceMutation } from "@/store/handexApi"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { format } from "date-fns"
@@ -26,6 +26,8 @@ export function ServiceTable() {
     const { data: services, refetch, isLoading: newsLoading } = useGetServiceQuery({ lang: currentLanguage, page: currentPage }, { skip: !currentLanguage });
     const [deleteService, { isLoading: delLoading }] = useDeleteServiceMutation()
     const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
+    const [pinService] = usePinServiceMutation()
+    const [unpinService] = useUnpinServiceMutation()
 
     useEffect(() => {
         function handleResize() {
@@ -45,6 +47,26 @@ export function ServiceTable() {
             toast.error('Xidməti silərkən xəta baş verdi!')
         }
     }
+
+
+    const handlePinService = async (id: number) => {
+        try {
+            await pinService(id).unwrap()
+            toast.success("Xidmət uğurla pinləndi")
+        } catch (error: any) {
+            toast.error(error.data.message)
+        }
+    }
+
+    const handleUnPin = async (id: number) => {
+        try {
+            await unpinService(id).unwrap()
+            toast.success("xidmət uğurla pindən silindi")
+        } catch (error: any) {
+            toast.error(error.data.message)
+        }
+    }
+
     return (
         <div className="rounded-md border">
             <div className="flex flex-col gap-5 md:gap-0 md:flex-row md:items-center justify-between  p-4">
@@ -114,6 +136,9 @@ export function ServiceTable() {
                                                 </div>
 
                                             </div>
+                                            <span>
+                                                {service.order == 2 ? <div className="flex items-center text-gray-400"><Pin className="w-4 h-4" /> pinned</div> : ''}
+                                            </span>
                                         </div>
                                     </TableCell>
                                     <TableCell className="hidden md:block py-7"> {format(new Date(service.createdAt), "PPP")}</TableCell>
@@ -140,6 +165,21 @@ export function ServiceTable() {
                                                         <span>Edit</span>
                                                     </DropdownMenuItem>
                                                 </Link>
+                                                {service.order == 1 ?
+                                                    <DropdownMenuItem className="w-full cursor-pointer">
+                                                        <button onClick={() => handlePinService(service.id)} className="flex items-center gap-2">
+                                                            <Pin className="mr-2 h-4 w-4" />
+                                                            <span>Pin</span>
+                                                        </button>
+                                                    </DropdownMenuItem>
+                                                    :
+                                                    <DropdownMenuItem className="w-full cursor-pointer">
+                                                        <button onClick={() => handleUnPin(service.id)} className="flex items-center gap-2">
+                                                            <PinOff className="mr-2 h-4 w-4" />
+                                                            <span>Unpin</span>
+                                                        </button>
+                                                    </DropdownMenuItem>
+                                                }
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem onClick={() => handledeleteService(service.id)} className="text-destructive">
                                                     <Trash2 className="mr-2 h-4 w-4" /> Delete

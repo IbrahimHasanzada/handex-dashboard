@@ -183,6 +183,86 @@ export const handexApi = createApi({
             }),
             invalidatesTags: ['News']
         }),
+        pinNews: builder.mutation({
+            query: (id) => ({
+                url: `/news/pin/${id}`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            }),
+            invalidatesTags: ['News']
+        }),
+        unpinNews: builder.mutation({
+            query: (id) => ({
+                url: `/news/unpin/${id}`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            }),
+            invalidatesTags: ['News']
+        }),
+        pinBlogs: builder.mutation({
+            query: (id) => ({
+                url: `/blogs/pin/${id}`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            }),
+            invalidatesTags: ['Blog']
+        }),
+        unpinBlogs: builder.mutation({
+            query: (id) => ({
+                url: `/blogs/unpin/${id}`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            }),
+            invalidatesTags: ['Blog']
+        }),
+        pinProjects: builder.mutation({
+            query: (id) => ({
+                url: `/project/pin/${id}`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            }),
+            invalidatesTags: ['Projects']
+        }),
+        unpinProjects: builder.mutation({
+            query: (id) => ({
+                url: `/project/unpin/${id}`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            }),
+            invalidatesTags: ['Projects']
+        }),
+        pinService: builder.mutation({
+            query: (id) => ({
+                url: `/service/pin/${id}`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            }),
+            invalidatesTags: ['Service']
+        }),
+        unpinService: builder.mutation({
+            query: (id) => ({
+                url: `/service/unpin/${id}`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            }),
+            invalidatesTags: ['Service']
+        }),
         deleteNews: builder.mutation({
             query: (id) => ({
                 url: `/news/${id}`,
@@ -638,7 +718,7 @@ export const handexApi = createApi({
         }),
         deleteBrochure: builder.mutation({
             query: (id) => ({
-                url: `/brochure/${id}`,
+                url: `study-area/${id}/brochure`,
                 method: 'delete'
             }),
             invalidatesTags: ['Brochure']
@@ -728,6 +808,14 @@ export const {
     useGetStudyAreaGroupsQuery,
     useGetStudyAreaItemQuery,
     useGetStudyAreaProfileQuery,
-    useUpdateStudyAreaOrderMutation
+    useUpdateStudyAreaOrderMutation,
+    usePinNewsMutation,
+    usePinBlogsMutation,
+    usePinProjectsMutation,
+    usePinServiceMutation,
+    useUnpinBlogsMutation,
+    useUnpinNewsMutation,
+    useUnpinProjectsMutation,
+    useUnpinServiceMutation
 
 } = handexApi

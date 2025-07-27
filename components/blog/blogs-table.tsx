@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image"
-import { MoreHorizontal, Eye, Edit, Trash2, ArrowUpDown, Plus, Loader2, Package, ChevronLeft, ChevronRight } from "lucide-react"
+import { MoreHorizontal, Eye, Edit, Trash2, ArrowUpDown, Plus, Loader2, Package, ChevronLeft, ChevronRight, Pin, PinOff } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { useDeleteBlogsMutation, useGetBlogsQuery } from "@/store/handexApi"
+import { useDeleteBlogsMutation, useGetBlogsQuery, usePinBlogsMutation, useUnpinBlogsMutation } from "@/store/handexApi"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { format } from "date-fns"
@@ -26,6 +26,8 @@ export function BlogsTable() {
     const { data: blogs, refetch, isLoading: newsLoading } = useGetBlogsQuery({ lang: currentLanguage, page: currentPage }, { skip: !currentLanguage });
     const [deleteBlogs, { isLoading: delLoading }] = useDeleteBlogsMutation()
     const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
+    const [pinBlog] = usePinBlogsMutation()
+    const [unpinBlog] = useUnpinBlogsMutation()
     useEffect(() => {
         function handleResize() {
             setWindowWidth(window.innerWidth);
@@ -42,6 +44,23 @@ export function BlogsTable() {
             })
         } catch (error) {
             toast.error('Bloq silərkən xəta baş verdi!')
+        }
+    }
+
+    const handlePinBlog = async (id: number) => {
+        try {
+            await pinBlog(id).unwrap()
+            toast.success("Bloq uğurla pinləndi")
+        } catch (error: any) {
+            toast.error(error.data.message)
+        }
+    }
+    const handleUnPin = async (id: number) => {
+        try {
+            await unpinBlog(id).unwrap()
+            toast.success("Bloq uğurla pindən silindi")
+        } catch (error: any) {
+            toast.error(error.data.message)
         }
     }
     return (
@@ -117,6 +136,9 @@ export function BlogsTable() {
                                                         </div>
 
                                                     </div>
+                                                    <span>
+                                                        {blog.order == 2 ? <div className="flex items-center text-gray-400"><Pin className="w-4 h-4" /> pinned</div> : ''}
+                                                    </span>
                                                 </div>
                                             </TableCell>
                                             <TableCell className="hidden md:block py-7"> {format(new Date(blog.createdAt), "PPP")}</TableCell>
@@ -143,6 +165,20 @@ export function BlogsTable() {
                                                                 <span>Edit</span>
                                                             </DropdownMenuItem>
                                                         </Link>
+                                                        {blog.order === 1
+                                                            ? <DropdownMenuItem className="w-full cursor-pointer">
+                                                                <button onClick={() => handlePinBlog(blog.id)} className="flex items-center gap-2">
+                                                                    <Pin className="mr-2 h-4 w-4" />
+                                                                    <span>Pin</span>
+                                                                </button>
+                                                            </DropdownMenuItem>
+                                                            :
+                                                            <DropdownMenuItem className="w-full cursor-pointer">
+                                                                <button onClick={() => handleUnPin(blog.id)} className="flex items-center gap-2">
+                                                                    <PinOff className="mr-2 h-4 w-4" />
+                                                                    <span>Unpin</span>
+                                                                </button>
+                                                            </DropdownMenuItem>}
                                                         <DropdownMenuSeparator />
                                                         <DropdownMenuItem onClick={() => handledeleteBlogs(blog.id)} className="text-destructive">
                                                             <Trash2 className="mr-2 h-4 w-4" /> Delete

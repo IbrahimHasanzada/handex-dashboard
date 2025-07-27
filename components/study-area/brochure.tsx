@@ -102,7 +102,7 @@ export default function BrochureForm({ studyAreaId }: { studyAreaId: number }) {
 
     const handleDeleteBrochure = async () => {
         try {
-            showDeleteConfirmation(deleteBrochure, data?.id, refetch, {
+            showDeleteConfirmation(deleteBrochure, studyAreaId, refetch, {
                 title: "Broşürü silmək istəyirsinizmi?",
                 text: "Bu əməliyyat geri qaytarıla bilməz!",
                 successText: "Broşür uğurla silindi.",

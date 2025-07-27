@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image"
-import { MoreHorizontal, Eye, Edit, Trash2, ArrowUpDown, Plus, Loader2, Package, ChevronRight, ChevronLeft } from "lucide-react"
+import { MoreHorizontal, Eye, Edit, Trash2, ArrowUpDown, Plus, Loader2, Package, ChevronRight, ChevronLeft, Pin, MapPinned, PinOff } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { useDeleteNewsMutation, useGetNewsQuery } from "@/store/handexApi"
+import { useDeleteNewsMutation, useGetNewsQuery, usePinNewsMutation, useUnpinNewsMutation } from "@/store/handexApi"
 import { showDeleteConfirmation } from "@/utils/sweet-alert"
 import { toast } from "react-toastify"
 import { format } from "date-fns"
@@ -26,6 +26,8 @@ export function ArticlesTable() {
     const { data: news, refetch, isLoading: newsLoading } = useGetNewsQuery({ lang: currentLanguage, page: currentPage }, { skip: !currentLanguage });
     const [deleteNews, { isLoading: delLoading }] = useDeleteNewsMutation()
     const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0)
+    const [pinNews] = usePinNewsMutation()
+    const [unpinNews] = useUnpinNewsMutation()
     useEffect(() => {
         function handleResize() {
             setWindowWidth(window.innerWidth);
@@ -44,6 +46,25 @@ export function ArticlesTable() {
             toast.error('Xəbər silərkən xəta baş verdi!')
         }
     }
+
+    const handlePinNews = async (id: number) => {
+        try {
+            await pinNews(id).unwrap()
+            toast.success("Xəbər uğurla pinləndi")
+        } catch (error: any) {
+            toast.error(error.data.message)
+        }
+    }
+
+    const handleUnPin = async (id: number) => {
+        try {
+            await unpinNews(id).unwrap()
+            toast.success("Xəbər uğurla pindən silindi")
+        } catch (error: any) {
+            toast.error(error.data.message)
+        }
+    }
+
     return (
         <div className="rounded-md border">
             <div className="flex md:items-center justify-between  p-4">
@@ -114,6 +135,9 @@ export function ArticlesTable() {
                                                 </div>
 
                                             </div>
+                                            <span>
+                                                {article.order == 2 ? <div className="flex items-center text-gray-400"><Pin className="w-4 h-4" /> pinned</div> : ''}
+                                            </span>
                                         </div>
                                     </TableCell>
                                     <TableCell className="hidden md:block py-7"> {format(new Date(article.createdAt), "PPP")}</TableCell>
@@ -140,6 +164,21 @@ export function ArticlesTable() {
                                                         <span>Edit</span>
                                                     </DropdownMenuItem>
                                                 </Link>
+                                                {article.order === 1 ?
+                                                    <DropdownMenuItem className="w-full cursor-pointer">
+                                                        <button onClick={() => handlePinNews(article.id)} className="flex items-center gap-2">
+                                                            <Pin className="mr-2 h-4 w-4" />
+                                                            <span>Pin</span>
+                                                        </button>
+                                                    </DropdownMenuItem>
+                                                    :
+                                                    <DropdownMenuItem className="w-full cursor-pointer">
+                                                        <button onClick={() => handleUnPin(article.id)} className="flex items-center gap-2">
+                                                            <PinOff className="mr-2 h-4 w-4" />
+                                                            <span>Unpin</span>
+                                                        </button>
+                                                    </DropdownMenuItem>
+                                                }
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem onClick={() => handleDeleteNews(article.id)} className="text-destructive">
                                                     <Trash2 className="mr-2 h-4 w-4" /> Delete
