@@ -482,6 +482,17 @@ export const handexApi = createApi({
             }),
             invalidatesTags: ['Study-area']
         }),
+        updateStudyAreaOrder: builder.mutation({
+            query: (orderData) => ({
+                url: '/study-area/update/orders',
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: orderData
+            }),
+            invalidatesTags: ['Study-area']
+        }),
         deleteStudyArea: builder.mutation({
             query: (id) => ({
                 url: `/study-area/${id}`,
@@ -717,5 +728,6 @@ export const {
     useGetStudyAreaGroupsQuery,
     useGetStudyAreaItemQuery,
     useGetStudyAreaProfileQuery,
+    useUpdateStudyAreaOrderMutation
 
 } = handexApi
