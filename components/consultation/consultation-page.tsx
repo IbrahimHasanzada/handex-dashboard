@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { Trash2, Phone, User, BookOpen, Loader2, Download } from "lucide-react"
+import { Trash2, Phone, User, BookOpen, Loader2, Download, Mail, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -26,6 +26,8 @@ interface Consultation {
     course: Course
     createdAt: string
     updatedAt: string
+    company?: string
+    email?: string
 }
 
 export default function ConsultationPage() {
@@ -33,6 +35,7 @@ export default function ConsultationPage() {
     const [delConsultation, { isLoading: delLoading }] = useDeleteConsultationMutation()
     const [isExporting, setIsExporting] = useState(false)
 
+    console.log(data)
     const handleDelete = async (id: number) => {
         try {
             await showDeleteConfirmation(delConsultation, id, refetch, {
@@ -257,10 +260,18 @@ export default function ConsultationPage() {
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-4">
+                                {consultation.company && <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                    <Building2 className="h-4 w-4" />
+                                    <span>{consultation.company}</span>
+                                </div>}
                                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                                     <Phone className="h-4 w-4" />
                                     <span>{consultation.phone}</span>
                                 </div>
+                                {consultation.email && <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                    <Mail className="h-4 w-4" />
+                                    <span>{consultation.email}</span>
+                                </div>}
 
                                 <div className="space-y-2">
                                     <Badge style={{ backgroundColor: consultation.course.color }} className="text-white">
