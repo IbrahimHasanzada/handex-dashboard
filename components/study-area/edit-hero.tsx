@@ -42,7 +42,6 @@ export function EditHero({
 
     const apiKey = process.env.NEXT_PUBLIC_EDITOR_API_KEY
 
-    console.log(apiKey)
 
     const getLanguageDisplayName = (lang: string) => {
         switch (lang) {
@@ -120,7 +119,6 @@ export function EditHero({
             return
         }
 
-        console.log("Editor content:", data.course_detail);
 
         setIsSubmitting(true)
         try {

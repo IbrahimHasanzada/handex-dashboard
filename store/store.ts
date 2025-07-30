@@ -2,11 +2,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import { handexApi } from './handexApi';
 import authReducer from './authSlices';
 import { aboutReducer } from './aboutSlice';
+import { modelReducer } from './studyAreaModalSlice'
 export const store = configureStore({
     reducer: {
         [handexApi.reducerPath]: handexApi.reducer,
         auth: authReducer,
-        about: aboutReducer
+        about: aboutReducer,
+        model: modelReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(handexApi.middleware),

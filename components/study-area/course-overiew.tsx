@@ -20,6 +20,7 @@ import { MetaIntegration } from "./meta/meta-integration"
 import StatisticsSection from "../home/statistics/StatisticsSection"
 import Instructors from "./teachers/instructors"
 import BrochureForm from "./brochure"
+import { useSelector } from "react-redux"
 
 interface MetaTranslation {
     name: string
@@ -36,6 +37,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
     const [selectedLanguage, setSelectedLanguage] = useState("az")
     const [isProgramFormOpen, setIsProgramFormOpen] = useState(false)
     const [isStudyAreaEditOpen, setIsStudyAreaEditOpen] = useState(false)
+    const model = useSelector((store: any) => store.model.model)
     const [editingProgram, setEditingProgram] = useState<{
         id: number
         name: string
@@ -47,11 +49,11 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
     //     { slug: slug, lang: selectedLanguage },
     //     { skip: !slug },
     // )
-    const { data: programsData, isLoading, isError, refetch, isFetching } = useGetStudyAreaProgramsQuery({ slug, lang: selectedLanguage }, { skip: !slug })
-    const { data: groupsData, isLoading: groupsLoading, isError: groupsError, refetch: groupsFetch } = useGetStudyAreaGroupsQuery({ slug, lang: selectedLanguage }, { skip: !slug })
-    const { data: faqData, isLoading: faqLoading, isError: faqError, refetch: faqFetch } = useGetStudyAreaFaqQuery({ slug, lang: selectedLanguage }, { skip: !slug })
-    const { data: itemData, isLoading: itemLoading, isError: itemError, refetch: itemFetch } = useGetStudyAreaItemQuery({ slug, lang: selectedLanguage }, { skip: !slug })
-    const { data: profileData, isLoading: profileLoading, isError: profileError, refetch: profileFetch } = useGetStudyAreaProfileQuery({ slug, lang: selectedLanguage }, { skip: !slug })
+    const { data: programsData, isLoading, isError, refetch, isFetching } = useGetStudyAreaProgramsQuery({ slug, lang: selectedLanguage, model }, { skip: !slug })
+    const { data: groupsData, isLoading: groupsLoading, isError: groupsError, refetch: groupsFetch } = useGetStudyAreaGroupsQuery({ slug, lang: selectedLanguage, model }, { skip: !slug })
+    const { data: faqData, isLoading: faqLoading, isError: faqError, refetch: faqFetch } = useGetStudyAreaFaqQuery({ slug, lang: selectedLanguage, model }, { skip: !slug })
+    const { data: itemData, isLoading: itemLoading, isError: itemError, refetch: itemFetch } = useGetStudyAreaItemQuery({ slug, lang: selectedLanguage, model }, { skip: !slug })
+    const { data: profileData, isLoading: profileLoading, isError: profileError, refetch: profileFetch } = useGetStudyAreaProfileQuery({ slug, lang: selectedLanguage, model }, { skip: !slug })
     const [deleteProgram] = useDeleteProgramMutation()
     const [updateStudyArea, { isLoading: updateLoading }] = useUpdateStudyAreaMutation()
     const onEdit = () => setIsStudyAreaEditOpen(true)

@@ -27,6 +27,8 @@ import Image from "next/image"
 import type { InstructorsProps } from "@/types/study-area/instructors.dto"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import Link from "next/link"
+import { useDispatch, useSelector } from "react-redux"
+import { changeModel } from "@/store/studyAreaModalSlice"
 
 type Language = "az" | "en" | "ru"
 
@@ -46,7 +48,6 @@ interface CourseWithOrder extends StudyAreaData {
 }
 
 export function CourseList({ selectedLanguage, setSelectedLanguage }: InstructorsProps) {
-    const [modelTypes, setModelTypes] = useState("home")
     const [currentPage, setCurrentPage] = useState(1)
     const [draggedItem, setDraggedItem] = useState<number | null>(null)
     const [dragOverItem, setDragOverItem] = useState<number | null>(null)
@@ -54,9 +55,11 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
     const [hasChanges, setHasChanges] = useState(false)
     const [showAll, setShowAll] = useState(false)
     const router = useRouter()
+    const dispatch = useDispatch()
+    const model = useSelector((store: any) => store.model.model)
     const itemsPerPage = 5
 
-    const { data, isLoading, error, refetch } = useGetStudyAreaQuery({ lang: selectedLanguage, model: modelTypes })
+    const { data, isLoading, error, refetch } = useGetStudyAreaQuery({ lang: selectedLanguage, model: model })
     const [deleteStudyArea] = useDeleteStudyAreaMutation()
     const [updateStudyAreaOrder] = useUpdateStudyAreaOrderMutation()
 
@@ -74,7 +77,7 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
             setHasChanges(false)
         }
         setCurrentPage(1)
-    }, [data, selectedLanguage, modelTypes])
+    }, [data, selectedLanguage, model])
 
     const paginatedCourses = showAll
         ? orderedCourses
@@ -93,7 +96,7 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
     }
 
     const handleChooseModel = (value: any) => {
-        setModelTypes(value)
+        dispatch(changeModel(value))
     }
 
     // Drag and Drop handlers
@@ -238,7 +241,7 @@ export function CourseList({ selectedLanguage, setSelectedLanguage }: Instructor
                             </Link>
                         </Button>
                         <div className="space-y-2">
-                            <Select value={modelTypes} onValueChange={handleChooseModel}>
+                            <Select value={model} onValueChange={handleChooseModel}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Tədris sahəsinin modelini seçin..." />
                                 </SelectTrigger>

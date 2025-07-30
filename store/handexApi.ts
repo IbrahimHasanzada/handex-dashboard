@@ -516,24 +516,24 @@ export const handexApi = createApi({
             providesTags: ['Study-area']
         }),
         getStudyAreaPrograms: builder.query({
-            query: ({ slug, lang }) => `/study-area/${slug}/programs?lang=${lang}`,
+            query: ({ slug, lang, model }) => `/study-area/${slug}/programs/${model}?lang=${lang}`,
             providesTags: ['Study-area']
 
         }),
         getStudyAreaGroups: builder.query({
-            query: ({ slug, lang }) => `/study-area/${slug}/groups?lang=${lang}`,
+            query: ({ slug, lang, model }) => `/study-area/${slug}/groups/${model}?lang=${lang}`,
             providesTags: ['Study-area']
         }),
         getStudyAreaItem: builder.query({
-            query: ({ slug, lang }) => `/study-area/${slug}/item?lang=${lang}`,
+            query: ({ slug, lang, model }) => `/study-area/${slug}/item/${model}?lang=${lang}`,
             providesTags: ['Study-area']
         }),
         getStudyAreaProfile: builder.query({
-            query: ({ slug, lang }) => `/study-area/${slug}/profile?lang=${lang}`,
+            query: ({ slug, lang, model }) => `/study-area/${slug}/profile/${model}?lang=${lang}`,
             providesTags: ['Study-area']
         }),
         getStudyAreaFaq: builder.query({
-            query: ({ slug, lang }) => `/study-area/${slug}/faq?lang=${lang}`,
+            query: ({ slug, lang, model }) => `/study-area/${slug}/faq/${model}?lang=${lang}`,
             providesTags: ['Study-area']
         }),
         getStudyArea: builder.query({
