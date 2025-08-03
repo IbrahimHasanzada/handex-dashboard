@@ -90,6 +90,10 @@ export function CourseBasicInfo({ form, generateSlug, setImageState, imageState,
                             </Select>
                         </div>
                         <div className="space-y-2">
+                            <Label>Gizli məlumat</Label>
+                            <Input {...form.register("hidden")} placeholder="Gizli məlumatı daxil edin..." className="flex-1" />
+                        </div>
+                        <div className="space-y-2">
                             <Label htmlFor="color">Rəng</Label>
                             <div className="flex gap-2">
                                 <Input id="color" type="color" {...form.register("color")} className="w-20" />

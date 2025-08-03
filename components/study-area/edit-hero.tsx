@@ -77,6 +77,7 @@ export function EditHero({
             color: "#DE465D",
             image: 0,
             course_detail: "",
+            hidden: ""
         },
     })
 
@@ -89,6 +90,7 @@ export function EditHero({
                 color: initialData.color || "#DE465D",
                 image: initialData.image?.id || 0,
                 course_detail: initialData.course_detail || "",
+                hidden: initialData.hidden || ""
             })
             setImageState({
                 preview: initialData.image?.url || null,
@@ -98,6 +100,8 @@ export function EditHero({
             })
             setAltText(initialData.image?.alt || "")
         }
+
+        console.log(initialData)
     }, [initialData, form])
 
     const handleImageUpload = (imageId: number) => {
@@ -133,6 +137,7 @@ export function EditHero({
                         lang: selectedLanguage,
                     },
                 ],
+                hidden: data.hidden
             }
 
             await updateStudyArea({ id: studyAreaId, params: payload }).unwrap()
@@ -187,6 +192,12 @@ export function EditHero({
                             {form.formState.errors.slug && (
                                 <p className="text-sm text-red-500">{form.formState.errors.slug.message}</p>
                             )}
+                        </div>
+
+
+                        <div className="space-y-2">
+                            <Label>Gizli məlumat</Label>
+                            <Input value={form.watch("hidden")} {...form.register("hidden")} placeholder="Gizli məlumatı daxil edin..." className="flex-1" />
                         </div>
 
                         {/* Color */}

@@ -8,6 +8,7 @@ export interface StudyAreaEditFormProps {
         color: string
         image: { id: number; url: string; alt: string | null }
         course_detail: string
+        hidden: string
     }
     selectedLanguage: string
     onSuccess: () => void

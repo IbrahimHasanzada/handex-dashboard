@@ -205,7 +205,11 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                                         </div>
                                         <div className="space-y-2">
                                             <div className="font-medium text-sm text-muted-foreground">Kurs Təfərrüatı</div>
-                                            <div className="text-sm leading-relaxed">{itemData.course_detail}</div>
+                                            <div className="text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: itemData.course_detail }} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <div className="font-medium text-sm text-muted-foreground">Gizli məlumat</div>
+                                            <div className="text-sm leading-relaxed">{itemData.hidden}</div>
                                         </div>
                                         <div className="space-y-2">
                                             <div className="font-medium text-sm text-muted-foreground">Rəng</div>
@@ -356,6 +360,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                         color: itemData.color,
                         image: itemData.image,
                         course_detail: itemData.course_detail,
+                        hidden: itemData.hidden
                     }}
                     selectedLanguage={selectedLanguage}
                     onSuccess={handleStudyAreaSuccess}

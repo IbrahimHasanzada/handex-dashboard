@@ -6,6 +6,7 @@ export const studyAreaFormSchema = z.object({
     color: z.string().min(1, "Rəng tələb olunur"),
     image: z.number().min(1, "Şəkil tələb olunur"),
     course_detail: z.string().min(1, "Kurs təfərrüatı tələb olunur"),
+    hidden: z.string().min(1, "Kurs üçün gizli məlumat tələb olunur tələb olunur"),
 })
 
 export type StudyAreaFormData = z.infer<typeof studyAreaFormSchema>

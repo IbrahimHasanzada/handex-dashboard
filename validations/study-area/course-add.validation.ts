@@ -74,6 +74,7 @@ const groupSchema = z.object({
 
 export const courseSchema = z.object({
     name: z.string().min(1, "Kurs adı tələb olunur"),
+    hidden: z.string().min(1, "Kurs üçün gizli məlumat tələb olunur"),
     slug: z.string()
         .min(1, "Slug boş ola bilməz")
         .regex(/^[a-z0-9-]+$/, "Slug yalnız kiçik ingilis hərfləri, rəqəmlər və `-` icazə verir")

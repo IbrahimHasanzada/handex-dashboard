@@ -5,6 +5,7 @@ export const courseDefaultValues: CourseFormData = {
     slug: "",
     color: "#DE465D",
     image: 0,
+    hidden: "",
     translations: [
         { course_detail: "", lang: "az" },
         { course_detail: "", lang: "en" },
