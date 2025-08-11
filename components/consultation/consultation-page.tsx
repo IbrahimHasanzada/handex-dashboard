@@ -35,7 +35,7 @@ export default function ConsultationPage() {
     const [delConsultation, { isLoading: delLoading }] = useDeleteConsultationMutation()
     const [isExporting, setIsExporting] = useState(false)
 
-    console.log(data)
+
     const handleDelete = async (id: number) => {
         try {
             await showDeleteConfirmation(delConsultation, id, refetch, {
@@ -49,14 +49,12 @@ export default function ConsultationPage() {
     }
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString("az-AZ", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-        })
-    }
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}.${month}.${year}`;
+    };
 
     // Export to Excel using ExcelJS
     const exportToExcel = async () => {
@@ -282,7 +280,6 @@ export default function ConsultationPage() {
                                 <div className="pt-3 border-t border-gray-100">
                                     <div className="text-xs text-gray-500 space-y-1">
                                         <div>Yaradılıb: {formatDate(consultation.createdAt)}</div>
-                                        <div>Yenilənib: {formatDate(consultation.updatedAt)}</div>
                                     </div>
                                 </div>
                             </CardContent>

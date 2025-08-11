@@ -93,7 +93,7 @@ export default function AdminFeaturesPage({ slug, title }: any) {
                         </Tabs>
                     </div>
 
-                    {featuresData?.length < 6 && <Button onClick={() => setIsAddDialogOpen(true)} className="w-full sm:w-auto">
+                    {featuresData?.length < 8 && <Button onClick={() => setIsAddDialogOpen(true)} className="w-full sm:w-auto">
                         <Plus className="mr-2 h-4 w-4" /> Yeni üstünlük əlavə edin
                     </Button>}
                 </div>
