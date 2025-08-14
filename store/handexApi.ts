@@ -580,6 +580,10 @@ export const handexApi = createApi({
             }),
             invalidatesTags: ['Study-area']
         }),
+        getFaq: builder.query({
+            query: ({ lang, model }) => `/faq?model=${model}&lang=${lang}`,
+            providesTags: ['FAQ']
+        }),
         addFaq: builder.mutation({
             query: (params) => ({
                 url: `/faq`,
@@ -816,6 +820,7 @@ export const {
     useUnpinBlogsMutation,
     useUnpinNewsMutation,
     useUnpinProjectsMutation,
-    useUnpinServiceMutation
+    useUnpinServiceMutation,
+    useGetFaqQuery
 
 } = handexApi
