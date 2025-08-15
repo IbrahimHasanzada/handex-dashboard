@@ -66,14 +66,14 @@ export function FAQList({ model, faqs, selectedLanguage, onRefresh }: FAQListPro
                                             </Button>
                                         }
                                     />
-                                    {faqs.length > 1 && <Button
+                                    <Button
                                         size="icon"
                                         variant="ghost"
                                         onClick={() => handleDelete(faq.id)}
                                         disabled={deletingId === faq.id}
                                     >
                                         <Trash2 className="h-4 w-4" />
-                                    </Button>}
+                                    </Button>
                                 </div>
                             </div>
                         </div>
