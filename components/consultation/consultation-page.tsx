@@ -236,61 +236,65 @@ export default function ConsultationPage() {
                     </CardContent>
                 </Card>
             ) : (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {data?.map((consultation: Consultation) => (
-                        <Card key={consultation.id} className="relative hover:shadow-lg transition-shadow">
-                            <CardHeader className="pb-3">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center space-x-2">
-                                        <User className="h-5 w-5 text-gray-500" />
-                                        <CardTitle className="text-lg">
-                                            {consultation.name} {consultation.surname}
-                                        </CardTitle>
-                                    </div>
-                                    <Button
-                                        onClick={() => handleDelete(consultation.id)}
-                                        variant="ghost"
-                                        size="sm"
-                                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                {consultation.company && <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                    <Building2 className="h-4 w-4" />
-                                    <span>{consultation.company}</span>
-                                </div>}
-                                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                    <Phone className="h-4 w-4" />
-                                    <span>{consultation.phone}</span>
-                                </div>
-                                {consultation.email && <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                    <Mail className="h-4 w-4" />
-                                    <span>{consultation.email}</span>
-                                </div>}
 
-                                <div className="space-y-2">
-                                    <Badge style={{ backgroundColor: consultation.course.color }} className="text-white">
-                                        {consultation.course.name}
-                                    </Badge>
-                                </div>
+                <>
 
-                                <div className="pt-3 border-t border-gray-100">
-                                    <div className="text-xs text-gray-500 space-y-1">
-                                        <div>Yaradılıb: {formatDate(consultation.createdAt)}</div>
+                    <div className="mt-8 text-center mb-5">
+                        <p className="text-sm text-gray-500">Cəmi {data?.length} konsultasiya müraciəti</p>
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        {data?.map((consultation: Consultation) => (
+                            <Card key={consultation.id} className="relative hover:shadow-lg transition-shadow">
+                                <CardHeader className="pb-3">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-center space-x-2">
+                                            <User className="h-5 w-5 text-gray-500" />
+                                            <CardTitle className="text-lg">
+                                                {consultation.name} {consultation.surname}
+                                            </CardTitle>
+                                        </div>
+                                        <Button
+                                            onClick={() => handleDelete(consultation.id)}
+                                            variant="ghost"
+                                            size="sm"
+                                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
                                     </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {consultation.company && <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                        <Building2 className="h-4 w-4" />
+                                        <span>{consultation.company}</span>
+                                    </div>}
+                                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                        <Phone className="h-4 w-4" />
+                                        <span>{consultation.phone}</span>
+                                    </div>
+                                    {consultation.email && <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                        <Mail className="h-4 w-4" />
+                                        <span>{consultation.email}</span>
+                                    </div>}
+
+                                    <div className="space-y-2">
+                                        <Badge style={{ backgroundColor: consultation.course.color }} className="text-white">
+                                            {consultation.course.name}
+                                        </Badge>
+                                    </div>
+
+                                    <div className="pt-3 border-t border-gray-100">
+                                        <div className="text-xs text-gray-500 space-y-1">
+                                            <div>Yaradılıb: {formatDate(consultation.createdAt)}</div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </>
             )}
 
-            <div className="mt-8 text-center">
-                <p className="text-sm text-gray-500">Cəmi {data?.length} konsultasiya müraciəti</p>
-            </div>
         </div>
     )
 }
