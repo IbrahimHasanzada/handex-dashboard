@@ -168,6 +168,17 @@ export const handexApi = createApi({
                 method: 'DELETE',
             })
         }),
+        updateProfileOrders: builder.mutation({
+            query: (orderData) => ({
+                url: '/profiles/update/orders',
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: orderData
+            }),
+            invalidatesTags: ['Graduates', 'Study-area']
+        }),
         getNews: builder.query({
             query: ({ lang, page }) => `/news?lang=${lang}&page=${page}`,
             providesTags: ['News']
@@ -746,6 +757,7 @@ export const {
     useAddProfilesMutation,
     useDeleteProfilesMutation,
     useUpdateProfilesMutation,
+    useUpdateProfileOrdersMutation,
     useUpdateCustomersMutation,
     useAddNewsMutation,
     useGetNewsQuery,
