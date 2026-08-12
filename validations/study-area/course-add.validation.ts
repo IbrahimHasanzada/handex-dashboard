@@ -82,6 +82,7 @@ export const courseSchema = z.object({
             message: "Slug içində ə, ı, ö, ü, ş, ç hərfləri ola bilməz",
         }),
     color: z.string().regex(/^#[0-9A-F]{6}$/i, "Düzgün hex rəng formatı tələb olunur"),
+    seoWord: z.string().optional(),
     image: z.number().min(1, "Şəkil tələb olunur"),
     translations: z
         .array(courseTranslationSchema)

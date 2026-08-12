@@ -358,6 +358,7 @@ export function CourseOverview({ slug }: CourseOverviewProps) {
                         name: itemData.name,
                         slug: itemData.slug,
                         color: itemData.color,
+                        seoWord: itemData.seoWord,
                         image: itemData.image,
                         course_detail: itemData.course_detail,
                         hidden: itemData.hidden

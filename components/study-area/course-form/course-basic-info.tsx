@@ -70,6 +70,10 @@ export function CourseBasicInfo({ form, generateSlug, setImageState, imageState,
                         <Input id="slug" {...form.register("slug")} placeholder="kurs-slug" />
                         {form.formState.errors.slug && <p className="text-sm text-red-500">{form.formState.errors.slug.message}</p>}
                     </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="seoWord">SEO sözü</Label>
+                        <Input id="seoWord" {...form.register("seoWord")} placeholder="məs: kursu" />
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

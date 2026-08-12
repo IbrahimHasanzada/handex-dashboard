@@ -75,6 +75,7 @@ export function EditHero({
             name: "",
             slug: "",
             color: "#DE465D",
+            seoWord: "",
             image: 0,
             course_detail: "",
             hidden: ""
@@ -88,6 +89,7 @@ export function EditHero({
                 name: initialData.name || "",
                 slug: initialData.slug || "",
                 color: initialData.color || "#DE465D",
+                seoWord: initialData.seoWord ?? "",
                 image: initialData.image?.id || 0,
                 course_detail: initialData.course_detail || "",
                 hidden: initialData.hidden || ""
@@ -130,6 +132,7 @@ export function EditHero({
                 name: data.name,
                 slug: data.slug,
                 color: data.color,
+                seoWord: data.seoWord ?? "",
                 image: data.image,
                 translations: [
                     {
@@ -192,6 +195,12 @@ export function EditHero({
                             {form.formState.errors.slug && (
                                 <p className="text-sm text-red-500">{form.formState.errors.slug.message}</p>
                             )}
+                        </div>
+
+                        {/* SEO Word */}
+                        <div className="space-y-2">
+                            <Label htmlFor="seoWord">SEO sözü</Label>
+                            <Input id="seoWord" {...form.register("seoWord")} placeholder="məs: kursu" />
                         </div>
 
 

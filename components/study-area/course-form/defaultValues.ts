@@ -4,6 +4,7 @@ export const courseDefaultValues: CourseFormData = {
     name: "",
     slug: "",
     color: "#DE465D",
+    seoWord: "",
     image: 0,
     hidden: "",
     translations: [
