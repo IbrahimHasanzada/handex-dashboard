@@ -26,7 +26,7 @@ const formSchema = z.object({
     logoAlt: z.string().optional(),
 })
 
-export function AddPartner({ refetch, partners }: { refetch: () => void; partners: [{ id: number; url: string }] }) {
+export function AddPartner({ refetch, partners, phones }: { refetch: () => void; partners: [{ id: number; url: string }]; phones: string[] }) {
     const [open, setOpen] = useState(false)
     const [logoState, setLogoState] = useState<{
         preview: string | null
@@ -119,7 +119,7 @@ export function AddPartner({ refetch, partners }: { refetch: () => void; partner
         try {
             const { logoAlt, ...submitData } = values
 
-            await addPartner({ company: [...previousPartners, submitData.id] }).unwrap()
+            await addPartner({ company: [...previousPartners, submitData.id], phone: phones }).unwrap()
             form.reset()
             setLogoState({
                 preview: null,

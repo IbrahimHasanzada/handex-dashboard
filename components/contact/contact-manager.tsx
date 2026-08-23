@@ -79,7 +79,7 @@ export default function ContactManager() {
                 return
             }
 
-            updateContactGeneral({ phone: [...contactData.phone, trimmedPhone] }).unwrap()
+            await updateContactGeneral({ phone: [...contactData.phone, trimmedPhone] }).unwrap()
             toast.success("Telefon nömrəsi uğurla yeniləndi")
             setContactData((prev) => ({
                 ...prev,
@@ -117,7 +117,11 @@ export default function ContactManager() {
         try {
             const validatedData = contactFormSchema.parse(editForm)
 
-            updateContactGeneral({ email: validatedData.email, location: validatedData.location }).unwrap()
+            await updateContactGeneral({
+                email: validatedData.email,
+                location: validatedData.location,
+                phone: [...contactData.phone],
+            }).unwrap()
             setContactData((prev) => ({
                 ...prev,
                 location: validatedData.location,

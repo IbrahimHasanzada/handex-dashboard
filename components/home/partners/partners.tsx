@@ -23,7 +23,7 @@ const Partners = () => {
         try {
             const updatedPartners = compaines.filter((item: any) => item.id !== id).map((elem: any) => elem.id)
             fetchPartners()
-            showDeleteConfirmation(updatePartner, { company: updatedPartners }, fetchPartners, {
+            showDeleteConfirmation(updatePartner, { company: updatedPartners, phone: partners?.[0]?.phone ?? [] }, fetchPartners, {
                 title: "Şirkəti silmək istəyirsinizmi?",
                 text: "Bu əməliyyat geri qaytarıla bilməz!",
                 successText: "Tərəfdaş uğurla silindi.",
@@ -40,7 +40,7 @@ const Partners = () => {
                     <CardTitle>Məzunların işlədiyi top şirkətlər</CardTitle>
                     <CardDescription>Şirkətləri idarə edin</CardDescription>
                 </div>
-                <AddPartner partners={partners?.[0].company} refetch={fetchPartners} />
+                <AddPartner partners={partners?.[0].company} phones={partners?.[0]?.phone ?? []} refetch={fetchPartners} />
             </CardHeader>
             <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
