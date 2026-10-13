@@ -2,6 +2,7 @@
 import { useState } from "react"
 import CorporateHero from "./corporate/corporate-hero"
 import Partners from "./corporate/partners/partners"
+import ReferenceLetters from "./corporate/reference-letters/reference-letters"
 import AdminFeaturesPage from "./featuresSections/features-about"
 import { FAQList } from "./home/faq/faqlist"
 import StatisticsSection from "./home/statistics/StatisticsSection"
@@ -32,6 +33,9 @@ export function DashboardCorporate() {
 
             {/* Partners Management */}
             <Partners />
+
+            {/* Reference Letters Management */}
+            <ReferenceLetters />
 
             {/* Statistics Section */}
             <StatisticsSection field="corporate" />
