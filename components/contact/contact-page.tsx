@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Trash2, Mail, Phone, User, MessageSquare, FileText, Loader2, Download } from "lucide-react"
+import { Trash2, Mail, Phone, User, MessageSquare, FileText, Loader2, Download, Building2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useDeleteContactMutation, useGetContactQuery } from "@/store/handexApi"
@@ -17,6 +18,8 @@ interface Contact {
     phone: string
     title: string
     message: string
+    company?: string | null
+    type?: "individual" | "corporate"
     createdAt: string
 }
 
@@ -65,7 +68,9 @@ export default function ContactPage() {
             // Define columns
             worksheet.columns = [
                 { header: "Sıra", key: "sira", width: 8 },
+                { header: "Növ", key: "nov", width: 12 },
                 { header: "Ad Soyad", key: "ad_soyad", width: 20 },
+                { header: "Şirkət", key: "sirket", width: 20 },
                 { header: "Email", key: "email", width: 25 },
                 { header: "Telefon", key: "telefon", width: 15 },
                 { header: "Mövzu", key: "movzu", width: 30 },
@@ -93,7 +98,9 @@ export default function ContactPage() {
             data.forEach((contact: Contact, index: number) => {
                 const row = worksheet.addRow({
                     sira: index + 1,
+                    nov: contact.type === "corporate" ? "Korporativ" : "Fərdi",
                     ad_soyad: contact.full_name,
+                    sirket: contact.company || "",
                     email: contact.email,
                     telefon: contact.phone,
                     movzu: contact.title,
@@ -169,13 +176,13 @@ export default function ContactPage() {
             titleRow.alignment = { horizontal: "center" }
 
             // Merge title cells
-            worksheet.mergeCells("A1:G1")
+            worksheet.mergeCells("A1:I1")
 
             // Style export date
             const dateRow = worksheet.getRow(2)
             dateRow.font = { italic: true, color: { argb: "666666" } }
             dateRow.alignment = { horizontal: "center" }
-            worksheet.mergeCells("A2:G2")
+            worksheet.mergeCells("A2:I2")
 
             // Generate filename with current date
             const currentDate = new Date().toLocaleDateString("az-AZ").replace(/\./g, "-")
@@ -252,6 +259,7 @@ export default function ContactPage() {
                                     <div className="flex items-center space-x-2">
                                         <User className="h-5 w-5 text-gray-500" />
                                         <CardTitle className="text-lg">{contact.full_name}</CardTitle>
+                                        {contact.type === "corporate" && <Badge>Korporativ</Badge>}
                                     </div>
                                     <Button
                                         onClick={() => handleDelete(contact.id)}
@@ -265,6 +273,13 @@ export default function ContactPage() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-3">
+                                    {contact.company && (
+                                        <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                            <Building2 className="h-4 w-4" />
+                                            <span className="font-medium text-gray-900">{contact.company}</span>
+                                        </div>
+                                    )}
+
                                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                                         <Mail className="h-4 w-4" />
                                         <a href={`mailto:${contact.email}`} className="hover:text-blue-600 transition-colors">
@@ -282,7 +297,7 @@ export default function ContactPage() {
                                     <div className="flex items-start space-x-2 text-sm text-gray-600">
                                         <FileText className="h-4 w-4 mt-0.5" />
                                         <div>
-                                            <span className="font-medium text-gray-900">Mövzu: </span>
+                                            <span className="font-medium text-gray-900">{contact.type === "corporate" ? "Təlim: " : "Mövzu: "}</span>
                                             {contact.title}
                                         </div>
                                     </div>
