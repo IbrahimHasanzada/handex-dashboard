@@ -101,6 +101,18 @@ export const handexApi = createApi({
             invalidatesTags: ['Content']
         }),
 
+        updateContentOrders: builder.mutation({
+            query: (orderData) => ({
+                url: '/content/update/orders',
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: orderData
+            }),
+            invalidatesTags: ['Content']
+        }),
+
         getCustomers: builder.query({
             query: ({ lang, slug }) => `/customers/${slug}?lang=${lang}`,
             providesTags: ['Customers']
@@ -748,6 +760,7 @@ export const {
     useGetHeroQuery,
     useAddHeroMutation,
     useGetContentQuery,
+    useUpdateContentOrdersMutation,
     useAddContentMutation,
     useGetCustomersQuery,
     useUploadFileMutation,
