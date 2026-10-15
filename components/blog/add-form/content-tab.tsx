@@ -140,12 +140,21 @@ function CtaFields({ form, lang }: { form: UseFormReturn<any>; lang: string }) {
             {hasContent && (
                 <div>
                     <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Önizləmə</p>
-                    <div className="relative overflow-hidden rounded-[20px] bg-white p-6 shadow-sm border">
-                        <span className="absolute left-0 top-6 bottom-6 w-1 rounded-r bg-gradient-to-b from-[#73CCD8] to-[#2B6B9F]" />
-                        {title && <p className="text-xl font-bold text-[#141414]">{title}</p>}
-                        {description && <p className="mt-2 text-[#666] whitespace-pre-line">{description}</p>}
+                    <div className="rounded-[20px] bg-white p-5 shadow-sm border flex flex-col md:flex-row md:items-center gap-5">
+                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                            <img
+                                src="https://handex.edu.az/assets/img/blog-cta.webp"
+                                alt=""
+                                className="size-16 shrink-0 object-contain"
+                                onError={(e) => (e.currentTarget.style.display = "none")}
+                            />
+                            <div className="min-w-0">
+                                {title && <p className="text-lg font-bold leading-snug text-[#141414]">{title}</p>}
+                                {description && <p className="mt-1 text-sm text-[#666]">{description}</p>}
+                            </div>
+                        </div>
                         {buttonText && link && (
-                            <span className="mt-5 inline-flex items-center gap-2 h-11 px-6 rounded-full bg-gradient-to-b from-[rgba(17,17,17,0.8)] to-[rgba(26,26,26,0.9)] text-white font-medium">
+                            <span className="shrink-0 inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-gradient-to-b from-[rgba(17,17,17,0.8)] to-[rgba(26,26,26,0.9)] text-white font-medium whitespace-nowrap">
                                 {buttonText}
                                 <ArrowUpRight className="h-4 w-4" />
                             </span>
