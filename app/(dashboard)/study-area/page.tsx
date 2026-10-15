@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/dashboard-layout"
 import { useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AdminFeaturesPage from "@/components/featuresSections/features-about"
+import { StudyAreaCategories } from "@/components/study-area/categories/study-area-categories"
 
 type Language = "az" | "en" | "ru"
 export default function page() {
@@ -44,6 +45,10 @@ export default function page() {
 
             selectedLanguage={selectedLanguage}
             setSelectedLanguage={setSelectedLanguage} />
+        </div>
+
+        <div>
+          <StudyAreaCategories />
         </div>
 
       </div>

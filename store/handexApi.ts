@@ -17,7 +17,7 @@ export const handexApi = createApi({
             return headers
         }
     }),
-    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact', 'Study-area', 'FAQ', 'Program', 'Group', 'Content', 'Statistics', 'About', 'Brochure'],
+    tagTypes: ['HomeHero', 'Customers', 'Graduates', 'General', 'News', 'Blog', 'Service', 'Projects', 'Meta', 'Consultation', 'Contact', 'Study-area', 'FAQ', 'Program', 'Group', 'Content', 'Statistics', 'About', 'Brochure', 'StudyAreaCategory'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (params) => ({
@@ -559,6 +559,50 @@ export const handexApi = createApi({
             query: ({ slug, lang, model }) => `/study-area/${slug}/faq/${model}?lang=${lang}`,
             providesTags: ['Study-area']
         }),
+        getStudyAreaCategories: builder.query({
+            query: ({ model }) => `/study-area-category?model=${model}`,
+            providesTags: ['StudyAreaCategory']
+        }),
+        addStudyAreaCategory: builder.mutation({
+            query: (params) => ({
+                url: '/study-area-category',
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+            invalidatesTags: ['StudyAreaCategory']
+        }),
+        updateStudyAreaCategory: builder.mutation({
+            query: ({ id, params }) => ({
+                url: `/study-area-category/${id}`,
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: params
+            }),
+            invalidatesTags: ['StudyAreaCategory']
+        }),
+        deleteStudyAreaCategory: builder.mutation({
+            query: (id) => ({
+                url: `/study-area-category/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['StudyAreaCategory']
+        }),
+        updateStudyAreaCategoryOrders: builder.mutation({
+            query: (orderData) => ({
+                url: '/study-area-category/update/orders',
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: orderData
+            }),
+            invalidatesTags: ['StudyAreaCategory']
+        }),
         getStudyArea: builder.query({
             query: ({ lang, model }) => `/study-area?model=${model}&lang=${lang}`,
             providesTags: ['Study-area']
@@ -601,7 +645,7 @@ export const handexApi = createApi({
                 url: `/study-area/${id}`,
                 method: 'DELETE'
             }),
-            invalidatesTags: ['Study-area']
+            invalidatesTags: ['Study-area', 'StudyAreaCategory']
         }),
         getFaq: builder.query({
             query: ({ lang, model }) => `/faq?model=${model}&lang=${lang}`,
@@ -760,6 +804,11 @@ export const {
     useGetHeroQuery,
     useAddHeroMutation,
     useGetContentQuery,
+    useGetStudyAreaCategoriesQuery,
+    useAddStudyAreaCategoryMutation,
+    useUpdateStudyAreaCategoryMutation,
+    useDeleteStudyAreaCategoryMutation,
+    useUpdateStudyAreaCategoryOrdersMutation,
     useUpdateContentOrdersMutation,
     useAddContentMutation,
     useGetCustomersQuery,
