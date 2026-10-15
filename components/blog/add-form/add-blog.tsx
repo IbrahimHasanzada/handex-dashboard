@@ -26,6 +26,9 @@ import { CardFooter } from "@/components/ui/card"
 import { ContentTab } from "./content-tab"
 import { renderFormErrors } from "@/utils/render-error"
 
+const LANGS = ["az", "en", "ru"] as const
+const CTA_FIELDS = ["cta_title", "cta_description", "cta_button_text", "cta_link"] as const
+
 interface ImageState {
   preview: string | null
   id: number | null
@@ -87,6 +90,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
       meta_en: string
       meta_ru: string
     }>,
+    ...Object.fromEntries(LANGS.flatMap((lang) => CTA_FIELDS.map((field) => [`${field}_${lang}`, ""]))),
   }
 
   let form: any
@@ -123,6 +127,7 @@ export function BlogsForm({ slug }: { slug?: string }) {
         `content_${selectedLanguage}` as "content_az" | "content_en" | "content_ru",
         blogs.description || "",
       )
+      CTA_FIELDS.forEach((field) => form.setValue(`${field}_${selectedLanguage}`, blogs[field] || ""))
 
       if (blogs.meta && blogs.meta.length > 0) {
         if (blogs.meta[0]) {
@@ -179,6 +184,17 @@ export function BlogsForm({ slug }: { slug?: string }) {
   }, [blogs, slug, form])
 
   async function onSubmit(values: z.infer<typeof formSchemaNews>) {
+    const cta = (lang: (typeof LANGS)[number]) =>
+      Object.fromEntries(CTA_FIELDS.map((field) => [field, (values[`${field}_${lang}`] || "").trim()]))
+
+    for (const lang of LANGS) {
+      const { cta_button_text, cta_link } = cta(lang)
+      if (!!cta_button_text !== !!cta_link) {
+        setSelectedTab("content")
+        toast.error(`CTA düyməsi (${lang.toUpperCase()}) üçün həm düymə mətni, həm də link yazılmalıdır`)
+        return
+      }
+    }
 
     try {
       const mainMetaTranslations = [
@@ -200,9 +216,9 @@ export function BlogsForm({ slug }: { slug?: string }) {
       const postValue = {
         image: values.featuredImage,
         translations: [
-          { title: values.title_az, description: values.content_az, lang: "az" },
-          ...(values.title_en !== "" ? [{ title: values.title_en, description: values.content_en, lang: "en" }] : []),
-          ...(values.title_ru !== "" ? [{ title: values.title_ru, description: values.content_ru, lang: "ru" }] : []),
+          { title: values.title_az, description: values.content_az, lang: "az", ...cta("az") },
+          ...(values.title_en !== "" ? [{ title: values.title_en, description: values.content_en, lang: "en", ...cta("en") }] : []),
+          ...(values.title_ru !== "" ? [{ title: values.title_ru, description: values.content_ru, lang: "ru", ...cta("ru") }] : []),
         ],
         meta: [
           {

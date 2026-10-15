@@ -2,6 +2,8 @@
 
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { ArrowUpRight } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 const TinyMCE = dynamic(
     () => import('@tinymce/tinymce-react').then((mod) => mod.Editor),
@@ -77,8 +79,80 @@ export function ContentTab({ form, apiKey, selectedLanguage, setSelectedLanguage
                             </FormItem>
                         )}
                     />
+                    <CtaFields form={form} lang={lang} />
                 </TabsContent>
             ))}
         </Tabs>
+    )
+}
+
+const ctaLabels: Record<string, { heading: string; title: string; description: string; button: string; link: string }> = {
+    az: { heading: "Bloqun sonunda CTA bloku", title: "Başlıq", description: "Təsvir", button: "Düymə mətni", link: "Link" },
+    en: { heading: "Call-to-action at the end of the post", title: "Title", description: "Description", button: "Button text", link: "Link" },
+    ru: { heading: "Блок призыва в конце статьи", title: "Заголовок", description: "Описание", button: "Текст кнопки", link: "Ссылка" },
+}
+
+function CtaFields({ form, lang }: { form: UseFormReturn<any>; lang: string }) {
+    const labels = ctaLabels[lang]
+    const [title, description, buttonText, link] = form.watch([
+        `cta_title_${lang}`,
+        `cta_description_${lang}`,
+        `cta_button_text_${lang}`,
+        `cta_link_${lang}`,
+    ])
+    const hasContent = title || description || (buttonText && link)
+
+    const field = (name: string, label: string, placeholder: string, multiline = false) => (
+        <FormField
+            control={form.control}
+            name={`${name}_${lang}`}
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{label}</FormLabel>
+                    <FormControl>
+                        {multiline ? (
+                            <Textarea rows={3} placeholder={placeholder} {...field} value={field.value || ""} />
+                        ) : (
+                            <Input placeholder={placeholder} {...field} value={field.value || ""} />
+                        )}
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+    )
+
+    return (
+        <div className="rounded-lg border p-5 space-y-4">
+            <div>
+                <p className="font-medium">{labels.heading}</p>
+                <p className="text-sm text-muted-foreground">
+                    İstəyə bağlıdır. Doldurulsa, saytda bloqun məzmununun altında göstərilir. Düymə üçün həm mətn, həm də link yazılmalıdır.
+                </p>
+            </div>
+            {field("cta_title", labels.title, "Məs: Data analitikanı öyrənmək istəyirsiniz?")}
+            {field("cta_description", labels.description, "Məs: Ətraflı məlumat üçün təlim səhifəmizə keçin.", true)}
+            <div className="grid gap-4 md:grid-cols-2">
+                {field("cta_button_text", labels.button, "Məs: Ətraflı öyrən")}
+                {field("cta_link", labels.link, "https://handex.edu.az/tedris/...")}
+            </div>
+
+            {hasContent && (
+                <div>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Önizləmə</p>
+                    <div className="relative overflow-hidden rounded-[20px] bg-white p-6 shadow-sm border">
+                        <span className="absolute left-0 top-6 bottom-6 w-1 rounded-r bg-gradient-to-b from-[#73CCD8] to-[#2B6B9F]" />
+                        {title && <p className="text-xl font-bold text-[#141414]">{title}</p>}
+                        {description && <p className="mt-2 text-[#666] whitespace-pre-line">{description}</p>}
+                        {buttonText && link && (
+                            <span className="mt-5 inline-flex items-center gap-2 h-11 px-6 rounded-full bg-gradient-to-b from-[rgba(17,17,17,0.8)] to-[rgba(26,26,26,0.9)] text-white font-medium">
+                                {buttonText}
+                                <ArrowUpRight className="h-4 w-4" />
+                            </span>
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
     )
 }

@@ -7,6 +7,16 @@ const metaTagSchema = z.object({
     meta_ru: z.string().min(1, { message: "Meta təsviri (RU) tələb olunur" }),
 })
 
+// Optional call-to-action block at the end of a blog post, per language.
+const ctaFields = Object.fromEntries(
+    ["az", "en", "ru"].flatMap((lang) => [
+        [`cta_title_${lang}`, z.string().optional()],
+        [`cta_description_${lang}`, z.string().optional()],
+        [`cta_button_text_${lang}`, z.string().optional()],
+        [`cta_link_${lang}`, z.string().optional()],
+    ])
+) as Record<`cta_${"title" | "description" | "button_text" | "link"}_${"az" | "en" | "ru"}`, z.ZodOptional<z.ZodString>>
+
 export const formSchemaNews = z.object({
     title_az: z.string().min(5, { message: "Ən azı 5 simvol olmalıdır" }),
     title_en: z.string().min(5, { message: "Ən azı 5 simvol olmalıdır" }),
@@ -30,6 +40,7 @@ export const formSchemaNews = z.object({
     imageAlt: z.string().min(1, { message: "Şəkil təsviri tələb olunur" }),
     metaName: z.string().min(1, { message: "Meta adı tələb olunur" }),
     additionalMeta: z.array(metaTagSchema).optional().default([]),
+    ...ctaFields,
 })
 
 
@@ -75,4 +86,5 @@ export const editFormSchemaNews = z.object({
 
     // Add validation for the additional meta tags array
     additionalMeta: z.array(metaTagSchema).optional().default([]),
+    ...ctaFields,
 })
